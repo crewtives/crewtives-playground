@@ -1,6 +1,6 @@
 # Verification of add-seo-and-sharing
 
-Date: 2026-09-29. Branch `feat/seo-and-mobile`, on top of `main` at the commit that archived `prepare-public-release`. The figures below were measured again on the final code, after the review fixes of task 5.8, unless a line says otherwise. The ad hoc verification scripts and the fingerprint harness were never part of the repository (design D8); what remains of them are the figures recorded here and in `tasks.md`.
+Date: 2026-09-29. Branch `feat/seo-and-mobile`, on top of `main` (the public history, after `prepare-public-release`). The figures below were measured again on the final code, after the review fixes of task 5.8, unless a line says otherwise. The ad hoc verification scripts and the fingerprint harness were never part of the repository (design D8); what remains of them are the figures recorded here and in `tasks.md`.
 
 ## Status
 
@@ -115,7 +115,7 @@ Under `wrangler dev`, on the final build, with `curl`:
 The 10 routes were fingerprinted at 1440×900, at 390×844 and without JavaScript, served by `wrangler dev` from the final build, and compared with the baseline taken on this branch before any change (30 route-mode pairs). The harness is out of the repository (see "Known limitations").
 
 - **Visible text** (`document.body.innerText`): identical on 30 of 30 pairs. In this run even Wind-Up Empire's economy counter, which runs on its own clock and which the harness filters as known noise, matched.
-- **Requests and console errors:** identical on 30 of 30. Headless Chromium requests neither the favicon nor the apple-touch-icon, so the icon requests the spec allows did not occur. Every request of every page goes to the site itself.
+- **Requests and console errors:** identical on 30 of 30. Headless Chromium requests neither the favicon nor the apple-touch-icon, so the icon requests the spec allows did not occur. Every request of every page goes to the site itself: the harness records any other origin as external, and none appeared.
 - **Pixels:** 18 of 20 screenshots identical. World B at 1440×900 differs by 292 px and Game Center Yonjigen at 1440×900 by 16 px, both from live animation, both under the harness's 2,000 px tolerance. Earlier runs (5.3) had Game Center at 1,026 px and Wind-Up Empire at 96 px, from the same animations.
 - **Elements:** a script over the comparison asserts that each of the 20 page-width pairs differs by exactly `META` +16, `SCRIPT` +1 (the JSON-LD) and `LINK` +2 (+3 on `/`, which also declares `/favicon.ico`), with no other tag changing. It passed on all 20.
 
@@ -127,7 +127,7 @@ The 10 routes were fingerprinted at 1440×900, at 390×844 and without JavaScrip
 - `grep -rn --exclude='*.json' "capture-og\|audit-site" dist` prints nothing: only `dist/og/provenance.json` and the sidecars name the tool.
 - The tracked root holds `.claude/`, `.impeccable/`, `deploy/`, `docs/`, `openspec/`, `sites/`, `src/`, `tools/`, `.gitattributes`, `.gitignore`, `LICENSE`, `LICENSES.md`, `README.md`, `package.json`, `package-lock.json`, `tsconfig.json` and `vitest.config.ts`.
 - `git check-ignore .env .dev.vars` matches both.
-- Every repository path in `docs/site-metadata.md`, `docs/architecture.md` and the README tour exists. The link from `docs/site-metadata.md` to `openspec/specs/site-metadata/spec.md` resolves once this change is archived (6.3).
+- Every repository path in `docs/site-metadata.md`, `docs/architecture.md` and the README tour exists. The link from `docs/site-metadata.md` to `openspec/specs/site-metadata/spec.md` resolves since this change was archived (6.3).
 
 ## Scenarios: `site-metadata`
 
