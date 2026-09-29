@@ -51,6 +51,6 @@
 ## 8. Release
 
 - [x] 8.1 Archive this change with its specs synced; verify `npx openspec validate --specs --strict`
-- [ ] 8.2 Keep the private history as a local branch and a bundle outside the repository; verify `git bundle verify`
-- [ ] 8.3 Create the root commit with the final tree on an orphan branch, authored with the public identity; re-record every loop at it after a dry run whose frame hashes equal the previous recording; commit the loops, sidecars and `LICENSES.md` loop rows; verify no `[museum]` warning, `npm test`, and fingerprints equal to the baseline except the provenance line (new commit and date)
+- [x] 8.2 Keep the private history as a local branch and a bundle outside the repository; verify `git bundle verify`
+- [x] 8.3 Create the root commit with the final tree on an orphan branch, authored with the public identity; re-record every loop at it after a dry run whose frame hashes equal the previous recording; commit the loops, sidecars and `LICENSES.md` loop rows; verify no `[museum]` warning, `npm test`, and fingerprints equal to the baseline except the provenance line (new commit and date) (done: the dry run gave the 495 frame hashes of the previous recording, pass sizes byte-identical; after recording, the build prints no `[museum]` warning and 652 tests pass)
 - [ ] 8.4 Rename the repository to `crewtives-playground`, force-push `main`, delete the other remote branches, and make the repository public after a final audit of the pushed tree; verify an anonymous clone builds and that the provenance commits exist in it

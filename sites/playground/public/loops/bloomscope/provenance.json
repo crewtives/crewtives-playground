@@ -92,8 +92,12 @@
   "compression": "gzip",
   "contentType": "application/gzip"
  },
- "recorded": "2026-09-25",
- "commit": "2b9d89b5e7c6bcd94b84daa0684050ad57a497f7",
+ "recorded": "2026-09-29",
+ "sources": {
+  "algorithm": "sha256",
+  "hash": "fc7db9524c56e6404fdc532f0647dd4721bb3a3464fbfad80d1a49e6c1f5533a"
+ },
+ "commit": "ff02a9cfdfbf0e488eb305356b51e6d069a744c0",
  "method": {
   "liveRender": true,
   "controlledClock": true,
@@ -101,7 +105,7 @@
   "verifiedExact": true,
   "pageHidden": true,
   "stepping": "the controlled clock advances Math.round(f·1000/15) − Math.round((f−1)·1000/15) ms before loop frame f",
-  "tool": "scripts/capture-loops.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+  "tool": "tools/capture-loops.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
   "browser": "chromium",
   "browserVersion": "153.0.8010.12",
   "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Pro, Unspecified Version)"

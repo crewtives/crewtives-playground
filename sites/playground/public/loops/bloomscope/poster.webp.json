@@ -1,4 +1,4 @@
 {
-  "prompt": "Origin: not generated. Frame 0 of the FORWARD pass of loop bloomscope (004 · Bloomscope), recorded from the live render of /bloomscope/#g=WzEsMSwwLDEsMTM3LjUwNzgsW1siaCIsMTM3LjUwNzgsMTQ0XSxbInIiLDAsMjEsMC41LDAuNiwwXSxbInIiLDEsMjAsMC40LDAuMiwwXV1d at commit 2b9d89b5e7c6bcd94b84daa0684050ad57a497f7 on 2026-09-25, one pixel per display block (221 x 221, 16-colour palette), saved as lossless WebP and verified identical to that frame (SHA-256 74141b85b47e3e48fc2022f79badcc77c49c34c128fa3950ae94a24bd7653519 over RGBA). Full record: provenance.json in this folder.",
-  "createdAt": "2026-09-25T18:35:34.089Z"
+  "prompt": "Origin: not generated. Frame 0 of the FORWARD pass of loop bloomscope (004 · Bloomscope), recorded from the live render of /bloomscope/#g=WzEsMSwwLDEsMTM3LjUwNzgsW1siaCIsMTM3LjUwNzgsMTQ0XSxbInIiLDAsMjEsMC41LDAuNiwwXSxbInIiLDEsMjAsMC40LDAuMiwwXV1d at commit ff02a9cfdfbf0e488eb305356b51e6d069a744c0 on 2026-09-29, one pixel per display block (221 x 221, 16-colour palette), saved as lossless WebP and verified identical to that frame (SHA-256 74141b85b47e3e48fc2022f79badcc77c49c34c128fa3950ae94a24bd7653519 over RGBA). Full record: provenance.json in this folder.",
+  "createdAt": "2026-09-29T15:37:39.303Z"
 }

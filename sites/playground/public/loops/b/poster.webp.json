@@ -1,4 +1,4 @@
 {
-  "prompt": "Origin: not generated. Frame 0 of the FORWARD pass of loop b (001 · B · Plate), recorded from the live render of /4d-os/b/ at commit 2b9d89b5e7c6bcd94b84daa0684050ad57a497f7 on 2026-09-25, one pixel per display block (389 x 225, 16-colour palette), saved as lossless WebP and verified identical to that frame (SHA-256 c8cd61726f237f8a6383fe0def2da87926bf2d7144d23bfd8bfb4fc196733d61 over RGBA). Full record: provenance.json in this folder.",
-  "createdAt": "2026-09-25T18:35:33.780Z"
+  "prompt": "Origin: not generated. Frame 0 of the FORWARD pass of loop b (001 · B · Plate), recorded from the live render of /4d-os/b/ at commit ff02a9cfdfbf0e488eb305356b51e6d069a744c0 on 2026-09-29, one pixel per display block (389 x 225, 16-colour palette), saved as lossless WebP and verified identical to that frame (SHA-256 c8cd61726f237f8a6383fe0def2da87926bf2d7144d23bfd8bfb4fc196733d61 over RGBA). Full record: provenance.json in this folder.",
+  "createdAt": "2026-09-29T15:36:35.096Z"
 }
