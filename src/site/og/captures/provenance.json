@@ -1,0 +1,185 @@
+{
+  "about": "New source captures of the share images (add-seo-and-sharing D5): screenshots of the live render of each page in Chromium with software WebGL, at the full viewport, lossless and never retouched. The share images copy an 840×630 region of each one pixel for pixel.",
+  "captures": {
+    "museum.png": {
+      "route": "/",
+      "served": "the published site, https://playground.crewtives.com",
+      "commit": "d196bbf5606cb1d8cb8f47d6ae9c1f5e35a1fa6c",
+      "captured": "2026-09-29",
+      "viewport": {
+        "width": 840,
+        "height": 630
+      },
+      "dpr": 1,
+      "reducedMotion": true,
+      "clock": {
+        "origin": "2026-01-01T00:00:00.000Z",
+        "pausedAtMs": 1000,
+        "advancedMs": 4000,
+        "stepMs": 160
+      },
+      "boot": null,
+      "why": "the frame is the whole first screen at 840×630: the bar with the page clock above the featured sheet",
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "browserArgs": [
+        "--use-angle=swiftshader",
+        "--enable-unsafe-swiftshader",
+        "--ignore-gpu-blocklist",
+        "--disable-accelerated-2d-canvas"
+      ],
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+      "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+      "file": {
+        "width": 840,
+        "height": 630,
+        "bytes": 58489,
+        "sha256": "fe0bf3e8800337773cc13145d7248995d024585412517c356abe76a7454a7aff"
+      }
+    },
+    "bloomscope.png": {
+      "route": "/bloomscope/",
+      "served": "the published site, https://playground.crewtives.com",
+      "commit": "d196bbf5606cb1d8cb8f47d6ae9c1f5e35a1fa6c",
+      "captured": "2026-09-29",
+      "viewport": {
+        "width": 840,
+        "height": 630
+      },
+      "dpr": 1,
+      "reducedMotion": true,
+      "clock": {
+        "origin": "2026-01-01T00:00:00.000Z",
+        "pausedAtMs": 1000,
+        "advancedMs": 4000,
+        "stepMs": 160
+      },
+      "boot": null,
+      "why": "the frame is the whole first screen at 840×630, where the kaleidoscope fills the page",
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "browserArgs": [
+        "--use-angle=swiftshader",
+        "--enable-unsafe-swiftshader",
+        "--ignore-gpu-blocklist",
+        "--disable-accelerated-2d-canvas"
+      ],
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+      "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+      "file": {
+        "width": 840,
+        "height": 630,
+        "bytes": 117340,
+        "sha256": "73411d0ebdd80fdf457be5968d9b0639e0f6418fb2d6a1483a3712f28dc29c2b"
+      }
+    },
+    "game-center.png": {
+      "route": "/landings/game-center/",
+      "served": "the published site, https://playground.crewtives.com",
+      "commit": "d196bbf5606cb1d8cb8f47d6ae9c1f5e35a1fa6c",
+      "captured": "2026-09-29",
+      "viewport": {
+        "width": 900,
+        "height": 640
+      },
+      "dpr": 1,
+      "reducedMotion": true,
+      "clock": {
+        "origin": "2026-01-01T00:00:00.000Z",
+        "pausedAtMs": 1000,
+        "advancedMs": 4000,
+        "stepMs": 160
+      },
+      "boot": null,
+      "why": "at 900×640 the cabinet, its marquee and the floor directory fit in one 840×630 region",
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "browserArgs": [
+        "--use-angle=swiftshader",
+        "--enable-unsafe-swiftshader",
+        "--ignore-gpu-blocklist",
+        "--disable-accelerated-2d-canvas"
+      ],
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+      "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+      "file": {
+        "width": 900,
+        "height": 640,
+        "bytes": 142174,
+        "sha256": "f722d3e22d97ed38258daa807b44fd6a931e34e7259fa8b2efda6d017baa50a1"
+      }
+    },
+    "wind-up-empire.png": {
+      "route": "/landings/wind-up-empire/",
+      "served": "the published site, https://playground.crewtives.com",
+      "commit": "d196bbf5606cb1d8cb8f47d6ae9c1f5e35a1fa6c",
+      "captured": "2026-09-29",
+      "viewport": {
+        "width": 840,
+        "height": 760
+      },
+      "dpr": 1,
+      "reducedMotion": true,
+      "clock": {
+        "origin": "2026-01-01T00:00:00.000Z",
+        "pausedAtMs": 1000,
+        "advancedMs": 4000,
+        "stepMs": 160
+      },
+      "boot": null,
+      "why": "at 840×760 the title sits above the whole orrery, which one 840×630 region holds between the header and the launch panel",
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "browserArgs": [
+        "--use-angle=swiftshader",
+        "--enable-unsafe-swiftshader",
+        "--ignore-gpu-blocklist",
+        "--disable-accelerated-2d-canvas"
+      ],
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+      "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+      "file": {
+        "width": 840,
+        "height": 760,
+        "bytes": 110650,
+        "sha256": "d159a1257b7db311bdaf741a3b7114e0802042fa2175f94ba65324b5aad82c20"
+      }
+    },
+    "4d-os.png": {
+      "route": "/4d-os/",
+      "served": "the published site, https://playground.crewtives.com",
+      "commit": "d196bbf5606cb1d8cb8f47d6ae9c1f5e35a1fa6c",
+      "captured": "2026-09-29",
+      "viewport": {
+        "width": 901,
+        "height": 710
+      },
+      "dpr": 1,
+      "reducedMotion": false,
+      "clock": {
+        "origin": "2026-01-01T00:00:00.000Z",
+        "pausedAtMs": 1000,
+        "advancedMs": 2000,
+        "stepMs": 160
+      },
+      "boot": "waited for the 4D pack to load ([data-boot-pct] at 100) before running the clock",
+      "why": "901 is the narrowest width that keeps the three world windows in a row (the grid drops to one column at 900 and below), so the heading and all three windows fit in one 840×630 region; at 710 tall the windows end inside the viewport",
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "browserArgs": [
+        "--use-angle=swiftshader",
+        "--enable-unsafe-swiftshader",
+        "--ignore-gpu-blocklist",
+        "--disable-accelerated-2d-canvas"
+      ],
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+      "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+      "file": {
+        "width": 901,
+        "height": 710,
+        "bytes": 73255,
+        "sha256": "73432bce7fdd6678cc7db68661d4da1873e9890ae38bfe7d7e5e633dbfc1b7e3"
+      }
+    }
+  }
+}

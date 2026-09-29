@@ -1,0 +1,872 @@
+{
+  "about": "Share images of playground.crewtives.com (add-seo-and-sharing D5). Each is 1200×630: at the left, an 840×630 region of a real capture of the page's live render, copied pixel for pixel; at the right, a band set in the page's own typefaces and colors. None is generated.",
+  "images": {
+    "museum.png": {
+      "route": "/",
+      "source": {
+        "path": "src/site/og/captures/museum.png",
+        "sha256": "fe0bf3e8800337773cc13145d7248995d024585412517c356abe76a7454a7aff",
+        "width": 840,
+        "height": 630,
+        "capture": {
+          "record": "src/site/og/captures/provenance.json",
+          "entry": "museum.png",
+          "route": "/",
+          "served": "the published site, https://playground.crewtives.com",
+          "commit": "d196bbf5606cb1d8cb8f47d6ae9c1f5e35a1fa6c",
+          "captured": "2026-09-29",
+          "viewport": {
+            "width": 840,
+            "height": 630
+          },
+          "dpr": 1,
+          "reducedMotion": true,
+          "clock": {
+            "origin": "2026-01-01T00:00:00.000Z",
+            "pausedAtMs": 1000,
+            "advancedMs": 4000,
+            "stepMs": 160
+          },
+          "boot": null,
+          "why": "the frame is the whole first screen at 840×630: the bar with the page clock above the featured sheet",
+          "browser": "chromium",
+          "browserVersion": "153.0.8010.12",
+          "browserArgs": [
+            "--use-angle=swiftshader",
+            "--enable-unsafe-swiftshader",
+            "--ignore-gpu-blocklist",
+            "--disable-accelerated-2d-canvas"
+          ],
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+          "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+          "file": {
+            "width": 840,
+            "height": 630,
+            "bytes": 58489,
+            "sha256": "fe0bf3e8800337773cc13145d7248995d024585412517c356abe76a7454a7aff"
+          }
+        }
+      },
+      "region": {
+        "x": 0,
+        "y": 0,
+        "width": 840,
+        "height": 630
+      },
+      "frame": {
+        "copied": "pixel for pixel: no scaling, re-dithering, overlaid pattern, filter or retouching",
+        "depicts": "the museum’s first screen at 840×630: the bar with the page clock (REWIND, HOLD, FORWARD) above sheet 004, whose passe-partout holds the recorded loop of Bloomscope, a flower head of seeds at frame 0",
+        "shows": []
+      },
+      "band": {
+        "text": {
+          "series": null,
+          "site": "crewtives playground",
+          "title": "A museum of live graphics experiments",
+          "synthetic": null,
+          "credit": null
+        },
+        "titleSize": 46,
+        "display": {
+          "file": "src/playground/museum/fonts/geologica-latin-wght-normal.woff2",
+          "weight": 620,
+          "tracking": -0.01
+        },
+        "textFace": {
+          "file": "src/playground/museum/fonts/fira-mono-latin-500-normal.woff2",
+          "weight": 500
+        },
+        "colors": {
+          "background": "#f5f4ef",
+          "ink": "#16181d",
+          "tagBackground": "#16181d",
+          "tagInk": "#f5f4ef"
+        },
+        "tokens": {
+          "background": "src/playground/museum/tokens.css --sheet",
+          "ink": "src/playground/museum/tokens.css --ink",
+          "tagBackground": "src/playground/museum/tokens.css --ink",
+          "tagInk": "src/playground/museum/tokens.css --sheet"
+        }
+      },
+      "synthetic": false,
+      "credit": null,
+      "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "platform": "darwin-arm64",
+      "image": {
+        "width": 1200,
+        "height": 630,
+        "bytes": 83966,
+        "sha256": "be2499786c7b0f05b2ab5b549206711f2046e082d7a273c5587ea3d0fcfea174"
+      }
+    },
+    "bloomscope.png": {
+      "route": "/bloomscope/",
+      "source": {
+        "path": "src/site/og/captures/bloomscope.png",
+        "sha256": "73411d0ebdd80fdf457be5968d9b0639e0f6418fb2d6a1483a3712f28dc29c2b",
+        "width": 840,
+        "height": 630,
+        "capture": {
+          "record": "src/site/og/captures/provenance.json",
+          "entry": "bloomscope.png",
+          "route": "/bloomscope/",
+          "served": "the published site, https://playground.crewtives.com",
+          "commit": "d196bbf5606cb1d8cb8f47d6ae9c1f5e35a1fa6c",
+          "captured": "2026-09-29",
+          "viewport": {
+            "width": 840,
+            "height": 630
+          },
+          "dpr": 1,
+          "reducedMotion": true,
+          "clock": {
+            "origin": "2026-01-01T00:00:00.000Z",
+            "pausedAtMs": 1000,
+            "advancedMs": 4000,
+            "stepMs": 160
+          },
+          "boot": null,
+          "why": "the frame is the whole first screen at 840×630, where the kaleidoscope fills the page",
+          "browser": "chromium",
+          "browserVersion": "153.0.8010.12",
+          "browserArgs": [
+            "--use-angle=swiftshader",
+            "--enable-unsafe-swiftshader",
+            "--ignore-gpu-blocklist",
+            "--disable-accelerated-2d-canvas"
+          ],
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+          "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+          "file": {
+            "width": 840,
+            "height": 630,
+            "bytes": 117340,
+            "sha256": "73411d0ebdd80fdf457be5968d9b0639e0f6418fb2d6a1483a3712f28dc29c2b"
+          }
+        }
+      },
+      "region": {
+        "x": 0,
+        "y": 0,
+        "width": 840,
+        "height": 630
+      },
+      "frame": {
+        "copied": "pixel for pixel: no scaling, re-dithering, overlaid pattern, filter or retouching",
+        "depicts": "Bloomscope’s first screen at 840×630: the kaleidoscope, pre-exposed and loaded with sunflowers, inside its brass ring on the chartreuse field",
+        "shows": []
+      },
+      "band": {
+        "text": {
+          "series": null,
+          "site": "crewtives playground",
+          "title": "Bloomscope",
+          "synthetic": null,
+          "credit": null
+        },
+        "titleSize": 39,
+        "display": {
+          "file": "src/playground/bloomscope/fonts/ultra-latin-400-normal.woff2",
+          "weight": 400,
+          "tracking": -0.01
+        },
+        "textFace": {
+          "file": "src/playground/bloomscope/fonts/recursive-latin-casl-normal.woff2",
+          "weight": 560,
+          "variation": "'CASL' 0"
+        },
+        "colors": {
+          "background": "#1b0f2e",
+          "ink": "#c8f03c",
+          "tagBackground": "#c8f03c",
+          "tagInk": "#1b0f2e"
+        },
+        "tokens": {
+          "background": "src/playground/bloomscope/tokens.css --ink",
+          "ink": "src/playground/bloomscope/tokens.css --chartreuse",
+          "tagBackground": "src/playground/bloomscope/tokens.css --chartreuse",
+          "tagInk": "src/playground/bloomscope/tokens.css --ink"
+        }
+      },
+      "synthetic": false,
+      "credit": null,
+      "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "platform": "darwin-arm64",
+      "image": {
+        "width": 1200,
+        "height": 630,
+        "bytes": 131861,
+        "sha256": "ce2f63355cac8e454447a59b6acec14839ec959a1d8d825fe5f16ea8524ba682"
+      }
+    },
+    "game-center.png": {
+      "route": "/landings/game-center/",
+      "source": {
+        "path": "src/site/og/captures/game-center.png",
+        "sha256": "f722d3e22d97ed38258daa807b44fd6a931e34e7259fa8b2efda6d017baa50a1",
+        "width": 900,
+        "height": 640,
+        "capture": {
+          "record": "src/site/og/captures/provenance.json",
+          "entry": "game-center.png",
+          "route": "/landings/game-center/",
+          "served": "the published site, https://playground.crewtives.com",
+          "commit": "d196bbf5606cb1d8cb8f47d6ae9c1f5e35a1fa6c",
+          "captured": "2026-09-29",
+          "viewport": {
+            "width": 900,
+            "height": 640
+          },
+          "dpr": 1,
+          "reducedMotion": true,
+          "clock": {
+            "origin": "2026-01-01T00:00:00.000Z",
+            "pausedAtMs": 1000,
+            "advancedMs": 4000,
+            "stepMs": 160
+          },
+          "boot": null,
+          "why": "at 900×640 the cabinet, its marquee and the floor directory fit in one 840×630 region",
+          "browser": "chromium",
+          "browserVersion": "153.0.8010.12",
+          "browserArgs": [
+            "--use-angle=swiftshader",
+            "--enable-unsafe-swiftshader",
+            "--ignore-gpu-blocklist",
+            "--disable-accelerated-2d-canvas"
+          ],
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+          "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+          "file": {
+            "width": 900,
+            "height": 640,
+            "bytes": 142174,
+            "sha256": "f722d3e22d97ed38258daa807b44fd6a931e34e7259fa8b2efda6d017baa50a1"
+          }
+        }
+      },
+      "region": {
+        "x": 45,
+        "y": 0,
+        "width": 840,
+        "height": 630
+      },
+      "frame": {
+        "copied": "pixel for pixel: no scaling, re-dithering, overlaid pattern, filter or retouching",
+        "depicts": "Game Center Yonjigen’s first screen: the arcade cabinet under its PLAYGROUND marquee, its dithered screen showing Rain Run’s demo (a scene the page computes itself, not a 4D.OS world), the controls, and the floor directory at the side",
+        "shows": []
+      },
+      "band": {
+        "text": {
+          "series": null,
+          "site": "crewtives playground",
+          "title": "GAME CENTER YONJIGEN",
+          "synthetic": null,
+          "credit": null
+        },
+        "titleSize": 52,
+        "display": {
+          "file": "src/playground/game-center/fonts/bungee-latin-400-normal.woff2",
+          "weight": 400
+        },
+        "textFace": {
+          "file": "src/playground/game-center/fonts/m-plus-rounded-1c-latin-800-normal.woff2",
+          "weight": 800
+        },
+        "colors": {
+          "background": "#ffcc17",
+          "ink": "#140a24",
+          "tagBackground": "#140a24",
+          "tagInk": "#ffcc17"
+        },
+        "tokens": {
+          "background": "src/playground/game-center/tokens.css --sodium",
+          "ink": "src/playground/game-center/tokens.css --ink",
+          "tagBackground": "src/playground/game-center/tokens.css --ink",
+          "tagInk": "src/playground/game-center/tokens.css --sodium"
+        }
+      },
+      "synthetic": false,
+      "credit": null,
+      "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "platform": "darwin-arm64",
+      "image": {
+        "width": 1200,
+        "height": 630,
+        "bytes": 157007,
+        "sha256": "49d4d13d3fafa13123548284cd732f01e9863bffadf8941bdcecc4ddca11ade0"
+      }
+    },
+    "wind-up-empire.png": {
+      "route": "/landings/wind-up-empire/",
+      "source": {
+        "path": "src/site/og/captures/wind-up-empire.png",
+        "sha256": "d159a1257b7db311bdaf741a3b7114e0802042fa2175f94ba65324b5aad82c20",
+        "width": 840,
+        "height": 760,
+        "capture": {
+          "record": "src/site/og/captures/provenance.json",
+          "entry": "wind-up-empire.png",
+          "route": "/landings/wind-up-empire/",
+          "served": "the published site, https://playground.crewtives.com",
+          "commit": "d196bbf5606cb1d8cb8f47d6ae9c1f5e35a1fa6c",
+          "captured": "2026-09-29",
+          "viewport": {
+            "width": 840,
+            "height": 760
+          },
+          "dpr": 1,
+          "reducedMotion": true,
+          "clock": {
+            "origin": "2026-01-01T00:00:00.000Z",
+            "pausedAtMs": 1000,
+            "advancedMs": 4000,
+            "stepMs": 160
+          },
+          "boot": null,
+          "why": "at 840×760 the title sits above the whole orrery, which one 840×630 region holds between the header and the launch panel",
+          "browser": "chromium",
+          "browserVersion": "153.0.8010.12",
+          "browserArgs": [
+            "--use-angle=swiftshader",
+            "--enable-unsafe-swiftshader",
+            "--ignore-gpu-blocklist",
+            "--disable-accelerated-2d-canvas"
+          ],
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+          "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+          "file": {
+            "width": 840,
+            "height": 760,
+            "bytes": 110650,
+            "sha256": "d159a1257b7db311bdaf741a3b7114e0802042fa2175f94ba65324b5aad82c20"
+          }
+        }
+      },
+      "region": {
+        "x": 0,
+        "y": 71,
+        "width": 840,
+        "height": 630
+      },
+      "frame": {
+        "copied": "pixel for pixel: no scaling, re-dithering, overlaid pattern, filter or retouching",
+        "depicts": "Wind-Up Empire’s first screen: the WIND-UP EMPIRE title over an orrery of tin tops printed in each 4D.OS world’s inks and labeled with the worlds’ names, around the black-hole Whirl; the tops are toys of the page, not views of the worlds",
+        "shows": []
+      },
+      "band": {
+        "text": {
+          "series": null,
+          "site": "crewtives playground",
+          "title": "WIND-UP EMPIRE",
+          "synthetic": null,
+          "credit": null
+        },
+        "titleSize": 56,
+        "display": {
+          "file": "src/playground/wind-up-empire/fonts/tilt-warp-latin-full-normal.woff2",
+          "weight": 400
+        },
+        "textFace": {
+          "file": "src/playground/wind-up-empire/fonts/sono-latin-wght-normal.woff2",
+          "weight": 600
+        },
+        "colors": {
+          "background": "#ffc81a",
+          "ink": "#15131c",
+          "tagBackground": "#15131c",
+          "tagInk": "#ffc81a"
+        },
+        "tokens": {
+          "background": "src/playground/wind-up-empire/tokens.css --chrome",
+          "ink": "src/playground/wind-up-empire/tokens.css --ink",
+          "tagBackground": "src/playground/wind-up-empire/tokens.css --ink",
+          "tagInk": "src/playground/wind-up-empire/tokens.css --chrome"
+        }
+      },
+      "synthetic": false,
+      "credit": null,
+      "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "platform": "darwin-arm64",
+      "image": {
+        "width": 1200,
+        "height": 630,
+        "bytes": 97242,
+        "sha256": "fe107bbdb1caac13ae198287284143eeafa940e55f0a79a7d6ac13159e489917"
+      }
+    },
+    "4d-os.png": {
+      "route": "/4d-os/",
+      "source": {
+        "path": "src/site/og/captures/4d-os.png",
+        "sha256": "73432bce7fdd6678cc7db68661d4da1873e9890ae38bfe7d7e5e633dbfc1b7e3",
+        "width": 901,
+        "height": 710,
+        "capture": {
+          "record": "src/site/og/captures/provenance.json",
+          "entry": "4d-os.png",
+          "route": "/4d-os/",
+          "served": "the published site, https://playground.crewtives.com",
+          "commit": "d196bbf5606cb1d8cb8f47d6ae9c1f5e35a1fa6c",
+          "captured": "2026-09-29",
+          "viewport": {
+            "width": 901,
+            "height": 710
+          },
+          "dpr": 1,
+          "reducedMotion": false,
+          "clock": {
+            "origin": "2026-01-01T00:00:00.000Z",
+            "pausedAtMs": 1000,
+            "advancedMs": 2000,
+            "stepMs": 160
+          },
+          "boot": "waited for the 4D pack to load ([data-boot-pct] at 100) before running the clock",
+          "why": "901 is the narrowest width that keeps the three world windows in a row (the grid drops to one column at 900 and below), so the heading and all three windows fit in one 840×630 region; at 710 tall the windows end inside the viewport",
+          "browser": "chromium",
+          "browserVersion": "153.0.8010.12",
+          "browserArgs": [
+            "--use-angle=swiftshader",
+            "--enable-unsafe-swiftshader",
+            "--ignore-gpu-blocklist",
+            "--disable-accelerated-2d-canvas"
+          ],
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+          "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+          "file": {
+            "width": 901,
+            "height": 710,
+            "bytes": 73255,
+            "sha256": "73432bce7fdd6678cc7db68661d4da1873e9890ae38bfe7d7e5e633dbfc1b7e3"
+          }
+        }
+      },
+      "region": {
+        "x": 30,
+        "y": 79,
+        "width": 840,
+        "height": 630
+      },
+      "frame": {
+        "copied": "pixel for pixel: no scaling, re-dithering, overlaid pattern, filter or retouching",
+        "depicts": "the 4D.OS launcher: its heading \"One scene. Three worlds.\" above the windows of worlds A, Vitrine, B, Plate and C, Leader, each drawing the same synthetic black cat climbing a stairway, every moment at once",
+        "shows": [
+          "a",
+          "b",
+          "c"
+        ]
+      },
+      "band": {
+        "text": {
+          "series": "4D.OS",
+          "site": "crewtives playground",
+          "title": "One engine, five worlds",
+          "synthetic": "synthetic",
+          "credit": "\"Cat\" by J-Toastie, CC-BY 3.0"
+        },
+        "titleSize": 56,
+        "display": {
+          "file": "src/4d-os/worlds/a/fonts/host-grotesk-latin-wght.woff2",
+          "weight": 700,
+          "tracking": -0.035
+        },
+        "textFace": {
+          "file": "src/4d-os/worlds/a/fonts/departure-mono-regular.woff2",
+          "weight": 400
+        },
+        "colors": {
+          "background": "#f3f4f2",
+          "ink": "#121110",
+          "tagBackground": "#121110",
+          "tagInk": "#f3f4f2"
+        },
+        "tokens": {
+          "background": "src/4d-os/launcher/launcher.css --l-paper",
+          "ink": "src/4d-os/launcher/launcher.css --l-ink",
+          "tagBackground": "src/4d-os/launcher/launcher.css --l-ink",
+          "tagInk": "src/4d-os/launcher/launcher.css --l-paper"
+        }
+      },
+      "synthetic": true,
+      "credit": "\"Cat\" by J-Toastie, CC-BY 3.0",
+      "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "platform": "darwin-arm64",
+      "image": {
+        "width": 1200,
+        "height": 630,
+        "bytes": 93518,
+        "sha256": "338bda0fb5a318a767ee0e01ff49ebfa741e2c92ed029f3259aa17047ea3a4b5"
+      }
+    },
+    "4d-os-a.png": {
+      "route": "/4d-os/a/",
+      "source": {
+        "path": "src/pipeline/captures/a-vitrine.png",
+        "sha256": "0b35e64ebfed2b2752a255c7871e010a84d9355fb5a9d1431805ac91ea3e76b5",
+        "width": 1200,
+        "height": 900,
+        "capture": {
+          "record": "sites/playground/public/landings/_shared/stills/provenance.json",
+          "entry": "a.webp",
+          "capture": "Live render of /a/ (pack cat-stairs), frame 300 playing; Chromium headless (Playwright) with SwiftShader, 1440×900 viewport cropped to 4:3 (1200×900, x=240); 2026-09-25",
+          "captured": "2026-09-25"
+        }
+      },
+      "region": {
+        "x": 102,
+        "y": 0,
+        "width": 840,
+        "height": 630
+      },
+      "frame": {
+        "copied": "pixel for pixel: no scaling, re-dithering, overlaid pattern, filter or retouching",
+        "depicts": "world A, Vitrine: inside the red gallery wall, the vitrine of points where the synthetic black cat, in cyan, climbs the stairway, its earlier steps left behind as grey ghost cats, and the source camera drawn as a white frustum",
+        "shows": [
+          "a"
+        ]
+      },
+      "band": {
+        "text": {
+          "series": "4D.OS",
+          "site": "crewtives playground",
+          "title": "Vitrine",
+          "synthetic": "synthetic",
+          "credit": "\"Cat\" by J-Toastie, CC-BY 3.0"
+        },
+        "titleSize": 56,
+        "display": {
+          "file": "src/4d-os/worlds/a/fonts/host-grotesk-latin-wght.woff2",
+          "weight": 700,
+          "tracking": -0.04
+        },
+        "textFace": {
+          "file": "src/4d-os/worlds/a/fonts/departure-mono-regular.woff2",
+          "weight": 400
+        },
+        "colors": {
+          "background": "#5a1a1c",
+          "ink": "#f3f4f2",
+          "tagBackground": "#f3f4f2",
+          "tagInk": "#121110"
+        },
+        "tokens": {
+          "background": "src/4d-os/worlds/a/tokens.css --wall",
+          "ink": "src/4d-os/worlds/a/tokens.css --wall-ink",
+          "tagBackground": "src/4d-os/worlds/a/tokens.css --paper",
+          "tagInk": "src/4d-os/worlds/a/tokens.css --ink"
+        }
+      },
+      "synthetic": true,
+      "credit": "\"Cat\" by J-Toastie, CC-BY 3.0",
+      "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "platform": "darwin-arm64",
+      "image": {
+        "width": 1200,
+        "height": 630,
+        "bytes": 37961,
+        "sha256": "1440341a20580bbb49e4e68dd3b08f57c5f2f87fd2b34b4705908e77dcaf3093"
+      }
+    },
+    "4d-os-b.png": {
+      "route": "/4d-os/b/",
+      "source": {
+        "path": "src/pipeline/captures/b-plate.png",
+        "sha256": "bb844a52f750e4b35b4f3e36ded016adbe03396c42ecc9bcb3466121abf39cf9",
+        "width": 1200,
+        "height": 900,
+        "capture": {
+          "record": "sites/playground/public/landings/_shared/stills/provenance.json",
+          "entry": "b.webp",
+          "capture": "Live render of /b/ (pack cat-stairs), hero at 35 %, frame 265 playing; Chromium headless (Playwright) with SwiftShader, 1440×900 viewport cropped to 4:3 (1200×900, x=0); 2026-09-25",
+          "captured": "2026-09-25"
+        }
+      },
+      "region": {
+        "x": 0,
+        "y": 20,
+        "width": 840,
+        "height": 630
+      },
+      "frame": {
+        "copied": "pixel for pixel: no scaling, re-dithering, overlaid pattern, filter or retouching",
+        "depicts": "world B, Plate: the heading PLATE 4D-002, CAT, ASCENDING STAIRS. over a dark plate under a green and magenta aurora, where the cat’s whole climb is exposed as a staircase of white cats, the present one in cyan",
+        "shows": [
+          "b"
+        ]
+      },
+      "band": {
+        "text": {
+          "series": "4D.OS",
+          "site": "crewtives playground",
+          "title": "PLATE",
+          "synthetic": "synthetic",
+          "credit": "\"Cat\" by J-Toastie, CC-BY 3.0"
+        },
+        "titleSize": 56,
+        "display": {
+          "file": "src/4d-os/worlds/b/fonts/bricolage-grotesque-latin-wdth.woff2",
+          "weight": 700,
+          "variation": "'wdth' 75",
+          "tracking": -0.02
+        },
+        "textFace": {
+          "file": "src/4d-os/worlds/b/fonts/geist-pixel-latin-400.woff2",
+          "weight": 400
+        },
+        "colors": {
+          "background": "#1d211f",
+          "ink": "#e2ece9",
+          "tagBackground": "#d65ca5",
+          "tagInk": "#1d211f"
+        },
+        "tokens": {
+          "background": "src/4d-os/worlds/b/tokens.css --plate",
+          "ink": "src/4d-os/worlds/b/tokens.css --paper",
+          "tagBackground": "src/4d-os/worlds/b/tokens.css --tag",
+          "tagInk": "src/4d-os/worlds/b/tokens.css --tag-ink"
+        }
+      },
+      "synthetic": true,
+      "credit": "\"Cat\" by J-Toastie, CC-BY 3.0",
+      "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "platform": "darwin-arm64",
+      "image": {
+        "width": 1200,
+        "height": 630,
+        "bytes": 173794,
+        "sha256": "d01a168045a7a774d817a8056db1469a94e93e0ae4c975ba075d83b2c31d4a8f"
+      }
+    },
+    "4d-os-c.png": {
+      "route": "/4d-os/c/",
+      "source": {
+        "path": "src/pipeline/captures/c-leader.png",
+        "sha256": "b77f0f3b54bc41cc8ad2f80501beb5b429e431c5efbb013276df62a3a4b211e6",
+        "width": 1200,
+        "height": 900,
+        "capture": {
+          "record": "sites/playground/public/landings/_shared/stills/provenance.json",
+          "entry": "c.webp",
+          "capture": "Live render of /c/ (pack cat-stairs), frame 334 playing; Chromium headless (Playwright) with SwiftShader, 1440×900 viewport cropped to 4:3 (1200×900, x=0); 2026-09-25",
+          "captured": "2026-09-25"
+        }
+      },
+      "region": {
+        "x": 286,
+        "y": 120,
+        "width": 840,
+        "height": 630
+      },
+      "frame": {
+        "copied": "pixel for pixel: no scaling, re-dithering, overlaid pattern, filter or retouching",
+        "depicts": "world C, Leader: the projector gate between film perforations, where the cat’s night climb runs over-exposed in orange with the present cat in cyan, the source camera drawn as a white frustum, and the edge of the film strip below",
+        "shows": [
+          "c"
+        ]
+      },
+      "band": {
+        "text": {
+          "series": "4D.OS",
+          "site": "crewtives playground",
+          "title": "LEADER",
+          "synthetic": "synthetic",
+          "credit": "\"Cat\" by J-Toastie, CC-BY 3.0"
+        },
+        "titleSize": 56,
+        "display": {
+          "file": "src/4d-os/worlds/c/fonts/big-shoulders-stencil-latin-wght.woff2",
+          "weight": 800,
+          "tracking": 0.02
+        },
+        "textFace": {
+          "file": "src/4d-os/worlds/c/fonts/archivo-latin-wdth.woff2",
+          "weight": 500,
+          "variation": "'wdth' 92"
+        },
+        "colors": {
+          "background": "#0e0f10",
+          "ink": "#dcdfdf",
+          "tagBackground": "#ff8636",
+          "tagInk": "#0e0f10"
+        },
+        "tokens": {
+          "background": "src/4d-os/worlds/c/tokens.css --leader",
+          "ink": "src/4d-os/worlds/c/tokens.css --paper",
+          "tagBackground": "src/4d-os/worlds/c/tokens.css --leak",
+          "tagInk": "src/4d-os/worlds/c/tokens.css --ink"
+        }
+      },
+      "synthetic": true,
+      "credit": "\"Cat\" by J-Toastie, CC-BY 3.0",
+      "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "platform": "darwin-arm64",
+      "image": {
+        "width": 1200,
+        "height": 630,
+        "bytes": 65177,
+        "sha256": "955ec3305f4b041954f65549439036000c6b30ce306bc422a02fa60908a73cfa"
+      }
+    },
+    "4d-os-d.png": {
+      "route": "/4d-os/d/",
+      "source": {
+        "path": "sites/4d-os/public/launcher/d-golden-stoop.png",
+        "sha256": "49f2a03b3c7470fc1da94a689c06121527c2160b65e4670d22cd0d47ec8fcbcc",
+        "width": 1200,
+        "height": 900,
+        "capture": {
+          "record": "sites/playground/public/landings/_shared/stills/provenance.json",
+          "entry": "d.webp",
+          "capture": "Live render of /d/ (pack falcon-phi), hero at 25 %, frame ~147 playing; Chromium headless (Playwright) with SwiftShader, 1440×900 viewport cropped to 4:3 (1200×900, x=0); 2026-09-24",
+          "captured": "2026-09-24"
+        }
+      },
+      "region": {
+        "x": 360,
+        "y": 175,
+        "width": 840,
+        "height": 630
+      },
+      "frame": {
+        "copied": "pixel for pixel: no scaling, re-dithering, overlaid pattern, filter or retouching",
+        "depicts": "world D, The golden stoop: the falcon computed from equations, in cyan, ahead of its earlier moments in phosphor green along a dotted golden path, beside the plotter of the golden spiral, its equation r(θ) = r₀·φ^(−2θ/π) and the ratio 1.6180 = φ read live",
+        "shows": [
+          "d"
+        ]
+      },
+      "band": {
+        "text": {
+          "series": "4D.OS",
+          "site": "crewtives playground",
+          "title": "The golden stoop",
+          "synthetic": "synthetic",
+          "credit": null
+        },
+        "titleSize": 56,
+        "display": {
+          "file": "src/4d-os/worlds/d/fonts/tektur-latin-greek-wdth-wght.woff2",
+          "weight": 500,
+          "variation": "'wdth' 75",
+          "tracking": -0.012
+        },
+        "textFace": {
+          "file": "src/4d-os/worlds/d/fonts/jura-latin-greek-wght.woff2",
+          "weight": 600
+        },
+        "colors": {
+          "background": "#07060b",
+          "ink": "#baffd2",
+          "tagBackground": "#07060b",
+          "tagInk": "#3ad67c"
+        },
+        "tokens": {
+          "background": "src/4d-os/worlds/d/tokens.css --glass",
+          "ink": "src/4d-os/worlds/d/tokens.css --beam-hot",
+          "tagBackground": "src/4d-os/worlds/d/tokens.css --glass",
+          "tagInk": "src/4d-os/worlds/d/tokens.css --beam"
+        }
+      },
+      "synthetic": true,
+      "credit": null,
+      "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "platform": "darwin-arm64",
+      "image": {
+        "width": 1200,
+        "height": 630,
+        "bytes": 50900,
+        "sha256": "12e2f6a83040c8635d717114cc330fd7b50b831ea402090a183ae75656e13057"
+      }
+    },
+    "4d-os-e.png": {
+      "route": "/4d-os/e/",
+      "source": {
+        "path": "sites/4d-os/public/launcher/e-whale-fall.png",
+        "sha256": "a8af7b33db302c51b9e1adb7fbc7782ba58dbb771aba527735affe8bf073c856",
+        "width": 1200,
+        "height": 900,
+        "capture": {
+          "record": "sites/playground/public/landings/_shared/stills/provenance.json",
+          "entry": "e.webp",
+          "capture": "Live render of /e/ (pack whale-fall), review capture docs/images/world-e-whale-fall.png (Chromium with Metal, 1440×900) cropped to 4:3",
+          "captured": "2026-09-24"
+        }
+      },
+      "region": {
+        "x": 0,
+        "y": 0,
+        "width": 840,
+        "height": 630
+      },
+      "frame": {
+        "copied": "pixel for pixel: no scaling, re-dithering, overlaid pattern, filter or retouching",
+        "depicts": "world E, Whale fall: the heading Whale fall. above the black hole, whose lensed disk burns orange and gold around the photon ring while the humpback computed from equations circles inside it, every moment of its fall at once",
+        "shows": [
+          "e"
+        ]
+      },
+      "band": {
+        "text": {
+          "series": "4D.OS",
+          "site": "crewtives playground",
+          "title": "Whale fall",
+          "synthetic": "synthetic",
+          "credit": null
+        },
+        "titleSize": 56,
+        "display": {
+          "file": "src/4d-os/worlds/e/fonts/science-gothic-latin-wdth-wght.woff2",
+          "weight": 800,
+          "variation": "'wdth' 128",
+          "tracking": -0.01
+        },
+        "textFace": {
+          "file": "src/4d-os/worlds/e/fonts/atkinson-hyperlegible-next-latin-wght.woff2",
+          "weight": 500
+        },
+        "colors": {
+          "background": "#05060a",
+          "ink": "#f4f1ea",
+          "tagBackground": "#f4f1ea",
+          "tagInk": "#05060a"
+        },
+        "tokens": {
+          "background": "src/4d-os/worlds/e/tokens.css --void",
+          "ink": "src/4d-os/worlds/e/tokens.css --bone",
+          "tagBackground": "src/4d-os/worlds/e/tokens.css --bone",
+          "tagInk": "src/4d-os/worlds/e/tokens.css --void"
+        }
+      },
+      "synthetic": true,
+      "credit": null,
+      "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
+      "browser": "chromium",
+      "browserVersion": "153.0.8010.12",
+      "platform": "darwin-arm64",
+      "image": {
+        "width": 1200,
+        "height": 630,
+        "bytes": 58585,
+        "sha256": "9187ac44cb847527950ee5ac4bd7d62113f09fc10f548286935ca31d75d444ac"
+      }
+    }
+  }
+}

@@ -5,6 +5,7 @@
 # Binary files: never converted, never diffed as text.
 *.bin   binary
 *.gz    binary
+*.ico   binary
 *.png   binary
 *.webp  binary
 *.glb   binary
