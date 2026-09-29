@@ -1,0 +1,4 @@
+{
+  "prompt": "Pre-existing raster, not generated: the still of 4D.OS world D · The golden stoop (/4d-os/d/). Origin: sites/4d-os/public/launcher/d-golden-stoop.png. Method: Screenshot of the live render of /d/ (pack falcon-phi) with the hero at 25 %, playing near frame 147, Chromium headless (Playwright) with SwiftShader at 1440×900, cropped to 4:3 (1200×900 from x=0); converted to WebP with cwebp -lossless -z 9, not resized, retouched or re-dithered. Captured: 2026-09-24. Synthetic scene. Credit: none (own work). Full record: provenance.json.",
+  "createdAt": "2026-09-25T01:01:37.644Z"
+}

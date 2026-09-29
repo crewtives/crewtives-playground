@@ -1,0 +1,18 @@
+Title:    Cat
+Author:   J-Toastie
+Source:   https://poly.pizza/m/8GJbfM8R1A
+          (file: https://static.poly.pizza/0c90ff5b-4dfa-4657-8c41-10a27fbcc67a.glb, downloaded 2026-09-23)
+License:  Creative Commons Attribution 3.0 (CC-BY 3.0)
+          https://creativecommons.org/licenses/by/3.0/
+
+Cat.glb in this folder is the original file, unmodified.
+
+Modifications in the 4D packs baked from it (recipes in src/pipeline/bake/recipes/):
+- fur darkened to a black cat: albedo x 0.14, except the eyes;
+- procedural animation (planned footsteps, leg IK, a spine added in code, springs),
+  applied at bake time without changing the model file.
+
+Every page that shows the cat carries the visible credit:
+  "Cat" by J-Toastie, CC-BY 3.0
+
+The full list of third-party assets is in LICENSES.md at the repository root.

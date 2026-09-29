@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en" data-world="a">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <title>Cat, climbing — Room 4 — 4D.OS</title>
+    <meta
+      name="description"
+      content="A live 4D reconstruction hung like a museum piece: every moment of a synthetic black cat climbing a flight of stairs in an alley at night, on display at once."
+    />
+  </head>
+  <body>
+    <a class="skip" href="#rooms">Skip to the rooms</a>
+    <a class="playground-back" href="/#sheet-001"><span aria-hidden="true">←</span> Playground · Sheet 001</a>
+
+    <main>
+      <!-- Room 4: the desktop is the wall of the room; the scene hangs in the display case. -->
+      <section class="desk" aria-label="4D.OS desktop, Room 4">
+        <figure class="case">
+          <div class="case__glass" data-view="scene" role="img" aria-describedby="scene-desc"></div>
+          <span class="case__crop case__crop--tl" aria-hidden="true"></span>
+          <span class="case__crop case__crop--tr" aria-hidden="true"></span>
+          <span class="case__crop case__crop--bl" aria-hidden="true"></span>
+          <span class="case__crop case__crop--br" aria-hidden="true"></span>
+          <p class="tag case__tag" data-synthetic hidden>Synthetic</p>
+          <figcaption id="scene-desc" class="sr-only">
+            A live reconstruction in space and time. Every recorded moment of a black cat climbing a flight of stone
+            stairs in an alley at night is shown at once as a trail of points; the present moment is highlighted, cyan
+            when time moves forward and amber when it rewinds. A cone marks the camera that filmed it, with the frame
+            it saw. The wall nearest to you is cut away so you can see in. The scene is synthetic.
+          </figcaption>
+
+          <section class="win boot" data-boot aria-live="polite" aria-labelledby="w-boot">
+            <h2 class="win__title" id="w-boot">4D.OS</h2>
+            <div class="win__body">
+              <p class="boot__message" data-boot-message>Hanging the exhibit</p>
+              <div class="boot__bar" aria-hidden="true"><span class="boot__fill" data-boot-fill></span></div>
+              <p class="boot__pct"><span data-boot-pct>0</span>% received</p>
+            </div>
+          </section>
+        </figure>
+
+        <section class="win rail" data-window="timeline" aria-labelledby="w-timeline">
+          <h2 class="win__title" id="w-timeline">
+            <span>Timeline</span>
+            <span class="win__aside">Source <span data-stat="duration">···</span></span>
+          </h2>
+          <div class="win__body rail__body">
+            <button class="rail__play" type="button" data-play aria-label="Play">
+              <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 2 L10 6 L3 10 Z" /></svg>
+            </button>
+            <output class="rail__tc" data-now="timecode" aria-label="Source timecode">00:00:00</output>
+            <div
+              class="rail__track"
+              data-track
+              role="slider"
+              tabindex="0"
+              aria-label="Time in the source video"
+              aria-valuemin="0"
+              aria-valuenow="0"
+            >
+              <div class="rail__ruler" data-ruler aria-hidden="true"></div>
+              <div class="rail__head" aria-hidden="true"></div>
+            </div>
+            <output class="rail__state" data-now="state" aria-label="Playback">HOLD 0.00×</output>
+          </div>
+        </section>
+
+        <h1 class="desk__title">Every moment<br />at once</h1>
+
+        <section class="win plan" data-window="plan" aria-labelledby="w-plan">
+          <h2 class="win__title" id="w-plan"><span>Plan</span><span class="win__aside">Room 4</span></h2>
+          <div class="win__body">
+            <canvas class="plan__map" data-plan width="72" height="48" role="img" aria-label="Plan of the alley seen from above: the cat's path, the camera's path and where both are now"></canvas>
+            <p class="plan__key">
+              <span><i class="key key--cat"></i>Cat</span>
+              <span><i class="key key--camera"></i>Camera</span>
+            </p>
+          </div>
+        </section>
+
+        <section class="win clock" data-window="clock" aria-labelledby="w-clock">
+          <h2 class="win__title" id="w-clock"><span>Clock</span><span class="win__aside">Source</span></h2>
+          <div class="win__body">
+            <p class="clock__tc" data-now="timecode">00:00:00</p>
+            <p class="clock__frame">Frame <span data-now="frame">000</span> of <span data-stat="frames">···</span></p>
+            <p class="clock__wall" data-wall-clock></p>
+          </div>
+        </section>
+
+        <section class="win source" data-window="source" aria-labelledby="w-source">
+          <h2 class="win__title" id="w-source"><span>Camera 1</span><span class="win__aside">What it saw</span></h2>
+          <div class="win__body">
+            <div class="source__frame" data-source-frame role="img" aria-label="The source video frame for the current moment"></div>
+          </div>
+        </section>
+
+        <section class="win label" data-window="label" aria-labelledby="w-label">
+          <h2 class="win__title" id="w-label"><span>Label</span></h2>
+          <div class="win__body">
+            <p class="label__title">Cat, climbing</p>
+            <p class="label__maker">4D.OS after J-Toastie, 2026</p>
+            <p class="label__line">Point cloud, dithered live <span class="tag tag--ink" data-synthetic hidden>Synthetic</span></p>
+            <dl class="label__dims">
+              <div><dt>Frames</dt><dd data-stat="frames">···</dd></div>
+              <div><dt>Moments</dt><dd data-stat="dynamic">···</dd></div>
+              <div><dt>Ground</dt><dd data-stat="static">···</dd></div>
+              <div><dt>Weight</dt><dd data-stat="bytes">···</dd></div>
+            </dl>
+            <p class="label__credit">
+              <a href="https://poly.pizza/m/8GJbfM8R1A">"Cat"</a> by J-Toastie,
+              <a href="https://creativecommons.org/licenses/by/3.0/">CC-BY 3.0</a>. Animated by 4D.OS.
+            </p>
+            <p class="label__no">4D.2026.001</p>
+          </div>
+        </section>
+
+        <div class="drawers">
+          <section class="win layers" data-window="layers" aria-labelledby="w-layers">
+            <h2 class="win__title" id="w-layers">
+              <span>Layers</span>
+              <button class="win__shade" type="button" aria-expanded="true" aria-controls="b-layers" aria-label="Fold the Layers window"></button>
+            </h2>
+            <div class="win__body" id="b-layers">
+              <fieldset class="field">
+                <legend>Time</legend>
+                <label><input type="radio" name="mode" value="memory" checked /> Memory</label>
+                <label><input type="radio" name="mode" value="all" /> All at once</label>
+              </fieldset>
+              <fieldset class="field">
+                <legend>Show</legend>
+                <label><input type="checkbox" data-layer="trail" checked /> Trail</label>
+                <label><input type="checkbox" data-layer="background" checked /> Alley</label>
+                <label><input type="checkbox" data-layer="frustum" checked /> Camera</label>
+                <label><input type="checkbox" data-layer="trajectory" checked /> Path</label>
+              </fieldset>
+            </div>
+          </section>
+
+          <section class="win display" data-window="display" aria-labelledby="w-display">
+            <h2 class="win__title" id="w-display">
+              <span>Display</span>
+              <button class="win__shade" type="button" aria-expanded="true" aria-controls="b-display" aria-label="Fold the Display window"></button>
+            </h2>
+            <div class="win__body" id="b-display">
+              <fieldset class="field">
+                <legend>Colors</legend>
+                <label><input type="radio" name="depth" value="1bit" /> 1-bit</label>
+                <label><input type="radio" name="depth" value="16" checked /> 16 colors</label>
+                <label><input type="radio" name="depth" value="millions" /> Millions</label>
+              </fieldset>
+            </div>
+          </section>
+        </div>
+
+        <section class="win notice" data-window="notice" data-trail role="dialog" aria-labelledby="w-notice" aria-describedby="d-notice">
+          <h2 class="win__title" id="w-notice"><span>Gallery notice</span></h2>
+          <div class="win__body notice__body">
+            <svg class="notice__icon" viewBox="0 0 11 11" aria-hidden="true">
+              <path d="M5 0h1v1h1v2h1v2h1v2h1v2h1v2H0V9h1V7h1V5h1V3h1V1h1z" />
+              <path class="notice__mark" d="M5 3h1v4H5zM5 8h1v1H5z" />
+            </svg>
+            <p id="d-notice">Drag this notice across the wall. The trail it leaves is the flat version of what hangs in the case.</p>
+            <button class="btn" type="button" data-dismiss>OK</button>
+          </div>
+        </section>
+      </section>
+
+      <!-- The story page: each chapter is a room. -->
+      <section class="room room--paper intro" id="rooms" aria-labelledby="h-intro">
+        <h2 class="intro__title" id="h-intro">A black cat climbed a flight of stairs in fourteen seconds. All fourteen seconds hang here at once.</h2>
+        <p class="intro__text">
+          Film anything moving, rebuild every frame in three dimensions, and leave each one where and when it happened.
+          What you get is not a model of the cat but a record of its passage: the rooms that follow show how.
+        </p>
+      </section>
+
+      <section class="room room--wall" aria-labelledby="h-r5">
+        <header class="room__head">
+          <p class="room__no">Room 5</p>
+          <h2 class="room__title" id="h-r5">2D + time = 3D</h2>
+        </header>
+        <div class="room__body">
+          <figure class="case case--life">
+            <div class="case__glass" data-view="life" role="img" aria-describedby="life-desc"></div>
+            <span class="case__crop case__crop--tl" aria-hidden="true"></span>
+            <span class="case__crop case__crop--tr" aria-hidden="true"></span>
+            <span class="case__crop case__crop--bl" aria-hidden="true"></span>
+            <span class="case__crop case__crop--br" aria-hidden="true"></span>
+            <figcaption id="life-desc" class="case__caption">
+              Conway's Game of Life. Each generation of a glider is stacked above the last; the newest is the brightest.
+            </figcaption>
+          </figure>
+          <div class="room__text">
+            <p>
+              A flat world that changes over time is already a solid. Stack its moments one above the other and time
+              becomes a third dimension: the glider's walk across the grid turns into a staircase you could hold.
+            </p>
+            <p>
+              A 4D reconstruction does the same one dimension up. Each frame of a video becomes a small 3D scene, and
+              the scenes are stacked along time. You cannot see four dimensions, so the case in Room 4 shows them the
+              way this tower shows three: every moment at once.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="room room--paper" aria-labelledby="h-r6">
+        <header class="room__head">
+          <p class="room__no">Room 6</p>
+          <h2 class="room__title" id="h-r6">From video to space and time</h2>
+        </header>
+        <ol class="pipeline">
+          <li class="pipeline__step">
+            <figure class="case case--figure">
+              <div class="case__glass pipeline__video" data-pipeline="video" role="img" aria-label="One frame of the source video"></div>
+            </figure>
+            <h3 class="pipeline__title">A 2D video</h3>
+            <p>One camera films the subject. Every frame is a flat picture with a known position and direction.</p>
+          </li>
+          <li class="pipeline__step">
+            <figure class="case case--figure">
+              <div class="case__glass" data-pipeline="frame" role="img" aria-label="The same moment rebuilt in 3D as a cloud of points"></div>
+            </figure>
+            <h3 class="pipeline__title">3D, frame by frame</h3>
+            <p>Each frame is rebuilt as points in space: one small sculpture per moment.</p>
+          </li>
+          <li class="pipeline__step">
+            <figure class="case case--figure">
+              <div class="case__glass" data-pipeline="all" role="img" aria-label="All moments left in place at once, forming a trail"></div>
+            </figure>
+            <h3 class="pipeline__title">Left where and when it happened</h3>
+            <p>Nothing is moved or merged. The moments stay where they were recorded, and together they draw the journey.</p>
+          </li>
+        </ol>
+        <p class="notice-line" data-synthetic hidden>
+          <span class="tag tag--ink">Synthetic</span>
+          The scene on display is not a reconstruction of real footage. A free 3D cat (CC-BY) was animated and sampled
+          into points in the browser, frame by frame, and its "video" was rendered from a virtual camera. The format
+          and the viewer are the ones a real pipeline would feed.
+        </p>
+      </section>
+
+      <section class="room room--wall scrolltime" data-scroll-time aria-labelledby="h-r7">
+        <div class="scrolltime__stage">
+          <header class="room__head">
+            <p class="room__no">Room 7</p>
+            <h2 class="room__title" id="h-r7">Scroll is time</h2>
+            <p class="scrolltime__hint">In this room you are the playhead. Scroll down to move forward, up to rewind.</p>
+          </header>
+          <figure class="case case--wide">
+            <div class="case__glass" data-view="scroll" role="img" aria-label="The cat's journey, moving with your scroll"></div>
+            <span class="case__crop case__crop--tl" aria-hidden="true"></span>
+            <span class="case__crop case__crop--tr" aria-hidden="true"></span>
+            <span class="case__crop case__crop--bl" aria-hidden="true"></span>
+            <span class="case__crop case__crop--br" aria-hidden="true"></span>
+          </figure>
+          <p class="scrolltime__read">
+            <output data-now="timecode">00:00:00</output>
+            <output data-now="state">HOLD 0.00×</output>
+          </p>
+        </div>
+      </section>
+
+      <section class="room room--paper" aria-labelledby="h-r8">
+        <header class="room__head">
+          <p class="room__no">Room 8</p>
+          <h2 class="room__title" id="h-r8">Measurements</h2>
+        </header>
+        <div class="catalogue">
+          <p class="catalogue__lede">
+            Read from the pack now loaded in your browser, not typed by hand. Load another pack and these lines change.
+          </p>
+          <dl class="catalogue__entry">
+            <div><dt>Frames</dt><dd><span data-stat="frames">···</span> at <span data-stat="fps">···</span></dd></div>
+            <div><dt>Duration</dt><dd data-stat="duration">···</dd></div>
+            <div><dt>Moments of the cat</dt><dd><span data-stat="dynamic">···</span> points, <span data-stat-per-frame>···</span> per frame</dd></div>
+            <div><dt>The alley</dt><dd><span data-stat="static">···</span> points, drawn once</dd></div>
+            <div><dt>Points in the case</dt><dd data-stat-total>···</dd></div>
+            <div><dt>Weight on disk</dt><dd data-stat="bytes">···</dd></div>
+            <div><dt>Source frames</dt><dd><span data-stat-source>···</span></dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="room room--wall" aria-labelledby="h-r9">
+        <header class="room__head">
+          <p class="room__no">Room 9</p>
+          <h2 class="room__title" id="h-r9">Other subjects</h2>
+        </header>
+        <ul class="scenes" data-scenes>
+          <li>
+            <button class="scene is-active" type="button" aria-pressed="true" data-scene="cat">
+              <span class="scene__no">4D.2026.001</span>
+              <span class="scene__name">Cat, climbing</span>
+              <span class="scene__state">On view</span>
+            </button>
+          </li>
+          <li>
+            <button class="scene" type="button" aria-disabled="true" data-scene="real">
+              <span class="scene__no">4D.2026.002</span>
+              <span class="scene__name">A real capture</span>
+              <span class="scene__state">Not available yet</span>
+            </button>
+          </li>
+        </ul>
+        <p class="scenes__status" data-scenes-status aria-live="polite"></p>
+      </section>
+
+      <section class="room room--paper" aria-labelledby="h-r10">
+        <header class="room__head">
+          <p class="room__no">Room 10</p>
+          <h2 class="room__title" id="h-r10">Questions</h2>
+        </header>
+        <div class="faq">
+          <details>
+            <summary>What am I looking at?</summary>
+            <p>
+              Every moment of a short clip, rebuilt in three dimensions and left in place. The trail is the cat's
+              past; the highlighted cat is the present; the cone is the camera that filmed it, showing the frame it saw.
+              The wall nearest to you is cut away so you can see into the alley.
+            </p>
+          </details>
+          <details>
+            <summary>Is it real?</summary>
+            <p>
+              No. This scene is synthetic, and it is labelled that way wherever it appears. It was made in the browser
+              from a free 3D cat so the viewer could be built before real captures exist.
+            </p>
+          </details>
+          <details>
+            <summary>Why does it look like an old computer?</summary>
+            <p>
+              Because the old desktop already had this idea: drag a window and it leaves copies of itself behind. That
+              trail is the flat version of the one in the case. The look is drawn live, not from recorded animations.
+            </p>
+          </details>
+          <details>
+            <summary>Why is it pixelated?</summary>
+            <p>
+              The case is rendered at a third of your screen's resolution and each pixel is enlarged without blurring.
+              Colors are reduced to 16 (or 2) with ordered dithering. Switch the Display window to Millions to see it
+              without the treatment.
+            </p>
+          </details>
+          <details>
+            <summary>Can I move through time myself?</summary>
+            <p>
+              Yes. Drag the timeline, press space to hold or resume, J and L to rewind or play faster, K to hold, and
+              the arrow keys to step one frame. Drag inside the case to walk around it.
+            </p>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <div class="foot__mark" data-view="tesseract" role="img" aria-label="The 4D.OS mark: a tesseract drawn in dotted lines"></div>
+      <div class="foot__text">
+        <p class="foot__name">4D.OS</p>
+        <p>A local experiment. The scene is synthetic.</p>
+        <p>
+          <a href="https://poly.pizza/m/8GJbfM8R1A">"Cat"</a> by J-Toastie,
+          <a href="https://creativecommons.org/licenses/by/3.0/">CC-BY 3.0</a>, animated and sampled into points by
+          4D.OS. Type: Host Grotesk and Departure Mono, SIL Open Font License.
+        </p>
+      </div>
+    </footer>
+
+    <script type="module" src="../../../src/4d-os/worlds/a/main.ts"></script>
+  </body>
+</html>

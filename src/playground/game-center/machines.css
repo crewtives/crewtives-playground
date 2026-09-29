@@ -1,0 +1,1412 @@
+/* Machines of floors 3F, 4F and RF: the crane, the pachinko glass, the roof, the Gas Tuner and the
+   service panel. Same language as the 1F cabinet: acrylic plastic, ink, control cobalt,
+   dark screens. Whatever sits over a GL view carries a z-index above the engine. */
+
+/* ───────────────────────── 3F · Win a World crane ───────────────────────── */
+
+.machine-row--crane {
+  grid-template-columns: minmax(0, 3fr) minmax(0, 6fr) minmax(0, 3fr);
+}
+
+.crane {
+  display: grid;
+  gap: 0;
+  padding: 0 16px 16px;
+  background: var(--acrylic);
+  border: 4px solid var(--ink);
+  border-radius: 28px 28px 14px 14px;
+  box-shadow:
+    0 22px 40px rgba(51, 6, 28, 0.38),
+    inset -10px 0 0 rgba(20, 10, 36, 0.06),
+    inset 10px 0 0 rgba(255, 255, 255, 0.5);
+}
+
+.crane__marquee {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: 0 -16px 16px;
+  padding: 22px 16px 18px;
+  background: var(--sodium);
+  border-bottom: 4px solid var(--ink);
+  border-radius: 24px 24px 0 0;
+  font-family: var(--f-marquee);
+  font-size: clamp(28px, 3.4vw, 46px);
+  line-height: 1;
+  color: var(--ink);
+  text-transform: uppercase;
+  box-shadow: inset 0 -8px 0 rgba(20, 10, 36, 0.08);
+}
+
+/* Bulbs along the marquee: they light up one at a time per beat of the clock (120 BPM). */
+.crane__marquee::before,
+.crane__marquee::after {
+  content: '';
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  height: 8px;
+  background: radial-gradient(circle, var(--acrylic) 0 3px, transparent 3.5px) 0 0 / 22px 8px repeat-x;
+}
+
+.crane__marquee::before {
+  top: 7px;
+}
+
+.crane__marquee::after {
+  bottom: 5px;
+}
+
+.gc.is-live .crane__marquee::before,
+.gc.is-live .crane__marquee::after {
+  animation: bulbs calc(var(--beat) * 2) steps(1) infinite;
+}
+
+.gc.is-live .crane__marquee::after {
+  animation-delay: calc(var(--beat) * -1);
+}
+
+@keyframes bulbs {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 11px 0;
+  }
+}
+
+.crane__glass {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 5;
+  background: var(--crt);
+  border-radius: 16px;
+  box-shadow:
+    0 0 0 6px var(--ink),
+    inset 0 12px 30px rgba(0, 0, 0, 0.6);
+}
+
+.crane__view {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+}
+
+.crane__view:focus-visible {
+  outline: 4px solid var(--sodium);
+  outline-offset: 4px;
+}
+
+/* The machine's glass: a single diagonal reflection, above the GL view. */
+.crane__glass::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: var(--over-engine);
+  border-radius: 16px;
+  pointer-events: none;
+  background: linear-gradient(118deg, transparent 0 22%, rgba(242, 244, 255, 0.1) 22% 25%, transparent 25% 29%, rgba(242, 244, 255, 0.06) 29% 30.5%, transparent 30.5%);
+}
+
+.crane.is-running .crane__adjust {
+  display: none;
+}
+
+.crane__deck {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  margin: 22px -4px 0;
+  padding: 18px 18px 16px;
+  background: linear-gradient(180deg, var(--cobalt) 0 70%, var(--cobalt-deep) 70%);
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: 0 8px 14px rgba(20, 10, 36, 0.3);
+}
+
+.crane__chute {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  margin: 0;
+  padding: 10px 8px 8px;
+  background: rgba(217, 222, 255, 0.18);
+  border: 3px solid var(--ink);
+  border-radius: 8px 8px 4px 4px;
+  color: var(--acrylic);
+  font-family: var(--f-sign);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.crane__chute span {
+  font-family: var(--f-screen);
+  font-size: 22px;
+  letter-spacing: 0;
+  color: var(--sodium);
+}
+
+.crane__buttons {
+  display: flex;
+  gap: 18px;
+}
+
+.crane-btn {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  padding: 0;
+  border: 4px solid var(--ink);
+  border-radius: 50%;
+  color: var(--ink);
+  background: var(--sodium);
+  box-shadow:
+    0 7px 0 #b98f00,
+    0 12px 16px rgba(8, 2, 30, 0.45);
+  transition:
+    transform 140ms var(--ease-press),
+    box-shadow 140ms var(--ease-press);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  --focus: var(--acrylic);
+}
+
+.crane-btn--2 {
+  background: var(--mint);
+  box-shadow:
+    0 7px 0 #0f8a57,
+    0 12px 16px rgba(8, 2, 30, 0.45);
+}
+
+.crane-btn svg {
+  width: 44px;
+  height: 44px;
+}
+
+.crane-btn[aria-disabled='true'],
+.crane-btn:disabled {
+  filter: saturate(0.25) brightness(0.72);
+  cursor: default;
+}
+
+/* Lit button: the lamp of the button whose turn it is now (once, no blinking). */
+.crane-btn.is-lit {
+  box-shadow:
+    0 7px 0 #b98f00,
+    0 10px 22px 2px rgba(255, 204, 23, 0.55);
+}
+
+.crane-btn--2.is-lit {
+  box-shadow:
+    0 7px 0 #0f8a57,
+    0 10px 22px 2px rgba(31, 214, 138, 0.55);
+}
+
+.crane-btn.is-down {
+  transform: translateY(5px);
+  box-shadow:
+    0 2px 0 #b98f00,
+    0 3px 5px rgba(8, 2, 30, 0.4);
+  transition-duration: 50ms;
+  transition-timing-function: linear;
+}
+
+.crane-btn--2.is-down {
+  box-shadow:
+    0 2px 0 #0f8a57,
+    0 3px 5px rgba(8, 2, 30, 0.4);
+}
+
+.crane__readout {
+  justify-self: end;
+  margin: 0;
+  padding: 8px 10px 6px;
+  min-width: 11ch;
+  background: var(--crt);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 2px #07040f;
+  color: var(--sodium);
+  font-family: var(--f-screen);
+  font-size: 14px;
+  line-height: 1.25;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Ticket holder */
+.rack {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.rack__tickets {
+  position: relative;
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ticket {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 6px;
+  padding: 16px 16px 12px;
+  background: var(--paper);
+  color: var(--paper-ink);
+  font-family: var(--f-screen);
+  font-size: 15px;
+  line-height: 1.3;
+  text-transform: uppercase;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  box-shadow: 0 8px 14px rgba(20, 10, 36, 0.45);
+  /* Serrated edges of the thermal paper, top and bottom. */
+  mask:
+    linear-gradient(#000 0 0) center / 100% calc(100% - 12px) no-repeat,
+    conic-gradient(from 135deg at 50% 0, #000 90deg, transparent 0) top / 10px 6px repeat-x,
+    conic-gradient(from -45deg at 50% 100%, #000 90deg, transparent 0) bottom / 10px 6px repeat-x;
+}
+
+.ticket.is-dragging {
+  cursor: grabbing;
+  z-index: 4;
+}
+
+.ticket.is-printing {
+  animation: print 320ms steps(8) 1;
+}
+
+@keyframes print {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.ticket-echo {
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 1;
+  box-shadow: none;
+}
+
+.ticket__link {
+  display: grid;
+  gap: 2px;
+  color: inherit;
+  text-decoration: none;
+  -webkit-user-drag: none;
+}
+
+.ticket__prize {
+  font-size: 12px;
+  color: var(--wine);
+}
+
+.ticket__what {
+  font-size: 19px;
+  line-height: 1.15;
+}
+
+.ticket__route {
+  font-size: 14px;
+  text-transform: none;
+}
+
+.ticket__open {
+  justify-self: start;
+  margin-top: 6px;
+  padding: 5px 10px 3px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 3px;
+}
+
+.ticket__link:hover .ticket__open,
+.ticket__link:focus-visible .ticket__open {
+  background: var(--candy);
+  color: var(--ink);
+}
+
+.ticket__link:focus-visible {
+  outline-color: var(--ink);
+}
+
+.ticket:has(.ticket__emblem) {
+  grid-template-columns: 48px 1fr;
+  column-gap: 12px;
+}
+
+.ticket__emblem {
+  align-self: start;
+  width: 48px;
+  height: 48px;
+}
+
+.ticket__body {
+  display: grid;
+  gap: 2px;
+}
+
+.ticket__save {
+  justify-self: start;
+  margin-top: 6px;
+  padding: 7px 10px 5px;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  background: var(--sodium);
+  font-family: var(--f-screen);
+  font-size: 13px;
+  text-transform: uppercase;
+  --focus: var(--ink);
+}
+
+.ticket__serial {
+  grid-column: 1 / -1;
+  padding-top: 8px;
+  border-top: 2px dashed rgba(42, 28, 16, 0.3);
+  font-size: 12px;
+  color: rgba(42, 28, 16, 0.7);
+}
+
+/* ───────────────────────── Tablet and phone ───────────────────────── */
+
+@media (max-width: 1279px) {
+  .machine-row--crane {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .machine-row--crane .crane {
+    grid-row: 1;
+    grid-column: 1 / -1;
+    width: 100%;
+    max-width: 560px;
+    justify-self: center;
+  }
+}
+
+@media (max-width: 767px) {
+  .machine-row--crane {
+    grid-template-columns: 1fr;
+  }
+  .crane {
+    padding: 0 10px 10px;
+    border-radius: 22px 22px 12px 12px;
+  }
+  .crane__marquee {
+    margin: 0 -10px 12px;
+  }
+  .crane__deck {
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    padding: 14px;
+  }
+  .crane__chute {
+    display: none;
+  }
+  .crane__readout {
+    font-size: 12px;
+  }
+  .crane-btn {
+    width: 68px;
+    height: 68px;
+  }
+}
+
+/* Cards in narrow columns: the key in a short column. */
+.machine-row .card__keys div {
+  grid-template-columns: 5.2em 1fr;
+}
+
+/* ───────────────────────── 4F · Parlour Glass ───────────────────────── */
+
+.floor--4f .machine-row--parlour {
+  grid-template-columns: minmax(0, 3fr) minmax(0, 5fr) minmax(0, 3fr);
+  align-items: start;
+}
+
+.parlour-side {
+  display: grid;
+  gap: 24px;
+}
+
+.panel {
+  display: grid;
+  gap: 18px;
+  padding: 20px 18px 20px;
+  background: linear-gradient(180deg, var(--cobalt) 0 86%, var(--cobalt-deep) 86%);
+  color: var(--acrylic);
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: 0 14px 24px rgba(8, 61, 38, 0.35);
+}
+
+.panel__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.panel__row--small {
+  gap: 8px;
+}
+
+.panel__out {
+  margin: 0;
+  padding: 8px 10px 6px;
+  background: var(--crt);
+  border-radius: 6px;
+  color: var(--sodium);
+  font-family: var(--f-screen);
+  font-size: 13px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+/* Multi-position rocker switch (symmetry, launchers, shutter). */
+.rocker {
+  display: grid;
+  gap: 8px;
+}
+
+.rocker__label {
+  margin: 0;
+  font-family: var(--f-sign);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cobalt-2);
+}
+
+.rocker__track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 3px;
+  padding: 3px;
+  background: var(--ink);
+  border-radius: 10px;
+}
+
+.rocker__track--4 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-flow: row;
+}
+
+.rocker__track button {
+  min-height: 44px;
+  padding: 6px 6px 4px;
+  border: 0;
+  border-radius: 7px;
+  background: #241656;
+  color: var(--night-2);
+  font-family: var(--f-sign);
+  font-size: 11px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  transition:
+    background-color 120ms steps(2),
+    color 120ms steps(2);
+  --focus: var(--sodium);
+}
+
+.rocker__track button[aria-checked='true'] {
+  background: var(--sodium);
+  color: var(--ink);
+  box-shadow: inset 0 -3px 0 #b98f00;
+}
+
+/* Microswitch keys: acrylic with ink, sunk when pressed. */
+.key {
+  min-height: 44px;
+  padding: 10px 14px 8px;
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  background: var(--acrylic);
+  color: var(--ink);
+  font-family: var(--f-sign);
+  font-size: 13px;
+  text-transform: uppercase;
+  box-shadow:
+    0 5px 0 var(--chrome-lo),
+    0 8px 12px rgba(8, 2, 30, 0.35);
+  transition:
+    transform 140ms var(--ease-press),
+    box-shadow 140ms var(--ease-press);
+  touch-action: manipulation;
+}
+
+.key:active,
+.key.is-down {
+  transform: translateY(4px);
+  box-shadow:
+    0 1px 0 var(--chrome-lo),
+    0 2px 4px rgba(8, 2, 30, 0.35);
+  transition-duration: 50ms;
+  transition-timing-function: linear;
+}
+
+.key--launch {
+  flex: 1 1 auto;
+  min-height: 64px;
+  background: var(--sodium);
+  font-size: 18px;
+  box-shadow:
+    0 6px 0 #b98f00,
+    0 10px 14px rgba(8, 2, 30, 0.35);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.key--launch.is-down {
+  box-shadow:
+    0 1px 0 #b98f00,
+    0 2px 4px rgba(8, 2, 30, 0.35);
+}
+
+.key--small {
+  padding: 8px 10px 6px;
+  font-size: 11px;
+}
+
+.key--now {
+  background: var(--candy);
+}
+
+/* Handle: a brass knob with its mark, turns −135°…+135°. */
+.handle {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.handle__knob {
+  position: relative;
+  flex: 0 0 auto;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background:
+    conic-gradient(from -135deg, var(--sodium) 0 calc((var(--turn, -54deg) + 135deg)), transparent 0 270deg, transparent 0) border-box,
+    var(--ink);
+  border: 4px solid var(--ink);
+  cursor: grab;
+  touch-action: none;
+}
+
+.handle__grip {
+  position: absolute;
+  inset: 9px;
+  border-radius: 50%;
+  background:
+    linear-gradient(135deg, #ffb45e 0 50%, var(--amber) 50%);
+  box-shadow:
+    0 4px 8px rgba(8, 2, 30, 0.45),
+    inset 0 -4px 6px rgba(46, 8, 3, 0.25);
+  transform: rotate(var(--turn, -54deg));
+}
+
+.handle__grip::after {
+  content: '';
+  position: absolute;
+  left: calc(50% - 3px);
+  top: 5px;
+  width: 6px;
+  height: 22px;
+  border-radius: 3px;
+  background: var(--ink);
+}
+
+.handle__read {
+  margin: 0;
+  font-family: var(--f-screen);
+  font-size: 16px;
+  color: var(--cobalt-2);
+  text-transform: uppercase;
+}
+
+.handle__read span {
+  display: block;
+  font-size: 30px;
+  line-height: 1;
+  color: var(--sodium);
+}
+
+/* Jog wheel: knurled rim, inner shuttle ring and hub. */
+.jogbox {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.jogbox__side {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+
+.jog {
+  position: relative;
+  flex: 0 0 auto;
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
+  touch-action: none;
+  cursor: grab;
+}
+
+.jog[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.jog__rim {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(var(--chrome-hi) 0 3deg, var(--chrome-lo) 3deg 6deg),
+    var(--chrome);
+  border: 4px solid var(--ink);
+  transform: rotate(var(--rim, 0deg));
+  box-shadow: 0 8px 16px rgba(8, 2, 30, 0.45);
+}
+
+.jog__ring {
+  position: absolute;
+  inset: 26%;
+  border-radius: 50%;
+  background: conic-gradient(from -8deg, var(--candy) 0 16deg, var(--chrome) 16deg);
+  border: 4px solid var(--ink);
+  transform: rotate(var(--ring, 0deg));
+  transition: transform 180ms var(--ease-press);
+}
+
+.jog__hub {
+  position: absolute;
+  inset: 38%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--night-2);
+  font-family: var(--f-sign);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.timecode {
+  display: block;
+  min-width: 13ch;
+  padding: 8px 10px 6px;
+  background: var(--crt);
+  border-radius: 6px;
+  color: var(--sodium);
+  font-family: var(--f-screen);
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.timecode[data-mode='rewind'],
+.timecode[data-mode='hold'] {
+  color: var(--amber);
+}
+
+/* The chrome cabinet: three flat tones, no painted reflections. */
+.parlour {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 0 22px 22px;
+  background:
+    linear-gradient(90deg, var(--chrome-lo) 0 4%, var(--chrome) 4% 12%, var(--chrome-hi) 12% 88%, var(--chrome) 88% 96%, var(--chrome-lo) 96%);
+  border: 4px solid var(--ink);
+  border-radius: 48% 48% 28% 28% / 18% 18% 10% 10%;
+  box-shadow: 0 24px 40px rgba(8, 61, 38, 0.45);
+}
+
+.parlour__marquee {
+  justify-self: stretch;
+  margin: 0 -22px;
+  padding: 26px 16px 18px;
+  background: var(--candy);
+  border-bottom: 4px solid var(--ink);
+  border-radius: 48% 48% 0 0 / 60% 60% 0 0;
+  font-family: var(--f-marquee);
+  font-size: clamp(26px, 2.8vw, 40px);
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.parlour__glass {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  margin-top: 18px;
+  border-radius: 50%;
+  background: var(--night);
+  box-shadow:
+    0 0 0 14px var(--ink),
+    0 0 0 18px var(--chrome-lo);
+}
+
+.parlour__lamps {
+  position: absolute;
+  inset: -7%;
+  width: 114%;
+  height: 114%;
+  max-width: none;
+  z-index: var(--over-engine);
+  pointer-events: none;
+  overflow: visible;
+}
+
+.parlour__lamps circle {
+  fill: #3a1c8c;
+}
+
+.parlour__lamps circle.is-sodium {
+  fill: var(--sodium);
+}
+
+.parlour__lamps circle.is-candy {
+  fill: var(--candy);
+}
+
+.parlour__view {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+
+.parlour__view:focus-visible {
+  outline-offset: 20px;
+}
+
+.parlour__canvas2d {
+  width: 100%;
+  height: 100%;
+}
+
+.parlour.is-running .parlour__adjust {
+  display: none;
+}
+
+.parlour__fever {
+  position: absolute;
+  top: -6%;
+  left: 50%;
+  z-index: var(--over-engine);
+  margin: 0;
+  padding: 4px 10px 2px;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: #3a1c8c;
+  font-family: var(--f-sign);
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 4px;
+}
+
+.parlour.is-fever .parlour__fever {
+  color: var(--mint);
+}
+
+.parlour__counter {
+  margin: 8px 0 0;
+  padding: 8px 12px 6px;
+  background: var(--crt);
+  border-radius: 6px;
+  color: var(--sodium);
+  font-family: var(--f-screen);
+  font-size: 15px;
+  text-align: center;
+}
+
+.parlour__note {
+  margin: 0;
+  max-width: 44ch;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ink);
+  text-align: center;
+}
+
+@media (max-width: 1279px) {
+  .floor--4f .machine-row--parlour {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .machine-row--parlour .parlour {
+    grid-row: 1;
+    grid-column: 1 / -1;
+    width: 100%;
+    max-width: 560px;
+    justify-self: center;
+  }
+}
+
+@media (max-width: 767px) {
+  .floor--4f .machine-row--parlour {
+    grid-template-columns: 1fr;
+  }
+  .parlour {
+    padding: 0 14px 16px;
+  }
+  .parlour__marquee {
+    margin: 0 -14px;
+  }
+  .parlour__glass {
+    box-shadow:
+      0 0 0 10px var(--ink),
+      0 0 0 13px var(--chrome-lo);
+  }
+  .parlour__counter {
+    font-size: 13px;
+  }
+  /* The control bars go at the foot of the machine: first play, then time, then the card. */
+  .parlour-side--right {
+    order: 2;
+  }
+  .parlour-side--left {
+    order: 3;
+  }
+  .machine-row--parlour .parlour {
+    order: 1;
+  }
+  .jog {
+    width: 148px;
+    height: 148px;
+  }
+}
+
+/* ───────────────────────── RF · Roof ───────────────────────── */
+
+.roof__screen {
+  position: relative;
+}
+
+.roof__view,
+.roof__still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 22px / 18px;
+}
+
+.roof__still {
+  image-rendering: pixelated;
+}
+
+.roof.is-running .adjust__card--roof {
+  display: none;
+}
+
+.roof__tag {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  z-index: var(--over-engine);
+  margin: 0;
+  background: var(--ink);
+  color: var(--night-2);
+}
+
+/* ───────────────────────── RF · Gas Tuner ───────────────────────── */
+
+.roof__deck {
+  grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+}
+
+@media (max-width: 1279px) {
+  .roof__deck {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gas {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+
+.gas__title {
+  margin: 0;
+}
+
+.gas__parapet {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 14px;
+}
+
+/* The vertical 四次元 signs, mirrored across the sign's axis. */
+.gas__tate {
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 12px 6px;
+  background: var(--sodium);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  border-radius: 6px;
+  font-family: var(--f-screen);
+  font-size: 22px;
+  line-height: 1;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.45);
+}
+
+.gas__sign {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 18px 18px 14px;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(242, 244, 255, 0.05) 22px 23px),
+    #0f0928;
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 2px #2a1d5c, 0 16px 26px rgba(0, 0, 0, 0.5);
+}
+
+.tube {
+  --gas: var(--gas-now, #9a7bff);
+  display: block;
+  width: calc((var(--w) + 4) * 3.4px);
+  height: 95px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.tube svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.tube path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Glass: the body of the tube, rounded, with a thin sheen along it; it reads as glass even when off. */
+.tube__glass {
+  stroke: #3b3078;
+  stroke-width: 2.8;
+}
+
+.tube__sheen {
+  stroke: rgba(226, 222, 255, 0.42);
+  stroke-width: 0.45;
+}
+
+.tube__gas {
+  stroke: var(--gas);
+  stroke-width: 2.2;
+  stroke-dasharray: 100 100;
+  stroke-dashoffset: 100;
+}
+
+.tube__core {
+  stroke: #fff6e8;
+  stroke-width: 0.6;
+  opacity: 0;
+}
+
+/* Electrode sleeves: dark metal at both ends of the tube; they never light up. */
+.tube__electrode {
+  stroke: #1d1638;
+  stroke-width: 3.1;
+  stroke-linecap: round;
+}
+
+.tube.is-lit .tube__gas {
+  stroke-dashoffset: 0;
+}
+
+.tube.is-lit .tube__core {
+  opacity: 0.7;
+}
+
+.tube.is-lit .tube__sheen {
+  opacity: 0.35;
+}
+
+/* Halo emitted into the night: real light from the tube, with its falloff downward. */
+.tube.is-lit svg {
+  filter: drop-shadow(0 2px 4px var(--gas)) drop-shadow(0 8px 16px color-mix(in srgb, var(--gas) 50%, transparent));
+}
+
+/* Strike: a single pulse of brightness (0 → 110 % → 100 %) and the gas rising from the base of the tube. */
+.tube.is-striking svg {
+  animation: ignite 380ms ease-out 1;
+}
+
+.tube.is-striking .tube__gas {
+  animation: warm 600ms linear 1;
+}
+
+@keyframes ignite {
+  0% {
+    filter: brightness(0.25) drop-shadow(0 2px 4px var(--gas));
+  }
+  45% {
+    filter: brightness(1.1) drop-shadow(0 2px 4px var(--gas)) drop-shadow(0 8px 16px color-mix(in srgb, var(--gas) 50%, transparent));
+  }
+  100% {
+    filter: brightness(1) drop-shadow(0 2px 4px var(--gas)) drop-shadow(0 8px 16px color-mix(in srgb, var(--gas) 50%, transparent));
+  }
+}
+
+@keyframes warm {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Lit on arrival: two blinks in tempo (at 0 and 500 ms) and the sign stays lit from 1 s on. */
+.gas__sign.is-igniting .tube.is-lit .tube__light {
+  animation: sign-strike 1100ms steps(1, end) 1;
+}
+
+.gas__sign.is-igniting .tube.is-lit svg {
+  animation: sign-halo 1100ms steps(1, end) 1;
+}
+
+@keyframes sign-strike {
+  0% {
+    opacity: 1;
+  }
+  9% {
+    opacity: 0.1;
+  }
+  45.5% {
+    opacity: 1;
+  }
+  54.5% {
+    opacity: 0.1;
+  }
+  91% {
+    opacity: 1;
+  }
+}
+
+@keyframes sign-halo {
+  0%,
+  45.5%,
+  91% {
+    filter: drop-shadow(0 2px 4px var(--gas)) drop-shadow(0 8px 16px color-mix(in srgb, var(--gas) 50%, transparent));
+  }
+  9%,
+  54.5% {
+    filter: none;
+  }
+}
+
+.tube:focus-visible {
+  outline-offset: 4px;
+}
+
+/* Strike strip: each strike leaves a mark in the color of its gas. */
+.gas__strip {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 3px;
+  height: 22px;
+  margin: 0;
+  padding: 4px 6px;
+  overflow: hidden;
+  list-style: none;
+  background: var(--crt);
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 2px #07040f;
+}
+
+.gas__strip li {
+  flex: 0 0 4px;
+  background: var(--gas);
+  border-radius: 1px;
+}
+
+.gas__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+}
+
+.gas__dial {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Five-detent rotary knob (−60° … +60°). */
+.gas__knob {
+  position: relative;
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--chrome);
+  border: 4px solid var(--ink);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.45);
+  transform: rotate(var(--turn, 0deg));
+  transition: transform 180ms steps(3);
+}
+
+.gas__knob::after {
+  content: '';
+  position: absolute;
+  left: calc(50% - 3px);
+  top: 4px;
+  width: 6px;
+  height: 20px;
+  border-radius: 3px;
+  background: var(--gas-now, var(--ink));
+  box-shadow: 0 0 0 2px var(--ink);
+}
+
+.gas__stops {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  background: var(--ink);
+  border-radius: 10px;
+}
+
+.gas__stops button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 6px 10px 4px;
+  border: 0;
+  border-radius: 7px;
+  background: #241656;
+  color: var(--night-2);
+  font-family: var(--f-sign);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.gas__stops i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--gas);
+}
+
+.gas__stops button[aria-checked='true'] {
+  background: var(--acrylic);
+  color: var(--ink);
+}
+
+.key--strike {
+  background: var(--sodium);
+  box-shadow:
+    0 5px 0 #b98f00,
+    0 8px 12px rgba(0, 0, 0, 0.45);
+}
+
+.gas__caption {
+  margin: 0;
+}
+
+.gas__howto {
+  margin: 0;
+  max-width: 56ch;
+  font-size: 16px;
+  color: var(--night-2);
+}
+
+/* ───────────────────────── RF · Service panel ───────────────────────── */
+
+.service {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  padding: 24px 22px 26px;
+  background: #241656;
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 2px #33236e, 0 16px 26px rgba(0, 0, 0, 0.45);
+}
+
+.service__title {
+  margin: 0;
+}
+
+.service__door {
+  margin: 0;
+  font-family: var(--f-screen);
+  font-size: 14px;
+  color: var(--night-2);
+  text-transform: uppercase;
+}
+
+/* The 8-position DIP block: red body, white levers, ON at the top. */
+.dip {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 6px;
+  padding: 26px 12px 12px;
+  background: var(--enamel);
+  border: 3px solid var(--ink);
+  border-radius: 6px;
+  box-shadow: 0 8px 0 #b3301a, 0 12px 18px rgba(0, 0, 0, 0.45);
+}
+
+.dip::before {
+  content: 'ON';
+  position: absolute;
+  top: 6px;
+  left: 12px;
+  font-family: var(--f-sign);
+  font-size: 11px;
+  color: var(--ink);
+}
+
+.dip__sw {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.dip__sw input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.dip__slot {
+  position: relative;
+  width: 26px;
+  height: 52px;
+  background: var(--ink);
+  border-radius: 4px;
+}
+
+.dip__lever {
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  bottom: 3px;
+  height: 22px;
+  background: var(--acrylic);
+  border-radius: 2px;
+  transition: transform 120ms steps(2);
+}
+
+.dip__sw input:checked + .dip__slot .dip__lever {
+  transform: translateY(-24px);
+}
+
+.dip__sw input:focus-visible + .dip__slot {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.dip__sw input:disabled + .dip__slot {
+  opacity: 0.7;
+}
+
+.dip__num {
+  font-family: var(--f-sign);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.dip__name {
+  font-family: var(--f-sign);
+  font-size: 9px;
+  line-height: 1.1;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--enamel-2);
+}
+
+.service__read {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.service__read div {
+  display: grid;
+  grid-template-columns: 5.5em 1fr;
+  gap: 10px;
+}
+
+.service__read dt {
+  font-weight: 800;
+  color: var(--sodium);
+}
+
+.service__read dd {
+  margin: 0;
+}
+
+@media (max-width: 767px) {
+  .roof__screen {
+    height: min(118vw, 72vh);
+  }
+  .gas__tate {
+    display: none;
+  }
+  /* Each letter is a 44 px touch cell (at 390 px the eight fill the sign exactly); the drawn tube
+     keeps its size because the SVG fits by height and stays centered in the cell. */
+  .gas__sign {
+    gap: 0;
+    padding: 12px 0 10px;
+    width: 100%;
+    justify-content: center;
+  }
+  .tube {
+    flex: 0 1 44px;
+    width: 44px;
+    min-width: 0;
+    height: 44px;
+  }
+  .dip {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    row-gap: 16px;
+  }
+}

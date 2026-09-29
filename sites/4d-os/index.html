@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <title>4D.OS — one engine, five worlds</title>
+    <meta name="description" content="A local experiment: live 4D reconstructions, every moment at once, rendered in five worlds: one scene in three, and two computed subjects in their own." />
+  </head>
+  <body class="launcher">
+    <header class="bar">
+      <p class="bar__name">4D.OS</p>
+      <p class="bar__note">Local experiment · synthetic scene</p>
+      <p class="bar__clock" data-wall-clock></p>
+    </header>
+    <a class="playground-back" href="/"><span aria-hidden="true">←</span> Playground</a>
+
+    <main class="stage">
+      <h1 class="stage__title">One scene.<br />Three worlds.</h1>
+      <p class="stage__lede">
+        The same reconstruction in space and time, every moment kept where and when it happened, drawn live
+        in three directions. Pick one to open its desktop.
+      </p>
+
+      <ol class="worlds">
+        <li class="world" data-world="a">
+          <a class="world__win" href="a/">
+            <span class="world__title"><span>A</span><span>Vitrine</span></span>
+            <span class="world__view" data-view="a" role="img" aria-label="World A preview: the scene in natural colors, like an exhibit in a gallery vitrine."></span>
+            <span class="world__thesis">The reconstruction as an exhibit: a red gallery room, a vitrine, wall labels.</span>
+            <span class="world__open">Open desktop</span>
+          </a>
+        </li>
+        <li class="world" data-world="b">
+          <a class="world__win" href="b/">
+            <span class="world__title"><span>B</span><span>Plate</span></span>
+            <span class="world__view" data-view="b" role="img" aria-label="World B preview: the whole journey exposed in silver onto one black plate."></span>
+            <span class="world__thesis">Every moment exposed onto one photographic plate, after Marey.</span>
+            <span class="world__open">Open desktop</span>
+          </a>
+        </li>
+        <li class="world" data-world="c">
+          <a class="world__win" href="c/">
+            <span class="world__title"><span>C</span><span>Leader</span></span>
+            <span class="world__view" data-view="c" role="img" aria-label="World C preview: the scene as a projected frame of cross-processed film."></span>
+            <span class="world__thesis">Time as a strip of 16mm film you pull through the gate.</span>
+            <span class="world__open">Open desktop</span>
+          </a>
+        </li>
+      </ol>
+
+      <section class="status" aria-live="polite">
+        <p class="status__line">
+          <span data-boot-message>Loading scene…</span>
+          <span class="status__bar"><span class="status__fill" data-boot-fill></span></span>
+          <span><span data-boot-pct>0</span>%</span>
+        </p>
+        <p class="status__now">
+          <output data-now="timecode">00:00:00</output>
+          <output data-now="state">HOLD 0.00×</output>
+          <span class="status__keys">Space · J K L · ← →</span>
+          <span class="status__credit"><a href="https://poly.pizza/m/8GJbfM8R1A">Cat model</a> by J-Toastie, <a href="https://creativecommons.org/licenses/by/3.0/">CC-BY 3.0</a></span>
+        </p>
+      </section>
+
+      <section class="more" aria-labelledby="more-title">
+        <h2 class="more__title" id="more-title">Two more plates.</h2>
+        <p class="more__lede">
+          New subjects computed from equations, new worlds, the same engine: every moment kept where and when it
+          happened.
+        </p>
+        <ol class="worlds worlds--more">
+          <li class="world" data-world="d">
+            <a class="world__win" href="d/">
+              <span class="world__title"><span>D</span><span>The golden stoop</span></span>
+              <img
+                class="world__view world__still"
+                src="/launcher/d-golden-stoop.png"
+                width="1200"
+                height="900"
+                loading="lazy"
+                decoding="async"
+                alt="World D: a peregrine falcon computed from equations dives along a golden spiral through a phosphor-green city of points, every past moment still on screen."
+              />
+              <span class="world__thesis">A falcon computed from equations dives a golden spiral, with the mathematics read live.</span>
+              <span class="world__open">Open landing</span>
+            </a>
+          </li>
+          <li class="world" data-world="e">
+            <a class="world__win" href="e/">
+              <span class="world__title"><span>E</span><span>Whale fall</span></span>
+              <img
+                class="world__view world__still"
+                src="/launcher/e-whale-fall.png"
+                width="1200"
+                height="900"
+                loading="lazy"
+                decoding="async"
+                alt="World E: a humpback whale computed from equations spirals into a black hole whose lensed disk is traced live; its trail bunches up near the horizon."
+              />
+              <span class="world__thesis">A whale spirals into a black hole. Near the horizon its clock runs slow: two clocks, one plate.</span>
+              <span class="world__open">Open landing</span>
+            </a>
+          </li>
+        </ol>
+        <p class="more__note">Both subjects are synthetic and computed from our own equations: no third-party models.</p>
+      </section>
+    </main>
+
+    <script type="module" src="../../src/4d-os/launcher/main.ts"></script>
+  </body>
+</html>

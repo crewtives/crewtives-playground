@@ -1,0 +1,3216 @@
+/* Wind-Up Empire: the box of a tin toy, unfolded. Each section is a face flooded with
+   its ink; the tin, the cardboard and the paper are objects on those fields. */
+
+/* ---------- base and browser surfaces ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--space);
+  color: var(--tin-hi);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  scrollbar-color: var(--space) var(--tin);
+  caret-color: var(--pink);
+  scroll-padding-top: calc(var(--strip-h) + 8px);
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  background: var(--space);
+  font-size: 1.125rem;
+  line-height: 1.5;
+  overflow-x: clip;
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--chrome);
+  color: var(--ink);
+}
+
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+::-webkit-scrollbar-track {
+  background: var(--tin);
+  border-left: 2px solid var(--ink);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--space);
+  border: 2px solid var(--ink);
+  border-radius: 7px;
+}
+
+img,
+svg {
+  display: block;
+}
+
+p,
+h1,
+h2,
+h3,
+ol,
+ul,
+figure {
+  margin: 0;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: underline dashed 2px;
+  text-underline-offset: 4px;
+}
+
+:focus-visible {
+  outline: 3px solid var(--chrome);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--ink);
+}
+
+.num {
+  font-family: var(--font-num);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.vh {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon.arrow {
+  display: inline-block;
+  width: 1.05em;
+  height: 1.05em;
+  vertical-align: -0.18em;
+  stroke-width: 2.4;
+}
+
+.skip {
+  position: fixed;
+  left: 16px;
+  top: -80px;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--chrome);
+  color: var(--ink);
+  font-weight: 700;
+  border-radius: 8px;
+  text-decoration: none;
+}
+.skip:focus-visible {
+  top: 12px;
+  outline-color: var(--ink);
+  box-shadow: 0 0 0 5px var(--pink);
+}
+
+/* State in the stroke: solid = done, dashed = queued, dotted = locked or not cast. */
+.socket-unset {
+  border: 2px dotted var(--tin-shade);
+}
+
+.unset-note {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.6875rem;
+  line-height: 1.25;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ---------- tin buttons ---------- */
+
+.tin-button,
+.chrome-button,
+.lever {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--tin);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: inset 0 2px 0 var(--tin-hi), inset 0 -3px 0 var(--tin-shade), 0 3px 6px rgba(21, 19, 28, 0.28);
+  transition: transform 120ms var(--ease-out), box-shadow 120ms var(--ease-out);
+}
+.tin-button:hover,
+.chrome-button:hover,
+.lever:hover {
+  transform: translateY(-1px);
+}
+.tin-button:active,
+.chrome-button:active,
+.lever:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 0 var(--tin-shade), 0 1px 2px rgba(21, 19, 28, 0.3);
+}
+.tin-button:disabled,
+.chrome-button:disabled {
+  cursor: not-allowed;
+  border-style: dotted;
+  background: var(--tin-hi);
+  color: var(--tin-text);
+  box-shadow: none;
+  transform: none;
+}
+
+/* The tin relief covered the ink focus ring: the ring comes back (the faces that
+   change the focus color redefine it further down). */
+.tin-button:focus-visible,
+.chrome-button:focus-visible,
+.lever:focus-visible,
+.spark-wheel:focus-visible {
+  box-shadow: 0 0 0 5px var(--ink);
+}
+
+.chrome-button {
+  background: var(--chrome);
+  box-shadow: inset 0 2px 0 var(--lemon), inset 0 -3px 0 var(--orange), 0 3px 6px rgba(21, 19, 28, 0.28);
+}
+
+/* ---------- the resource strip ---------- */
+
+.strip {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--strip-h);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px 3px;
+  color: var(--ink);
+}
+/* The plate lives in a pseudo-element: its toothed mask does not clip the menu that drops from the strip. */
+.strip::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle, var(--tin-hi) 0 1.1px, var(--tin-shade) 1.5px 3px, transparent 3.4px) left 7px top 7px / 8px 8px no-repeat,
+    radial-gradient(circle, var(--tin-hi) 0 1.1px, var(--tin-shade) 1.5px 3px, transparent 3.4px) right 7px top 7px / 8px 8px no-repeat,
+    radial-gradient(circle, var(--tin-hi) 0 1.1px, var(--tin-shade) 1.5px 3px, transparent 3.4px) left 7px bottom 12px / 8px 8px no-repeat,
+    radial-gradient(circle, var(--tin-hi) 0 1.1px, var(--tin-shade) 1.5px 3px, transparent 3.4px) right 7px bottom 12px / 8px 8px no-repeat,
+    linear-gradient(var(--ink), var(--ink)) left bottom 3px / 100% 2px no-repeat,
+    linear-gradient(var(--tin-shade), var(--tin-shade)) left bottom / 100% 7px no-repeat,
+    linear-gradient(var(--tin-hi), var(--tin-hi)) left top / 100% 2px no-repeat;
+  background-color: var(--tin);
+  /* Pressed bottom edge: 3 px teeth */
+  -webkit-mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - 3px) no-repeat,
+    conic-gradient(from 135deg at 50% 0, #000 90deg, #0000 0) bottom / 6px 3px repeat-x;
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - 3px) no-repeat,
+    conic-gradient(from 135deg at 50% 0, #000 90deg, #0000 0) bottom / 6px 3px repeat-x;
+}
+
+.strip-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.wordmark {
+  font-family: var(--font-box);
+  font-size: 1.25rem;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  font-variation-settings: 'XROT' calc(-10 * var(--wind)), 'YROT' calc(-28 * var(--wind));
+}
+
+.sticker {
+  display: inline-block;
+  padding: 4px 8px 3px;
+  background: var(--pink);
+  color: var(--ink);
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  line-height: 1.1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  rotate: -3deg;
+  box-shadow: 0 2px 4px rgba(21, 19, 28, 0.3);
+}
+
+.strip-drums {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.drum {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  align-items: center;
+}
+
+.drum-label {
+  grid-row: 1 / 3;
+  font-weight: 700;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+}
+
+.drum-well {
+  display: block;
+  height: 32px;
+  padding: 0 6px;
+  background: var(--ink);
+  border-radius: 5px;
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.55), 0 1px 0 var(--tin-hi);
+  overflow: hidden;
+}
+
+.drum-digits {
+  display: block;
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 32px;
+  letter-spacing: 0.12em;
+  color: var(--tin-hi);
+  background: repeating-linear-gradient(90deg, transparent 0 calc(1ch + 0.12em - 1px), var(--space-deep) 0 calc(1ch + 0.12em));
+}
+
+.drum-rate {
+  font-weight: 500;
+  font-size: 0.6875rem;
+  line-height: 1.3;
+  color: var(--tin-text);
+  white-space: nowrap;
+}
+.drum-rate .num {
+  font-weight: 500;
+}
+
+.strip-nav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+.strip-links {
+  display: contents;
+}
+.menu-button {
+  display: none;
+}
+
+.tin-tab {
+  padding: 6px 10px;
+  border-radius: 6px 6px 3px 3px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  text-decoration-color: var(--vermilion);
+  white-space: nowrap;
+}
+.tin-tab:hover {
+  background: var(--tin-hi);
+}
+
+.bell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 4px 12px 4px 8px;
+  border: 2px solid var(--ink);
+  border-radius: 18px;
+  background: var(--ink);
+  color: var(--tin-hi);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.bell[aria-pressed='true'] {
+  background: var(--chrome);
+  color: var(--ink);
+}
+.bell .icon-on {
+  display: none;
+}
+.bell[aria-pressed='true'] .icon-on {
+  display: block;
+}
+.bell[aria-pressed='true'] .icon-off {
+  display: none;
+}
+
+/* ---------- faces of the box ---------- */
+
+.face {
+  position: relative;
+}
+
+.face-inner {
+  width: min(100% - 2 * var(--side), 1312px);
+  margin-inline: auto;
+  padding: 128px 0 96px;
+}
+
+.face-title {
+  font-family: var(--font-box);
+  font-weight: 400;
+  font-size: clamp(2.5rem, 4.2vw, 3.75rem);
+  line-height: 0.95;
+  text-wrap: balance;
+}
+
+.lede {
+  max-width: 62ch;
+  margin-top: 20px;
+  font-size: 1.125rem;
+}
+
+/* ---------- 1 · the lid ---------- */
+
+.lid {
+  --frame-in: 16px;
+  height: calc(100svh - var(--strip-h));
+  min-height: 760px;
+  /* The cobalt field is the body's: the lid is transparent so the engine canvas, which sits
+     under it (the lid's z-index > --engine-z), paints the orrery. The size container creates
+     a stacking context, so the whole lid sits above the canvas. */
+  background: transparent;
+  container-type: size;
+  overflow: clip;
+  z-index: var(--over);
+}
+
+.lid-scene {
+  position: absolute;
+  inset: 0;
+}
+
+.lid-frame {
+  position: absolute;
+  inset: var(--frame-in);
+  border: 4px solid var(--chrome);
+  border-radius: 14px;
+  z-index: var(--over);
+  pointer-events: none;
+}
+.lid-frame::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 2px solid var(--vermilion);
+  border-radius: 7px;
+}
+
+/* Edge shading with the same 8×8 Bayer dither as the display (tiles generated at startup). */
+.lid-shade {
+  position: absolute;
+  inset: calc(var(--frame-in) + 12px);
+  z-index: var(--over);
+  pointer-events: none;
+  border-radius: 6px;
+  background:
+    var(--shade-top, none) top left / 16px 48px repeat-x,
+    var(--shade-bottom, none) bottom left / 16px 48px repeat-x,
+    var(--shade-left, none) top left / 48px 16px repeat-y,
+    var(--shade-right, none) top right / 48px 16px repeat-y;
+  image-rendering: pixelated;
+}
+
+.lid-comp {
+  --u: min(calc(100cqw / 1440), calc(100cqh / 844));
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(1440 * var(--u));
+  height: calc(844 * var(--u));
+  translate: -50% -50%;
+  z-index: var(--over);
+  pointer-events: none;
+}
+.lid-comp > * {
+  pointer-events: auto;
+}
+
+.lid-title {
+  position: absolute;
+  left: calc(96 * var(--u));
+  top: calc(246 * var(--u));
+  width: calc(700 * var(--u));
+  rotate: -8deg;
+  transform-origin: 0 100%;
+  pointer-events: none;
+}
+
+.lid-title h1 {
+  font-family: var(--font-box);
+  font-weight: 400;
+  font-size: max(3rem, calc(92 * var(--u)));
+  line-height: 0.9;
+  letter-spacing: 0;
+  color: var(--chrome);
+  white-space: nowrap;
+  -webkit-text-stroke: calc(7 * var(--u)) var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 calc(10 * var(--u)) calc(18 * var(--u)) rgba(10, 15, 74, 0.55);
+  font-variation-settings: 'XROT' calc(-10 * var(--wind)), 'YROT' calc(-28 * var(--wind));
+}
+
+.subline {
+  margin-top: calc(18 * var(--u));
+  margin-left: calc(10 * var(--u));
+  max-width: calc(470 * var(--u));
+  min-width: 300px;
+  font-size: max(1rem, calc(19 * var(--u)));
+  line-height: 1.4;
+  color: var(--tin-hi);
+  text-shadow: 0 1px 0 var(--space-deep), 0 2px 6px rgba(10, 15, 74, 0.6);
+}
+
+.orrery-anchor {
+  position: absolute;
+  left: calc(420 * var(--u));
+  top: calc(198 * var(--u));
+  width: calc(760 * var(--u));
+  height: calc(532 * var(--u));
+  pointer-events: none;
+}
+
+.launch {
+  display: contents;
+}
+
+.rocket-grab {
+  position: absolute;
+  left: calc(734 * var(--u));
+  top: calc(608 * var(--u));
+  width: 132px;
+  height: 132px;
+  translate: -50% -50%;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+}
+.rocket-grab:active,
+.rocket-grab.is-pulling {
+  cursor: grabbing;
+}
+.rocket-grab:focus-visible {
+  outline-style: dashed;
+}
+
+.rail {
+  position: absolute;
+  left: calc(800 * var(--u));
+  /* Anchored at the bottom: it always stays above the band, at any scale. */
+  bottom: calc(68 * var(--u));
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 5px 8px 5px 14px;
+  border-radius: 8px;
+  color: var(--ink);
+  background-color: var(--tin);
+  background-image:
+    radial-gradient(circle, var(--tin-hi) 0 1px, var(--tin-shade) 1.4px 2.6px, transparent 3px),
+    radial-gradient(circle, var(--tin-hi) 0 1px, var(--tin-shade) 1.4px 2.6px, transparent 3px);
+  background-position: left 5px center, right 5px center;
+  background-size: 7px 7px, 7px 7px;
+  background-repeat: no-repeat;
+  box-shadow: inset 0 2px 0 var(--tin-hi), inset 0 -3px 0 var(--tin-shade), 0 6px 14px rgba(10, 15, 74, 0.5);
+  border: 2px solid var(--ink);
+  white-space: nowrap;
+}
+.rail.is-out {
+  border-style: dashed;
+}
+
+.rail-plate {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.rail-title {
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.rail-hint {
+  font-size: 0.75rem;
+  color: var(--tin-text);
+}
+/* Touch screens have no space bar: the hint talks about dragging. */
+.rail-hint-touch {
+  display: none;
+}
+@media (pointer: coarse) {
+  .rail-hint-keys {
+    display: none;
+  }
+  .rail-hint-touch {
+    display: inline;
+  }
+}
+
+.rail-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rail-field {
+  display: grid;
+  gap: 1px;
+  font-weight: 700;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+input[type='range'] {
+  width: 104px;
+  height: 20px;
+  margin: 0;
+  background: transparent;
+  accent-color: var(--vermilion);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+input[type='range']::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 8.33%), var(--tin-shade);
+  border: 1px solid var(--ink);
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 20px;
+  margin-top: -8px;
+  border-radius: 3px;
+  background: var(--vermilion);
+  border: 2px solid var(--ink);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.35);
+}
+input[type='range']::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--tin-shade);
+  border: 1px solid var(--ink);
+}
+input[type='range']::-moz-range-thumb {
+  width: 12px;
+  height: 18px;
+  border-radius: 3px;
+  background: var(--vermilion);
+  border: 2px solid var(--ink);
+}
+
+.rail-launch {
+  min-height: 34px;
+  padding: 4px 12px;
+  background: var(--vermilion);
+  color: var(--white);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.28), inset 0 -3px 0 var(--oxblood), 0 3px 6px rgba(21, 19, 28, 0.3);
+}
+.rail-launch:disabled {
+  background: var(--tin-hi);
+  color: var(--tin-text);
+}
+
+/* Instruments: BUILD at the top right and FLEET at the bottom left (C2 symmetry). */
+.instrument {
+  position: absolute;
+  width: calc(232 * var(--u));
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.instrument.build {
+  left: auto;
+  right: calc(48 * var(--u));
+  top: calc(148 * var(--u));
+  width: max(226px, calc(232 * var(--u)));
+}
+.instrument.fleet {
+  left: calc(200 * var(--u));
+  bottom: calc(80 * var(--u));
+}
+
+.slip {
+  position: relative;
+  padding: 10px 14px 12px;
+  border-radius: 8px;
+  color: var(--ink);
+  background-color: var(--tin);
+  background-image:
+    radial-gradient(circle, var(--tin-hi) 0 1px, var(--tin-shade) 1.4px 2.6px, transparent 3px),
+    radial-gradient(circle, var(--tin-hi) 0 1px, var(--tin-shade) 1.4px 2.6px, transparent 3px),
+    radial-gradient(circle, var(--tin-hi) 0 1px, var(--tin-shade) 1.4px 2.6px, transparent 3px),
+    radial-gradient(circle, var(--tin-hi) 0 1px, var(--tin-shade) 1.4px 2.6px, transparent 3px);
+  background-position: left 5px top 5px, right 5px top 5px, left 5px bottom 5px, right 5px bottom 5px;
+  background-size: 7px 7px, 7px 7px, 7px 7px, 7px 7px;
+  background-repeat: no-repeat;
+  box-shadow: inset 0 2px 0 var(--tin-hi), inset 0 -3px 0 var(--tin-shade), 0 8px 18px rgba(10, 15, 74, 0.5);
+}
+
+.slip-title {
+  font-weight: 700;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tin-text);
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+}
+
+.ticket-job {
+  font-weight: 700;
+  font-size: 0.875rem;
+  line-height: 1.3;
+}
+
+.coil {
+  height: 12px;
+  margin: 7px 0 5px;
+  border-radius: 6px;
+  border: 2px solid var(--ink);
+  background: repeating-linear-gradient(100deg, var(--tin-hi) 0 3px, var(--tin-shade) 3px 5px, var(--tin) 5px 8px);
+  overflow: hidden;
+}
+.coil-fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: repeating-linear-gradient(100deg, var(--turquoise) 0 2px, var(--teal-deep) 2px 3px);
+}
+
+.ticket-turns {
+  font-size: 0.75rem;
+  color: var(--tin-text);
+}
+
+.ticket-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.ticket-buttons .tin-button {
+  flex: 1;
+  min-height: 32px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+}
+
+.chip {
+  /* A tab peeking over the top edge of the ticket: it does not cover the title. */
+  position: absolute;
+  right: 12px;
+  top: -11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 2px solid var(--ink);
+  font-weight: 700;
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+}
+.chip[data-state='winding'] {
+  background: var(--orange);
+}
+.chip[data-state='running'] {
+  background: var(--turquoise);
+}
+.chip[data-state='hold'] {
+  background: var(--tin-hi);
+}
+
+/* FLEET gauge */
+.gauge {
+  width: calc(170 * var(--u));
+  min-width: 150px;
+}
+.gauge-face {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 8px 12px rgba(10, 15, 74, 0.5));
+}
+.gauge-rim {
+  fill: var(--tin);
+  stroke: var(--ink);
+  stroke-width: 3;
+}
+.gauge-dial {
+  fill: var(--paper);
+  stroke: var(--tin-shade);
+  stroke-width: 2;
+}
+.gauge-scale line {
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.gauge-scale line.minor {
+  stroke-width: 1;
+}
+.gauge-scale path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.gauge-labels text {
+  /* Below 16 px the nameplates are set in Libre Franklin 700, not in Rampart One. */
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 14px;
+  fill: var(--ink);
+}
+.gauge-labels .house {
+  fill: none;
+  stroke: var(--vermilion);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.gauge-needle path {
+  stroke: var(--vermilion);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+.gauge-needle circle {
+  fill: var(--ink);
+}
+.gauge-word {
+  font-family: var(--font-box);
+  font-size: 16px;
+  fill: var(--vermilion);
+  letter-spacing: 0.04em;
+}
+.gauge-readout span {
+  white-space: nowrap;
+}
+.gauge-readout {
+  margin-top: 6px;
+  font-family: var(--font-num);
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: var(--sky-tint);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.log-lines {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 5px;
+}
+.log-lines li {
+  font-size: 0.78125rem;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--tin-text);
+}
+/* The newest line, whole and in ink; the three before it on one line each. */
+.log-lines li:first-child {
+  -webkit-line-clamp: 3;
+  font-weight: 700;
+  color: var(--ink);
+  animation: stamp-in 110ms var(--ease-stamp);
+}
+.log-lines li:nth-child(n + 5) {
+  display: none;
+}
+
+@keyframes stamp-in {
+  from {
+    transform: scale(1.035);
+  }
+}
+
+/* The chrome band */
+.lip {
+  position: absolute;
+  left: calc(32 * var(--u));
+  right: calc(32 * var(--u));
+  top: calc(780 * var(--u));
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 6px 4px 24px;
+  background: var(--chrome);
+  color: var(--ink);
+  border-radius: 6px;
+  box-shadow: 0 -2px 0 var(--ink) inset;
+}
+.lip-text {
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.lip-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 4px 14px;
+  border-radius: 5px;
+  background: var(--ink);
+  color: var(--chrome);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.lip-button:hover .icon {
+  translate: 0 2px;
+}
+.lip-button .icon {
+  transition: translate 160ms var(--ease-out);
+}
+.lip-button:focus-visible,
+.lip :focus-visible {
+  outline-color: var(--ink);
+  box-shadow: 0 0 0 5px var(--pink);
+}
+
+.no-webgl {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  z-index: var(--over);
+  max-width: 34ch;
+  padding: 14px 18px;
+  border: 2px dotted var(--sky-tint);
+  border-radius: 10px;
+  background: var(--space-deep);
+  color: var(--tin-hi);
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* ---------- 2 · the tray ---------- */
+
+.tray {
+  background: var(--turquoise);
+  color: var(--ink);
+}
+.tray .face-title {
+  font-size: clamp(2.5rem, 4.2vw, 3.5rem);
+}
+.tray .face-inner {
+  padding-top: 96px;
+}
+
+.tray-grid {
+  list-style: none;
+  padding: 0;
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 40px var(--gutter);
+}
+.tray-credit {
+  max-width: 62ch;
+  margin-top: 40px;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.cavity {
+  /* No card: each world is die-cut into the turquoise cardboard. The cardboard cover (.well) covers
+     the cavity and has a hole shaped like the image, the nameplate and the top (ui/tray.ts); what
+     shows through the hole is the floor of the recess, and the cover casts its shadow inside. */
+  --recess: color-mix(in srgb, var(--turquoise) 70%, var(--teal-deep));
+  --score: calc(var(--gutter) / -2);
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+}
+.cavity.is-cut {
+  background: var(--recess);
+}
+.well {
+  position: absolute;
+  inset: -10px;
+  z-index: -1;
+  pointer-events: none;
+  /* The cover's shadow falls inside the recess; outside the cover it is clipped. */
+  clip-path: inset(0);
+  filter: drop-shadow(0 8px 9px rgba(11, 95, 88, 0.85)) drop-shadow(0 1.5px 0 var(--teal-deep));
+  transition: filter 200ms var(--ease-out);
+}
+.well::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background: var(--turquoise);
+  clip-path: var(--cut, none);
+}
+.cavity-world:hover .well,
+.cavity-launcher:hover .well {
+  filter: drop-shadow(0 12px 12px rgba(11, 95, 88, 0.9)) drop-shadow(0 1.5px 0 var(--teal-deep));
+}
+
+/* Between columns (desktop), a vertical fold line. */
+@media (min-width: 1101px) {
+  .cavity-world:not([data-world='c']):not([data-world='e'])::before,
+  .cavity-launcher::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: var(--score);
+    width: 2px;
+    background: linear-gradient(90deg, var(--teal-deep) 50%, color-mix(in srgb, var(--turquoise) 55%, var(--tin-hi)) 50%);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+}
+.cavity-world {
+  grid-column: span 3;
+}
+.cavity-featured {
+  grid-column: span 6;
+}
+.cavity-world[data-world='d'],
+.cavity-world[data-world='e'],
+.cavity-launcher,
+.cavity-lab {
+  grid-column: span 4;
+}
+/* On pointer hover, whatever is in the recess rises 4 px and the cover's shadow sinks. */
+.cavity-world > :not(.well),
+.cavity-launcher > :not(.well) {
+  transition: translate 200ms var(--ease-out);
+}
+.cavity-world:hover > .cavity-window,
+.cavity-world:hover > .cavity-plate,
+.cavity-launcher:hover > .cavity-window,
+.cavity-launcher:hover > .cavity-plate {
+  translate: 0 -4px;
+}
+
+.cavity-window {
+  position: relative;
+  padding: 10px;
+}
+.cavity-window img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 3px;
+  background: var(--ink);
+  box-shadow: 0 0 0 2px var(--ink), 0 6px 10px rgba(11, 95, 88, 0.6);
+}
+.stamp-synthetic {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  padding: 3px 7px 2px;
+  border-radius: 3px;
+  background: var(--pink);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  rotate: -2deg;
+}
+
+/* The row of the nameplate and the top: the tin nameplate in its recess and, beside it, the round socket,
+   which bites into the bottom edge of the image. */
+.cavity-plate {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  min-height: 72px;
+}
+.tin-nameplate {
+  min-width: 0;
+  max-width: calc(100% - 16px - 18px - 72px - 12px);
+  margin: 8px 0 0 8px;
+  padding: 8px 12px 7px;
+  border: 2px solid var(--ink);
+  border-radius: 6px 6px 6px 3px;
+  background: var(--tin);
+  color: var(--ink);
+  box-shadow: inset 0 2px 0 var(--tin-hi), inset 0 -3px 0 var(--tin-shade), 0 4px 7px rgba(11, 95, 88, 0.65);
+}
+
+.nameplate {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 8px;
+  font-family: var(--font-plate);
+  font-weight: 400;
+  line-height: 1;
+}
+.nameplate-letter {
+  font-size: 2.25rem;
+  /* Rampart One is hollow: the oxblood reads on the tin. */
+  color: var(--oxblood);
+}
+.nameplate-name {
+  font-size: 1.375rem;
+}
+.cavity-featured .nameplate-letter {
+  font-size: 2.75rem;
+}
+.cavity-featured .nameplate-name {
+  font-size: 1.5rem;
+}
+.nameplate-launcher .nameplate-name {
+  font-size: 2rem;
+}
+
+.coord,
+.lab-coord {
+  margin-top: 4px;
+  font-family: var(--font-num);
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--tin-text);
+}
+
+.cavity .top-socket {
+  flex: none;
+  /* The center of the top's recess sits 23 px below the edge of the image. */
+  margin-top: -13px;
+}
+
+.cavity-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.cavity-line {
+  font-size: 1rem;
+  line-height: 1.45;
+  max-width: 52ch;
+}
+.cavity-featured .cavity-line {
+  font-size: 1.125rem;
+}
+
+.provenance {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.credit {
+  font-weight: 700;
+  text-decoration-color: var(--teal-deep);
+}
+
+.open-world {
+  align-self: flex-start;
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--chrome);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  text-decoration: underline dashed 2px;
+  text-decoration-color: color-mix(in srgb, var(--chrome) 55%, transparent);
+  text-underline-offset: 5px;
+}
+.open-world:hover {
+  text-decoration-color: var(--chrome);
+}
+.open-world:hover .icon {
+  translate: 2px -2px;
+}
+.open-world .icon {
+  transition: translate 160ms var(--ease-out);
+}
+
+/* B, featured: below the recess, the line on the left and the credit and the link on the right. */
+@media (min-width: 1101px) {
+  .cavity-featured .cavity-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: 'line open' 'prov open';
+    column-gap: 28px;
+    row-gap: 6px;
+    align-items: start;
+  }
+  .cavity-featured .cavity-line { grid-area: line; }
+  .cavity-featured .provenance { grid-area: prov; }
+  .cavity-featured .open-world { grid-area: open; margin-top: 0; }
+}
+
+/* Round socket of the live top: the view paints the inside (ellipse mask), the ring is DOM. */
+.top-socket {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 3px solid var(--teal-deep);
+  background: color-mix(in srgb, var(--recess) 80%, var(--teal-deep));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--turquoise) 60%, var(--tin-hi)), inset 0 5px 9px rgba(11, 95, 88, 0.6);
+  overflow: hidden;
+}
+
+/* The row of the launcher's five tops (one view, a rounded rectangle). */
+.launcher-row {
+  position: relative;
+  height: 150px;
+  border-radius: 3px;
+  box-shadow: 0 0 0 2px var(--ink), 0 6px 10px rgba(11, 95, 88, 0.6);
+  overflow: hidden;
+}
+/* Next to D and E, the launcher's window has the proportions of their images: the row stays even. */
+@media (min-width: 561px) {
+  .launcher-row {
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+}
+
+/* Lab sockets: blank, shallow recesses, with an unprinted nameplate (only its
+   coordinate, dotted die line) and a bare tin top, standing still. */
+.cavity-lab .well {
+  filter: drop-shadow(0 3px 3px rgba(11, 95, 88, 0.6)) drop-shadow(0 1px 0 var(--teal-deep));
+}
+.cavity-lab.is-cut {
+  background: color-mix(in srgb, var(--turquoise) 86%, var(--teal-deep));
+}
+.cavity-lab .cavity-plate {
+  gap: 0;
+}
+.blank-plate {
+  display: grid;
+  place-items: center;
+  width: 150px;
+  min-height: 64px;
+  margin: 8px 0 0 8px;
+  border: 2px dotted var(--teal-deep);
+  background: transparent;
+  box-shadow: none;
+}
+.cavity-lab .top-socket {
+  margin-top: 4px;
+  display: grid;
+  place-items: center;
+  border-style: dotted;
+  background: transparent;
+  box-shadow: none;
+}
+.bare-top {
+  width: 48px;
+  height: 48px;
+  fill: var(--tin);
+  stroke: var(--teal-deep);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.lab-coord {
+  margin: 0;
+  color: var(--ink);
+}
+.lab-label {
+  margin-top: 14px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ---------- 3 · the side panel ---------- */
+
+.deck {
+  background: var(--vermilion);
+  color: var(--white);
+}
+
+.deck-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.deck .face-title {
+  color: var(--chrome);
+}
+.deck .lede {
+  color: var(--white);
+}
+.deck :focus-visible {
+  outline-color: var(--lemon);
+}
+
+.lever {
+  min-height: 44px;
+}
+
+.deck-grid {
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--gutter);
+  align-items: start;
+}
+
+.tin-plate {
+  position: relative;
+  padding: 22px 24px 24px;
+  border-radius: 12px;
+  color: var(--ink);
+  background-color: var(--tin);
+  background-image:
+    radial-gradient(circle, var(--tin-hi) 0 1.2px, var(--tin-shade) 1.6px 3px, transparent 3.4px),
+    radial-gradient(circle, var(--tin-hi) 0 1.2px, var(--tin-shade) 1.6px 3px, transparent 3.4px),
+    radial-gradient(circle, var(--tin-hi) 0 1.2px, var(--tin-shade) 1.6px 3px, transparent 3.4px),
+    radial-gradient(circle, var(--tin-hi) 0 1.2px, var(--tin-shade) 1.6px 3px, transparent 3.4px);
+  background-position: left 8px top 8px, right 8px top 8px, left 8px bottom 8px, right 8px bottom 8px;
+  background-size: 8px 8px, 8px 8px, 8px 8px, 8px 8px;
+  background-repeat: no-repeat;
+  box-shadow: inset 0 2px 0 var(--tin-hi), inset 0 -4px 0 var(--tin-shade), 0 10px 22px rgba(80, 10, 6, 0.45);
+}
+.tin-plate :focus-visible {
+  outline-color: var(--ink);
+  box-shadow: 0 0 0 5px var(--pink);
+}
+
+.plate-title {
+  font-family: var(--font-box);
+  font-weight: 400;
+  font-size: 1.75rem;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.construction {
+  grid-column: span 7;
+}
+.press {
+  grid-column: span 5;
+}
+.hangar {
+  grid-column: span 12;
+  display: grid;
+  grid-template-columns: auto auto auto 1fr;
+  align-items: center;
+  gap: 24px;
+  padding-block: 18px;
+}
+.hangar .plate-title {
+  margin: 0;
+}
+
+.build-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.build-row {
+  display: grid;
+  grid-template-columns: minmax(110px, 1fr) auto;
+  grid-template-areas: 'name button' 'meta button' 'why why';
+  column-gap: 16px;
+  row-gap: 2px;
+  align-items: center;
+  /* Rows engraved in the same plate (not cards inside the plate): a groove separates them. */
+  padding: 12px 2px;
+}
+.build-row + .build-row {
+  border-top: 2px solid var(--tin-shade);
+  box-shadow: inset 0 1px 0 var(--tin-hi);
+}
+.build-name {
+  grid-area: name;
+  font-weight: 700;
+  font-size: 1.0625rem;
+}
+.build-level,
+.build-effect {
+  grid-area: meta;
+  font-size: 0.8125rem;
+  color: var(--tin-text);
+}
+.build-effect {
+  justify-self: end;
+  margin-right: 4px;
+}
+.build-level {
+  justify-self: start;
+}
+.build-queue {
+  grid-area: button;
+  font-size: 0.75rem;
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+.build-why {
+  grid-area: why;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--oxblood);
+}
+.build-why:empty {
+  display: none;
+}
+
+.queue-slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 16px;
+}
+.queue-slot {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 2px dashed var(--ink);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+.queue-slot.is-running {
+  border-style: solid;
+  background: var(--turquoise);
+}
+.queue-slot.is-empty {
+  border-color: var(--tin-shade);
+  color: var(--tin-text);
+  font-weight: 500;
+}
+
+.press {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.press-die {
+  height: 18px;
+  margin: -6px 0 2px;
+  border-radius: 4px;
+  background: repeating-linear-gradient(90deg, var(--ink) 0 6px, var(--tin-shade) 6px 8px);
+  box-shadow: 0 3px 0 var(--tin-shade);
+}
+.press-row {
+  margin: 0;
+  padding: 10px 12px 12px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  min-width: 0;
+}
+.press-row legend {
+  padding: 0 6px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.press-row.is-locked {
+  border-style: dotted;
+}
+.press-row.is-researching {
+  border-style: dashed;
+}
+.press-unit {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--tin-text);
+}
+
+.slide-switch {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 3px;
+  border-radius: 8px;
+  background: var(--ink);
+  gap: 3px;
+}
+.slide-switch label {
+  position: relative;
+  cursor: pointer;
+}
+.slide-switch input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.slide-switch span {
+  display: grid;
+  place-items: center;
+  min-height: 36px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  color: var(--tin);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  text-align: center;
+  line-height: 1.15;
+}
+.slide-switch input:checked + span {
+  background: var(--chrome);
+  color: var(--ink);
+  box-shadow: inset 0 2px 0 var(--lemon), inset 0 -3px 0 var(--orange);
+}
+.slide-switch input:focus-visible + span {
+  outline: 3px solid var(--pink);
+  outline-offset: 1px;
+}
+
+.hangar-slots {
+  display: flex;
+  gap: 6px;
+}
+.hangar-slot {
+  width: 30px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--tin-hi);
+}
+.hangar-slot.is-out {
+  border-style: dashed;
+  background: transparent;
+}
+.hangar-slot.is-locked {
+  border-style: dotted;
+  border-color: var(--tin-shade);
+  background: transparent;
+  color: var(--tin-shade);
+}
+.hangar-slot .icon {
+  width: 18px;
+  height: 18px;
+}
+.hangar-flights,
+.hangar-charted {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 0.875rem;
+}
+.hangar-flights li {
+  font-size: 0.8125rem;
+}
+.hangar-charted li:not(.hangar-empty) {
+  padding: 3px 8px;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  font-weight: 700;
+  rotate: -2deg;
+  background: var(--chrome);
+}
+.hangar-empty {
+  color: var(--tin-text);
+}
+
+/* ---------- 4 · the instruction sheet ---------- */
+
+.leaflet {
+  /* Orange, not chrome: the field's yellow read the same as Game Center's sodium. Chrome
+     stays on the H1, the band and the yellow buttons. */
+  background: var(--orange);
+  color: var(--ink);
+}
+.leaflet :focus-visible {
+  outline-color: var(--ink);
+  box-shadow: 0 0 0 5px var(--pink);
+}
+
+.sheet {
+  width: min(100%, 880px);
+  margin-inline: auto;
+  padding: 56px 64px 64px;
+  background: var(--paper);
+  border-radius: 4px;
+  rotate: -0.6deg;
+  box-shadow: 0 8px 24px rgba(21, 19, 28, 0.25), 0 2px 4px rgba(21, 19, 28, 0.12);
+}
+
+.steps {
+  margin-top: 36px;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  display: grid;
+  gap: 18px;
+}
+.steps li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 40px 96px 1fr;
+  align-items: center;
+  gap: 18px;
+  font-size: 1.1875rem;
+  font-weight: 700;
+}
+.steps li::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--vermilion);
+  color: var(--white);
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+.step-art {
+  width: 96px;
+  height: 64px;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.step-art .dash {
+  stroke-dasharray: 4 4;
+  stroke: var(--vermilion);
+}
+
+.sheet-title {
+  margin: 56px 0 14px;
+  font-family: var(--font-box);
+  font-weight: 400;
+  font-size: 2rem;
+  line-height: 1;
+}
+.sheet p {
+  max-width: 64ch;
+}
+
+.warning-plate {
+  margin-top: 32px;
+  padding: 18px 22px;
+  border: 4px solid var(--orange);
+  border-radius: 10px;
+  background: var(--paper);
+  font-size: 1.0625rem;
+}
+
+.sheet-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+.sheet-buttons > * {
+  min-height: 48px;
+}
+
+/* ---------- 5 · the proof and the footer ---------- */
+
+.proof {
+  background: var(--space-deep);
+  color: var(--tin-hi);
+}
+.proof .face-title {
+  color: var(--chrome);
+}
+
+.proof-sheet {
+  margin-top: 48px;
+  /* 960 px of canvas plus the 24 px paper margin on each side. */
+  width: min(100%, 1008px);
+}
+.proof-print {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  border-color: var(--sky-tint);
+  background: color-mix(in srgb, var(--space-deep) 85%, var(--space));
+}
+.reg {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--tin-hi);
+}
+.reg::before,
+.reg::after {
+  content: '';
+  position: absolute;
+  background: var(--tin-hi);
+}
+.reg::before {
+  left: -8px;
+  right: -8px;
+  top: 50%;
+  height: 2px;
+  translate: 0 -50%;
+}
+.reg::after {
+  top: -8px;
+  bottom: -8px;
+  left: 50%;
+  width: 2px;
+  translate: -50% 0;
+}
+.reg-tl {
+  left: 20px;
+  top: 20px;
+}
+.reg-tr {
+  right: 20px;
+  top: 20px;
+}
+.reg-bl {
+  left: 20px;
+  bottom: 20px;
+}
+.reg-br {
+  right: 20px;
+  bottom: 20px;
+}
+
+.color-bar {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  height: 20px;
+  margin-top: 12px;
+  border: 2px solid var(--tin-hi);
+}
+.color-bar span {
+  background: var(--c);
+}
+
+.colophon {
+  width: min(100% - 2 * var(--side), 1312px);
+  margin-inline: auto;
+  padding: 40px 0 64px;
+  border-top: 2px dashed var(--space-bright);
+  display: grid;
+  gap: 6px;
+  font-size: 0.9375rem;
+  color: var(--tin-hi);
+}
+.colophon-lead {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--chrome);
+  margin-bottom: 8px;
+}
+.colophon a {
+  text-decoration-color: var(--chrome);
+}
+.outside {
+  margin-top: 10px;
+  color: var(--sky-tint);
+}
+/* Back to the museum: none of the four families has ←, so the arrow is the stroke icon. */
+.outside .icon {
+  display: inline-block;
+  width: 1.05em;
+  height: 1.05em;
+  margin-right: 0.3em;
+  vertical-align: -0.18em;
+}
+
+/* ---------- intermediate widths and phone ---------- */
+
+@media (max-width: 1100px) {
+  .tray-grid,
+  .deck-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  .cavity-world,
+  .cavity-world[data-world='d'],
+  .cavity-world[data-world='e'],
+  .cavity-launcher,
+  .cavity-lab {
+    grid-column: span 3;
+  }
+  /* B first and full width; A and C below, side by side. The launcher, after E, in a
+     full-width band: that way no cavity sits alone on its row. */
+  .cavity-featured {
+    grid-column: span 6;
+    order: -1;
+  }
+  .cavity-world[data-world='e'] {
+    order: 1;
+  }
+  .cavity-launcher {
+    grid-column: span 6;
+    order: 2;
+  }
+  .cavity-lab {
+    grid-column: span 2;
+    order: 3;
+  }
+  .launcher-row {
+    height: 180px;
+    aspect-ratio: auto;
+  }
+  .construction,
+  .press,
+  .hangar {
+    grid-column: span 6;
+  }
+  .hangar {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Below ~760 px, a third of the grid is no longer enough for the blank nameplate and its socket
+   (the socket would cover the coordinate): each lab socket goes on its own row, as on the phone. */
+@media (min-width: 561px) and (max-width: 760px) {
+  .cavity-lab {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 1340px) and (min-width: 901px) {
+  .strip {
+    gap: 10px;
+    padding-inline: 18px;
+  }
+  .strip-brand {
+    gap: 8px;
+  }
+  .sticker {
+    font-size: 0.625rem;
+  }
+  .sticker-line {
+    display: block;
+  }
+  .strip-drums {
+    gap: 12px;
+  }
+  .drum-rate {
+    font-size: 0.6875rem;
+  }
+}
+
+@media (max-width: 900px) {
+  :root {
+    --strip-h: 80px;
+  }
+
+  .strip {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: 44px 33px;
+    gap: 0 8px;
+    padding: 0 12px 3px;
+  }
+  .strip-brand {
+    gap: 8px;
+  }
+  .wordmark {
+    font-size: 1rem;
+  }
+  .sticker {
+    font-size: 0.6875rem;
+    line-height: 1.15;
+    padding: 3px 6px;
+    text-align: center;
+  }
+  .sticker-line {
+    display: block;
+  }
+  .strip-drums {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .drum {
+    grid-template-columns: auto auto;
+    column-gap: 4px;
+  }
+  .drum-label {
+    writing-mode: horizontal-tb;
+    rotate: 0deg;
+    grid-row: 1;
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+  }
+  .drum-rate {
+    display: none;
+  }
+  .drum-well {
+    grid-row: 1;
+    height: 26px;
+    padding: 0 2px;
+  }
+  .drum-digits {
+    font-size: 0.875rem;
+    line-height: 26px;
+  }
+  .spark-wheel {
+    width: 52px;
+    height: 30px;
+  }
+  .strip-nav .tin-tab {
+    display: none;
+  }
+  /* Landscape phone and narrow tablets: there is room on the first row for the links. */
+  @media (min-width: 561px) {
+    .strip-nav .tin-tab {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+  }
+  .bell {
+    min-height: 34px;
+    padding: 2px 10px 2px 6px;
+    font-size: 0.6875rem;
+  }
+
+  .lid {
+    --frame-in: 8px;
+    height: auto;
+    min-height: calc(100svh - var(--strip-h));
+    container-type: normal;
+    padding: 16px 16px 20px;
+  }
+  .lid-comp {
+    --u: 1px;
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    translate: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'title title'
+      'orrery orrery'
+      'rail rail'
+      'controls controls'
+      'key gauge'
+      'lip lip'
+      'ticket ticket'
+      'log log';
+    gap: 8px;
+    padding: 0 4px 12px;
+  }
+  .lid-title {
+    grid-area: title;
+    padding-top: 6px;
+    position: static;
+    width: auto;
+    rotate: none;
+    text-align: center;
+  }
+  .lid-title h1 {
+    font-size: 3.25rem;
+    line-height: 0.92;
+    white-space: normal;
+    -webkit-text-stroke-width: 6px;
+    text-shadow: 0 6px 12px rgba(10, 15, 74, 0.55);
+  }
+  .h1-line {
+    display: block;
+  }
+  .subline {
+    margin: 6px auto 0;
+    max-width: 340px;
+    min-width: 0;
+    font-size: 1rem;
+  }
+  .orrery-anchor {
+    grid-area: orrery;
+    position: relative;
+    left: auto;
+    top: auto;
+    justify-self: center;
+    width: min(340px, 100%);
+    height: 244px;
+  }
+  .rocket-grab {
+    left: 50%;
+    top: 0;
+    width: 120px;
+    height: 120px;
+  }
+  .rail {
+    display: contents;
+  }
+  /* The rail is a single plate under the orrery: the plate on top and, attached to it, Aim, Pull-back and Launch. */
+  .rail-plate {
+    grid-area: rail;
+    align-items: center;
+    padding: 8px 16px 6px;
+    border: 2px solid var(--ink);
+    border-bottom: 0;
+    border-radius: 10px 10px 0 0;
+    color: var(--ink);
+    background: var(--tin);
+    box-shadow: inset 0 2px 0 var(--tin-hi);
+    text-align: center;
+  }
+  .rail.is-out .rail-plate,
+  .rail.is-out .rail-controls {
+    border-style: dashed;
+  }
+  .rail-controls {
+    grid-area: controls;
+    margin-top: -8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    align-items: end;
+    gap: 4px 14px;
+    padding: 2px 12px 12px;
+    border: 2px solid var(--ink);
+    border-top: 0;
+    border-radius: 0 0 10px 10px;
+    color: var(--ink);
+    background: var(--tin);
+    box-shadow: inset 0 -3px 0 var(--tin-shade), 0 6px 14px rgba(10, 15, 74, 0.5);
+  }
+  .rail-controls input[type='range'] {
+    width: 100%;
+    height: 46px;
+  }
+  .instrument {
+    display: contents;
+  }
+
+  .gauge {
+    grid-area: gauge;
+    width: auto;
+    min-width: 0;
+    height: 140px;
+    display: grid;
+    justify-items: center;
+    padding: 4px 0;
+    border-radius: 14px;
+    background: var(--space-deep);
+  }
+  .gauge-face {
+    width: 100px;
+  }
+  .gauge-readout {
+    margin-top: 2px;
+    font-size: 0.6875rem;
+    white-space: normal;
+    max-width: 150px;
+    line-height: 1.3;
+  }
+  .ticket {
+    grid-area: ticket;
+  }
+  .log {
+    grid-area: log;
+  }
+  .lip {
+    grid-area: lip;
+    position: static;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    padding: 8px;
+    text-align: center;
+  }
+  .lip-text {
+    font-size: 0.75rem;
+  }
+  .lip-button {
+    justify-content: center;
+    min-height: 44px;
+  }
+  .tin-button,
+  .chrome-button,
+  .lever {
+    min-height: 44px;
+  }
+  .ticket-buttons .tin-button {
+    min-height: 44px;
+  }
+  /* Whatever sits on the lid scales to 0.96 when it lifts: 46 px keeps the touch zone at 44. */
+  .lid .tin-button,
+  .lid .lip-button {
+    min-height: 46px;
+  }
+}
+
+@media (max-width: 560px) {
+  .face-inner {
+    padding: 96px 0 72px;
+  }
+  .tray-grid,
+  .deck-grid {
+    grid-template-columns: 1fr;
+  }
+  .cavity-world,
+  .cavity-featured,
+  .cavity-world[data-world='d'],
+  .cavity-world[data-world='e'],
+  .cavity-launcher,
+  .cavity-lab,
+  .construction,
+  .press,
+  .hangar {
+    grid-column: auto;
+  }
+  /* The order B, A, C, D, E, launcher and lab comes from the ≤ 1100 px rule. */
+  .sheet {
+    rotate: none;
+    padding: 36px 20px 40px;
+  }
+  .steps li {
+    grid-template-columns: 36px 1fr;
+  }
+  .step-art {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .steps li p {
+    grid-column: 1 / -1;
+  }
+  .build-row {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'name' 'meta' 'button' 'why';
+  }
+  .build-effect {
+    justify-self: start;
+    display: none;
+  }
+  .queue-slots {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}
+
+/* ---------- odometer drums ---------- */
+
+.drum-digits.is-reels {
+  display: flex;
+  gap: 2px;
+  background: none;
+  letter-spacing: 0;
+}
+.reel-window {
+  position: relative;
+  display: block;
+  width: 1.05ch;
+  height: 32px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: linear-gradient(var(--space-deep), transparent 30%, transparent 70%, var(--space-deep));
+}
+.reel {
+  display: block;
+  width: 1ch;
+  margin-inline: auto;
+  word-break: break-all;
+  line-height: 32px;
+  translate: 0 calc(var(--d, 0) * -32px);
+  transition: translate 160ms cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+.reel.is-instant {
+  transition: none;
+}
+.drums-blur .reel {
+  filter: blur(0.6px);
+}
+@media (max-width: 900px) {
+  .reel-window {
+    height: 26px;
+  }
+  .reel {
+    line-height: 26px;
+    translate: 0 calc(var(--d, 0) * -26px);
+  }
+}
+
+/* ---------- stamps: CHARTED, level seal ---------- */
+
+.charted-tab {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  padding: 4px 9px 3px;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  background: var(--chrome);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  rotate: 4deg;
+  animation: stamp-in 110ms var(--ease-stamp);
+  box-shadow: 0 3px 6px rgba(21, 19, 28, 0.35);
+}
+
+.lv-stamp {
+  position: absolute;
+  right: 14px;
+  bottom: 40px;
+  padding: 2px 10px;
+  border: 3px solid var(--vermilion);
+  border-radius: 6px;
+  color: var(--vermilion);
+  font-family: var(--font-plate);
+  font-size: 1.25rem;
+  line-height: 1.1;
+  rotate: -4deg;
+  pointer-events: none;
+  animation: stamp-drop 160ms var(--ease-stamp);
+}
+@keyframes stamp-drop {
+  from {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+.queue-slot.is-queued:not(.is-running) {
+  border-style: dashed;
+  border-color: var(--ink);
+  background: transparent;
+}
+
+/* =====================================================================================
+   Stage 2: the missing toys and the wrap-up
+   ===================================================================================== */
+
+/* ---------- the wind-up key (BUILD) ---------- */
+
+.key-wrap {
+  position: relative;
+  align-self: flex-end;
+  width: calc(172 * var(--u));
+  min-width: 140px;
+  aspect-ratio: 1;
+}
+/* The 3D view paints the inside (round mask); the tin ring is DOM and sits on top. */
+.key-socket {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid var(--tin);
+  box-shadow: 0 0 0 2px var(--ink), 0 10px 18px rgba(10, 15, 74, 0.55);
+  cursor: grab;
+  touch-action: none;
+}
+.key-socket.is-winding {
+  cursor: grabbing;
+}
+.key-socket:focus-visible {
+  outline-offset: 4px;
+}
+.key-flat {
+  position: absolute;
+  inset: 12%;
+  width: 76%;
+  height: 76%;
+  overflow: visible;
+  transition: rotate 90ms var(--ease-stamp);
+}
+.key-flat-path {
+  fill: var(--tin);
+  fill-rule: evenodd;
+  stroke: var(--ink);
+  stroke-width: 3.5;
+  stroke-linejoin: round;
+}
+.key-flat .key-flat-hub {
+  fill: var(--vermilion);
+}
+.key-fallback {
+  inset: 18%;
+  width: 64%;
+  height: 64%;
+}
+.key-tag {
+  position: absolute;
+  right: calc(100% - 14px);
+  top: 46%;
+  display: grid;
+  gap: 2px;
+  width: max-content;
+  max-width: 150px;
+  padding: 6px 10px 7px;
+  background: var(--chrome);
+  color: var(--ink);
+  border-radius: 6px 6px 6px 16px;
+  rotate: 6deg;
+  box-shadow: inset 0 2px 0 var(--lemon), inset 0 -3px 0 var(--orange), 0 6px 12px rgba(10, 15, 74, 0.45);
+  pointer-events: none;
+}
+.key-tag::before {
+  /* The string that hangs the tag from the key's ring. */
+  content: '';
+  position: absolute;
+  right: 6px;
+  top: -22px;
+  width: 2px;
+  height: 24px;
+  background: var(--ink);
+  rotate: 24deg;
+  transform-origin: 50% 100%;
+}
+.key-tag-title {
+  font-family: var(--font-plate);
+  font-size: 1.125rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.key-tag-hint {
+  font-weight: 500;
+  font-size: 0.8125rem;
+  line-height: 1.2;
+}
+
+/* ---------- flat key and ticket spike (Construction) ---------- */
+
+.construction-tools {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+.flat-key,
+.spike {
+  position: relative;
+  min-height: 176px;
+  border-radius: 10px;
+  padding: 12px;
+  color: var(--tin-text);
+  border: 2px solid var(--ink);
+  background: var(--tin-hi);
+  box-shadow: inset 0 3px 6px rgba(21, 19, 28, 0.25);
+}
+.flat-key {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 8px;
+}
+.flat-key-dial {
+  position: relative;
+  width: 124px;
+  height: 124px;
+  border-radius: 50%;
+  background: var(--space-deep);
+  box-shadow: 0 0 0 3px var(--tin), 0 0 0 5px var(--ink), inset 0 6px 10px rgba(0, 0, 0, 0.5);
+  cursor: grab;
+  touch-action: none;
+  overflow: hidden;
+}
+.flat-key-dial.is-winding {
+  cursor: grabbing;
+}
+.flat-key-dial:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 5px;
+  box-shadow: 0 0 0 3px var(--tin), 0 0 0 5px var(--ink), 0 0 0 11px var(--pink);
+}
+.flat-rosette {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+.flat-key-label {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 0.8125rem;
+}
+.flat-key-title {
+  font-weight: 700;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.flat-key-turns {
+  font-variant-numeric: tabular-nums;
+}
+
+.spike {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  justify-items: center;
+}
+.spike-pin {
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  bottom: 46px;
+  width: 4px;
+  translate: -50% 0;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(90deg, var(--tin-shade), var(--tin-hi) 45%, var(--tin-shade));
+}
+.spike-pin::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 44px;
+  height: 8px;
+  translate: -50% 0;
+  border-radius: 4px;
+  background: var(--ink);
+}
+.spike-tickets {
+  position: relative;
+  width: 100%;
+  list-style: none;
+  padding: 18px 0 0;
+  margin: 0;
+  display: grid;
+}
+.spike-ticket {
+  grid-area: 1 / 1;
+  justify-self: center;
+  width: min(92%, 210px);
+  margin-top: calc(var(--i) * 13px);
+  padding: 6px 10px;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  line-height: 1.2;
+  z-index: calc(10 - var(--i));
+  rotate: calc((var(--i) - 2) * 1.6deg);
+  box-shadow: 0 2px 4px rgba(21, 19, 28, 0.25);
+}
+.spike-ticket:first-child {
+  animation: stamp-in 110ms var(--ease-stamp);
+}
+.spike-ticket::before {
+  /* The hole the spike goes through. */
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: var(--tin-shade);
+}
+.spike-lv {
+  color: var(--vermilion);
+}
+.spike-note {
+  align-self: end;
+  margin-top: 14px;
+  translate: 0 4px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+/* ---------- the spark wheel (strip) ---------- */
+
+.spark-wheel {
+  position: relative;
+  width: 68px;
+  height: 38px;
+  padding: 0;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--tin);
+  box-shadow: inset 0 2px 0 var(--tin-hi), inset 0 -3px 0 var(--tin-shade);
+  cursor: ew-resize;
+  touch-action: none;
+}
+.spark-wheel-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  image-rendering: pixelated;
+}
+.spark-wheel.is-glowing::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--lemon) 70%, transparent);
+}
+.spark-spray {
+  position: fixed;
+  left: -999px;
+  top: 0;
+  z-index: 60;
+  width: 220px;
+  height: 150px;
+  pointer-events: none;
+}
+
+/* ---------- the press: research per row ---------- */
+
+.press-row {
+  display: grid;
+  gap: 8px;
+}
+/* Locked or researching: the state is carried by the stroke (dotted / dashed), not by dimmed text.
+   Ink on tin, 11:1. */
+.press-row.is-locked .slide-switch,
+.press-row.is-researching .slide-switch {
+  opacity: 1;
+  padding: 1px;
+  background: var(--tin);
+  border: 2px dotted var(--ink);
+}
+.press-row.is-researching .slide-switch {
+  border-style: dashed;
+}
+.press-row.is-locked .slide-switch span,
+.press-row.is-researching .slide-switch span {
+  color: var(--ink);
+}
+.press-row.is-locked .slide-switch input:checked + span,
+.press-row.is-researching .slide-switch input:checked + span {
+  background: var(--tin-hi);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+.slide-switch input:disabled {
+  cursor: not-allowed;
+}
+.press-state {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  min-height: 24px;
+}
+.press-row.is-done .press-state:has(.press-why:empty) {
+  display: none;
+}
+.press-research {
+  min-height: 32px;
+  padding: 3px 10px;
+  font-size: 0.8125rem;
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+.press-why {
+  font-weight: 700;
+  font-size: 0.8125rem;
+  color: var(--tin-text);
+}
+.press-dial {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke-linecap: round;
+}
+.press-dial circle {
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-dasharray: 3 2.5;
+}
+.press-dial-arc {
+  stroke: var(--turquoise);
+  stroke-width: 4;
+}
+.press-dial-needle {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.press-skip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--tin-text);
+}
+.press-skip .chrome-button {
+  min-height: 36px;
+  font-size: 0.75rem;
+}
+.press-skip[hidden] {
+  display: none;
+}
+
+/* ---------- nameplates of the planet tops (on the lid) ---------- */
+
+.planets {
+  position: absolute;
+  inset: 0;
+  z-index: var(--over);
+  pointer-events: none;
+}
+.planet {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+.planet-hit {
+  /* The touch zone moves off the top (--hx, --hy) only when another world, the rocket grab or a
+     control would cover it (spreadHits in nameplates.ts); the nameplate and the focus ring stay on the top. */
+  position: absolute;
+  left: calc(-32px + var(--hx, 0px));
+  top: calc(-32px + var(--hy, 0px));
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+.planet-hit:focus-visible {
+  outline: 3px dashed var(--chrome);
+  outline-offset: 0;
+  box-shadow: none;
+}
+.planet:not(.planet-home) .planet-hit::after {
+  content: '';
+  position: absolute;
+  left: calc(-1 * var(--hx, 0px));
+  top: calc(-1 * var(--hy, 0px));
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.planet:not(.planet-home) .planet-hit:focus-visible {
+  outline: none;
+}
+.planet:not(.planet-home) .planet-hit:focus-visible::after {
+  outline: 3px dashed var(--chrome);
+}
+.plate {
+  /* The spot is chosen by the 2D layout (nameplates.ts): top-left corner relative to the top. */
+  position: absolute;
+  left: calc(50% + var(--plx, 22px) - var(--hx, 0px));
+  top: calc(50% + var(--ply, -10px) - var(--hy, 0px));
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 3px 6px 2px 5px;
+  border: 2px solid var(--ink);
+  border-radius: 5px 5px 5px 2px;
+  background: var(--tin);
+  color: var(--ink);
+  white-space: nowrap;
+  box-shadow: inset 0 1px 0 var(--tin-hi), inset 0 -2px 0 var(--tin-shade), 0 3px 6px rgba(10, 15, 74, 0.45);
+  pointer-events: none;
+  transition: scale 160ms var(--ease-out);
+  transform-origin: 0 0;
+}
+.plate-letter {
+  font-family: var(--font-plate);
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--oxblood);
+}
+.plate-name {
+  font-family: var(--font-plate);
+  font-size: 1rem;
+  line-height: 1;
+}
+.planet.is-left .plate {
+  transform-origin: 100% 50%;
+}
+/* No free spot: the nameplate folds down to its letter until the top moves past. */
+.planet.is-folded .plate-name,
+.planet.is-folded .plate-coord {
+  display: none;
+}
+.plate-coord {
+  font-family: var(--font-num);
+  font-weight: 600;
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  color: var(--tin-text);
+}
+.plate-house {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.2;
+}
+.planet.is-open .plate,
+.planet-hit:hover .plate {
+  scale: 1.08;
+  background: var(--chrome);
+}
+.planet-home .planet-hit {
+  /* The home top holds the rocket: its nameplate is tapped off to the side, not over the top. The rocket grab
+     (120 px on a phone) sits above it: from 34 px on, the nameplate's 44 px core stays outside the grab. */
+  left: max(calc(var(--top-r, 16px) * 1.4), 34px);
+  top: -48px;
+  width: 104px;
+  height: 64px;
+  border-radius: 10px;
+}
+.planet-home .plate {
+  left: 4px;
+  top: 32px;
+  translate: 0 -50%;
+}
+svg[hidden] {
+  display: none;
+}
+
+.planet-tag {
+  /* It goes in the top layer (popover, nameplates.ts): this cancels the margins, inset and scroll that
+     the browser gives a popover; `absolute` there counts from the document. */
+  position: absolute;
+  inset: 0 auto auto 0;
+  margin: 0;
+  overflow: visible;
+  z-index: 2;
+  display: grid;
+  gap: 8px;
+  width: 208px;
+  padding: 10px 12px 12px;
+  border: 2px solid var(--ink);
+  border-radius: 8px 8px 8px 18px;
+  background: var(--chrome);
+  color: var(--ink);
+  pointer-events: auto;
+  box-shadow: inset 0 2px 0 var(--lemon), inset 0 -3px 0 var(--orange), 0 10px 20px rgba(10, 15, 74, 0.5);
+  animation: stamp-in 110ms var(--ease-stamp);
+}
+.planet-tag[hidden] {
+  display: none;
+}
+.planet-tag-title {
+  font-family: var(--font-plate);
+  font-size: 1rem;
+  line-height: 1.1;
+}
+.planet-tag-spin {
+  justify-self: start;
+  min-height: 36px;
+}
+.planet-tag-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--chrome);
+  font-weight: 700;
+  text-decoration: underline dashed 2px;
+  text-decoration-color: color-mix(in srgb, var(--chrome) 55%, transparent);
+  text-underline-offset: 5px;
+}
+.planet-tag-open[hidden] {
+  display: none;
+}
+.planet-tag :focus-visible {
+  outline-color: var(--ink);
+  box-shadow: 0 0 0 5px var(--pink);
+}
+@media (pointer: coarse), (max-width: 900px) {
+  .planet-tag-spin,
+  .planet-tag-open {
+    min-height: 44px;
+  }
+}
+
+/* ---------- tray tops ---------- */
+
+.top-view {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+.socket-print {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+/* ---------- lifting the lid ---------- */
+
+.lid {
+  box-shadow: 0 calc(24px * var(--lift, 0)) calc(48px * var(--lift, 0)) rgba(10, 15, 74, calc(0.45 * var(--lift, 0)));
+}
+.lid-comp {
+  scale: calc(1 - 0.04 * var(--lift, 0));
+}
+/* What the lid uncovers when it rises faster than the scroll: the tray's edge, underneath it. */
+.tray::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: calc(var(--lift, 0) * 21svh + 1px);
+  background: var(--turquoise);
+}
+
+/* ---------- the lid without WebGL2 ---------- */
+
+.lid-print {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+[data-webgl2='false'] .no-webgl {
+  left: auto;
+  right: calc(var(--frame-in) + 28px);
+  top: auto;
+  bottom: calc(var(--frame-in) + 60px);
+  translate: none;
+  max-width: 30ch;
+  font-size: 0.875rem;
+  border-style: dashed;
+  text-align: left;
+}
+
+/* ---------- the print proof ---------- */
+
+.proof-print {
+  padding: 24px;
+  background: var(--paper);
+  box-shadow: 0 0 0 2px var(--tin-hi), 0 18px 40px rgba(0, 0, 0, 0.5);
+}
+.proof-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+}
+.proof .reg {
+  width: 18px;
+  height: 18px;
+  border-color: var(--ink);
+}
+.proof .reg-tl {
+  left: 6px;
+  top: 6px;
+}
+.proof .reg-tr {
+  right: 6px;
+  top: 6px;
+}
+.proof .reg-bl {
+  left: 6px;
+  bottom: 6px;
+}
+.proof .reg-br {
+  right: 6px;
+  bottom: 6px;
+}
+.proof .reg::before,
+.proof .reg::after {
+  background: var(--ink);
+}
+.proof-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin-top: 28px;
+}
+.proof-actions :focus-visible {
+  outline-color: var(--chrome);
+}
+.proof-note {
+  font-size: 0.9375rem;
+  color: var(--sky-tint);
+}
+
+/* ---------- stage 2 on phones and intermediate widths ---------- */
+
+@media (max-width: 900px) {
+  .key-wrap {
+    grid-area: key;
+    align-self: stretch;
+    width: auto;
+    min-width: 0;
+    height: 140px;
+    aspect-ratio: auto;
+  }
+  .key-socket {
+    border-radius: 14px;
+    border-width: 2px;
+    box-shadow: none;
+  }
+  .key-tag {
+    right: auto;
+    left: 8px;
+    top: 8px;
+    max-width: none;
+    padding: 3px 7px 4px;
+    rotate: -3deg;
+  }
+  .key-tag::before {
+    display: none;
+  }
+  .key-tag-title {
+    font-size: 1rem;
+  }
+  .key-tag-hint {
+    display: none;
+  }
+  .construction-tools {
+    grid-template-columns: 1fr;
+  }
+  /* Touch zones of at least 44 px on a phone. */
+  .press-research,
+  .press-skip .chrome-button,
+  .slide-switch span {
+    min-height: 44px;
+  }
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .bell {
+    min-height: 44px;
+  }
+  /* The wheel's base rule comes after the phone one: the small size is repeated here. */
+  .spark-wheel {
+    flex: none;
+    width: 52px;
+    height: 30px;
+  }
+  /* 44 px touch zone: it reaches up to the edge of the first row and down below the strip (the
+     30 px wheel cannot grow any larger in its 33 px row). */
+  .spark-wheel::before {
+    content: '';
+    position: absolute;
+    inset: -4px -2px -15px;
+  }
+}
+
+@media (max-width: 560px) {
+  /* The phone's first screen (390×844): H1, orrery with rocket, rail, key, gauge and the band's
+     button must fit without scrolling; the rail now sits whole under the orrery. */
+  .key-wrap,
+  .gauge {
+    height: 122px;
+  }
+  .gauge-face {
+    width: 86px;
+  }
+  .rail-plate {
+    padding: 6px 12px 2px;
+  }
+  .rail-controls {
+    padding: 0 12px 8px;
+  }
+  .lip-text {
+    font-size: 0.6875rem;
+    letter-spacing: 0.02em;
+  }
+  /* The phone lid is taller than the screen: when it lifts it leaves 21svh of turquoise edge
+     over the tray, which already serves as a margin. */
+  .tray .face-inner {
+    padding-top: 48px;
+  }
+  /* On the phone the nameplate carries letter, name and coordinate in small type: the name in Libre
+     Franklin 700 (below 16 px it is not set in Rampart One) and the coordinate in Sono. It only folds
+     down to the letter when the layout finds no spot for it. */
+  .plate {
+    gap: 4px;
+    padding: 2px 5px 1px 4px;
+  }
+  .plate-name {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.6875rem;
+  }
+  .plate-coord {
+    font-size: 0.625rem;
+  }
+  .planet-tag {
+    width: 190px;
+  }
+}
+
+@media (min-width: 561px) and (max-width: 900px) {
+  .orrery-anchor {
+    width: min(620px, 100%);
+    height: auto;
+    aspect-ratio: 760 / 532;
+  }
+}
+
+/* The proof on the left and, beside it, what you can do with it. */
+@media (min-width: 1280px) {
+  .proof .face-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1008px) minmax(0, 1fr);
+    column-gap: 40px;
+    align-items: start;
+  }
+  .proof .face-title {
+    grid-column: 1 / -1;
+  }
+  /* The actions start at the height of the image (inside the paper margin), right against it. */
+  .proof-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: calc(48px + 24px);
+  }
+}
+
+/* Intermediate widths (901–1279): the diagonal holds, with more compact instruments
+   anchored to the edges of the frame so they do not cover the scene or the rail. */
+@media (min-width: 901px) and (max-width: 1279px) {
+  .strip {
+    grid-template-columns: auto 1fr auto;
+  }
+  .strip-drums {
+    justify-content: center;
+    gap: 10px;
+  }
+  .drum-rate {
+    display: none;
+  }
+  .instrument {
+    width: 208px;
+    min-width: 0;
+  }
+  .instrument.build {
+    left: auto;
+    right: calc(44 * var(--u));
+    top: calc(118 * var(--u));
+  }
+  .instrument.build {
+    width: 228px;
+  }
+  .instrument.fleet {
+    left: calc(44 * var(--u));
+    bottom: calc(120 * var(--u));
+    width: 348px;
+    flex-direction: row;
+    align-items: flex-end;
+  }
+  .instrument.fleet .log {
+    flex: 1;
+  }
+  .key-wrap {
+    width: 124px;
+    min-width: 0;
+  }
+  .key-tag-hint {
+    display: none;
+  }
+  .gauge {
+    width: 112px;
+    min-width: 0;
+    flex: none;
+  }
+  .gauge-readout {
+    white-space: normal;
+  }
+  /* The four newest here too: smaller type and the newest on two lines. */
+  .log-lines {
+    gap: 3px;
+  }
+  .log-lines li {
+    font-size: 0.6875rem;
+  }
+  .log-lines li:first-child {
+    -webkit-line-clamp: 2;
+  }
+  .rail {
+    gap: 10px;
+  }
+  .rail-hint {
+    display: none;
+  }
+  .rail-controls input[type='range'] {
+    width: 84px;
+  }
+}
+
+/* ---------- the strip on a phone: wordmark, decal, bell and menu ---------- */
+
+@media (max-width: 560px) {
+  .strip-nav {
+    position: relative;
+    gap: 6px;
+  }
+  /* The bell keeps its visible text (playground-hub: "Sound off" / "Sound on" on a phone),
+     compact to leave room for the menu. */
+  .bell {
+    justify-content: center;
+    gap: 4px;
+    min-height: 44px;
+    padding: 0 9px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  /* So all four fit in 390 px: the wordmark on two lines and a smaller decal. */
+  .strip-brand {
+    min-width: 0;
+    gap: 6px;
+  }
+  .wordmark {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    font-size: 0.8125rem;
+    line-height: 1.05;
+  }
+  .sticker {
+    font-size: 0.625rem;
+    padding: 2px 5px;
+  }
+  .menu-button {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    background: var(--tin);
+    color: var(--ink);
+    box-shadow: inset 0 2px 0 var(--tin-hi), inset 0 -3px 0 var(--tin-shade);
+    cursor: pointer;
+  }
+  .menu-button[aria-expanded='true'] {
+    background: var(--ink);
+    color: var(--tin-hi);
+    box-shadow: none;
+  }
+  /* The menu plate drops from the strip, flush right. */
+  .strip-links {
+    position: absolute;
+    top: calc(var(--strip-h) - 2px);
+    right: 0;
+    display: none;
+    min-width: 176px;
+    padding: 6px;
+    border: 2px solid var(--ink);
+    border-radius: 4px 4px 10px 10px;
+    background: var(--tin);
+    box-shadow: inset 0 2px 0 var(--tin-hi), 0 8px 16px rgba(10, 15, 74, 0.4);
+  }
+  .strip-links.is-open {
+    display: grid;
+  }
+  .strip-links .tin-tab {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 12px;
+    font-size: 1rem;
+  }
+}

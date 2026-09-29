@@ -1,0 +1,1165 @@
+/* World B — "Plate". The black glass is the surface; the windows are mounting cards. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--plate);
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  scrollbar-color: var(--muted) var(--plate);
+  scrollbar-width: thin;
+}
+
+body {
+  margin: 0;
+  background: var(--plate);
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--accent-forward);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 1px dashed var(--paper);
+  outline-offset: 3px;
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: 12px;
+  top: -40px;
+  z-index: 50;
+  padding: 4px 8px;
+  background: var(--mount);
+  color: var(--mount-ink);
+  font: var(--pixel-size) / 1 var(--font-pixel);
+}
+.skip:focus {
+  top: 12px;
+}
+
+/* Link back to the playground museum: a tab hanging from the top edge, in the free band above
+   the title and the cards (y < 16 px). Out of the flow: it moves or resizes no card, view or
+   canvas. Geist Pixel has no ←: the arrow is an icon. */
+.playground-back {
+  position: absolute;
+  top: 0;
+  left: 32px;
+  /* Above all the page content (fixed stages, titles, windows), below the
+     skip link. */
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 16px;
+  padding: 0 6px;
+  background: var(--mount);
+  color: var(--mount-ink);
+  border: var(--hair) solid var(--ink);
+  border-top: 0;
+  font: 400 var(--pixel-size) / 1 var(--font-pixel);
+  white-space: nowrap;
+  text-decoration: none;
+}
+.playground-back:hover {
+  text-decoration: underline;
+}
+.playground-back:focus-visible {
+  outline: 1px dashed var(--mount-ink);
+  outline-offset: -3px;
+}
+.playground-back__arrow {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  shape-rendering: crispEdges;
+}
+@media (max-width: 760px) {
+  .playground-back {
+    left: 12px;
+  }
+}
+
+/* ---------- Windows: mounting cards ---------- */
+
+.win {
+  position: relative;
+  background: var(--mount);
+  color: var(--mount-ink);
+  border: var(--hair) solid var(--ink);
+  font-family: var(--font-display);
+  font-size: 13px;
+  line-height: 1.45;
+  z-index: 20;
+}
+
+.win__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--win-title-h);
+  margin: 0;
+  padding: 0 6px;
+  background: var(--mount);
+  color: var(--mount-ink);
+  border-bottom: var(--hair) solid var(--ink);
+  font: 400 var(--pixel-size) / var(--win-title-h) var(--font-pixel);
+  letter-spacing: 0;
+  white-space: nowrap;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+/* Touch screen with draggable windows (tablet, phone in landscape): a vertical finger on the
+   bar scrolls the page; a horizontal one drags the window. */
+@media (pointer: coarse) {
+  .win__title {
+    touch-action: pan-y;
+  }
+}
+
+/* Active window: ink stripes in the bar, like the title bars of 1984 desktops. */
+.win:is(.is-active, .is-focused) > .win__title {
+  background:
+    repeating-linear-gradient(to bottom, var(--mount-ink) 0 1px, var(--mount) 1px 2px) 0 4px / 100% calc(100% - 8px)
+      no-repeat,
+    var(--mount);
+}
+/* The title sits on a sage block over the stripes, as in 1984 windows. */
+.win__title > span:first-child {
+  position: relative;
+  padding: 0 6px;
+  margin-left: -6px;
+  background: var(--mount);
+}
+
+.win.is-dragging > .win__title {
+  cursor: grabbing;
+}
+
+.win__aside {
+  margin-left: auto;
+  color: color-mix(in oklab, var(--mount-ink) 65%, var(--mount));
+}
+.win__aside,
+.clock__tc,
+.clock__wall,
+.source__meta,
+.dial__stops,
+.timeline__tc,
+.timeline__state,
+.timeline__ruler b,
+.boot__pct {
+  font-family: var(--font-pixel);
+  font-size: var(--pixel-size);
+}
+.win legend {
+  font-stretch: 75%;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 11px;
+}
+
+.win__body {
+  margin: 3px;
+  padding: 8px 9px 9px;
+  border: var(--hair) solid var(--ink);
+}
+
+.win fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.win legend {
+  padding: 0;
+  margin-bottom: 6px;
+  color: color-mix(in oklab, var(--mount-ink) 70%, var(--mount));
+}
+.win label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.win input[type='radio'],
+.win input[type='checkbox'] {
+  appearance: none;
+  width: 11px;
+  height: 11px;
+  margin: 0;
+  border: var(--hair) solid var(--mount-ink);
+  background: var(--mount);
+  display: grid;
+  place-content: center;
+}
+.win input[type='radio'] {
+  border-radius: 50%;
+}
+.win input:checked {
+  background: var(--mount-ink);
+  box-shadow: inset 0 0 0 2px var(--mount);
+}
+
+.btn {
+  font: inherit;
+  padding: 3px 14px;
+  background: var(--mount);
+  color: var(--mount-ink);
+  border: var(--hair) solid var(--mount-ink);
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px var(--mount), 0 0 0 2px var(--mount-ink);
+  cursor: pointer;
+}
+.btn:active {
+  background: var(--mount-ink);
+  color: var(--mount);
+}
+
+/* ---------- Desktop: hero with a gesture ---------- */
+
+/* The hero's track measures 100 for the stage + 200 of travel (zoom, final segment and pause). Neither
+   the section nor the track creates a stacking context: the stage and the window layer (sticky, which do
+   create one) rise above the engine's fixed canvas; the plate's glass is transparent, so the scene
+   shows through. */
+.desk {
+  position: relative;
+}
+
+.desk__track {
+  position: relative;
+  height: 300svh;
+}
+
+.desk__stage {
+  position: sticky;
+  top: 0;
+  z-index: calc(var(--engine-z, 5) + 1);
+  height: 100svh;
+  min-height: 640px;
+  overflow: hidden;
+}
+
+/* Window layer: it covers the whole track and its inside stays fixed like the stage. It lets the
+   pointer through to the plate except over the windows. */
+.desk__windows {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.desk__layer {
+  position: sticky;
+  top: 0;
+  z-index: calc(var(--engine-z, 5) + 1);
+  height: 100svh;
+  min-height: 640px;
+  overflow: hidden;
+}
+.desk__layer > * {
+  pointer-events: auto;
+}
+
+.desk__plate {
+  position: absolute;
+  inset: 0;
+}
+
+/* Grid engraved on the glass: thin lines and column numbers, like Muybridge's backdrop. */
+.desk__graticule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 58%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 10;
+  background:
+    repeating-linear-gradient(to right, var(--grid-line) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(to top, var(--grid-line) 0 1px, transparent 1px 64px);
+  mask-image: linear-gradient(to top, #000 55%, transparent);
+}
+.desk__graticule span {
+  position: absolute;
+  bottom: 8px;
+  font: 700 15px / 1 var(--font-display);
+  font-stretch: 75%;
+  color: var(--grid-number);
+  transform: translateX(5px);
+}
+
+/* HOLD inverts the screen for an instant; the filter goes on the root because the pinned desktop
+   is an isolated group and a difference blend would no longer reach the canvas. */
+html.is-inverting {
+  filter: invert(1);
+}
+.caption {
+  position: absolute;
+  left: 32px;
+  top: 28px;
+  z-index: 20;
+  max-width: min(56vw, 880px);
+  pointer-events: none;
+}
+/* Charcoal glaze behind the caption: over the aurora and the trail the text needs its own background. */
+.caption::before {
+  content: '';
+  position: absolute;
+  inset: -28px -120px -40px -32px;
+  z-index: -1;
+  /* farthest-side: the gradient reaches transparent at the right and bottom edges (no straight edge). */
+  background: radial-gradient(farthest-side at 0 0, color-mix(in oklab, var(--plate) 88%, transparent) 70%, transparent 100%);
+}
+.caption__title {
+  margin: 0;
+  font-weight: 700;
+  font-stretch: 75%;
+  font-size: clamp(2.6rem, 6.2vw, 6rem);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.caption__plate,
+.caption__subject {
+  display: block;
+}
+.caption__plate {
+  color: var(--mount);
+}
+.caption__note {
+  margin: 14px 0 0;
+  max-width: 36ch;
+  padding: 2px 6px 3px;
+  margin-left: -6px;
+  background: var(--plate);
+  font-size: 1.05rem;
+  color: color-mix(in oklab, var(--paper) 82%, var(--plate));
+}
+.caption__note strong {
+  padding: 1px 5px 2px;
+  background: var(--tag);
+  color: var(--tag-ink);
+  font: 400 var(--pixel-size) / 1 var(--font-pixel);
+  vertical-align: 0.1em;
+}
+
+/* The plate's controls, below the caption: loop HOLD and zoom, like the keys of an enlarger.
+   A sage card with ink separators; the scroll hint is in charcoal, like the note. */
+.loupe {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  pointer-events: auto;
+}
+.loupe__keys {
+  display: flex;
+  flex: none;
+  border: var(--hair) solid var(--ink);
+  background: var(--mount);
+  box-shadow: 0 0 0 1px var(--mount);
+}
+.loupe__key {
+  display: grid;
+  place-content: center;
+  width: 32px;
+  height: 26px;
+  padding: 0;
+  background: var(--mount);
+  color: var(--mount-ink);
+  border: 0;
+  border-left: var(--hair) solid var(--mount-ink);
+  cursor: pointer;
+}
+.loupe__key:first-child {
+  border-left: 0;
+}
+.loupe__key svg {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+  shape-rendering: crispEdges;
+}
+.loupe__key:active {
+  background: var(--mount-ink);
+  color: var(--mount);
+}
+.loupe__key[aria-disabled='true'] {
+  color: color-mix(in oklab, var(--mount-ink) 30%, var(--mount));
+  background: var(--mount);
+  cursor: default;
+}
+.loupe__key:focus-visible {
+  outline: 1px dashed var(--paper);
+  outline-offset: 3px;
+}
+.loupe__hint {
+  margin: 0;
+  padding: 3px 6px 4px;
+  background: var(--plate);
+  font: var(--pixel-size) / 1.2 var(--font-pixel);
+  color: color-mix(in oklab, var(--paper) 82%, var(--plate));
+  white-space: nowrap;
+}
+
+.desk__rail {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 232px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  z-index: 20;
+}
+
+.source__frame {
+  aspect-ratio: 16 / 9;
+  background-color: var(--ink);
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  border: var(--hair) solid var(--ink);
+}
+/* Silver prints: outside Millions, the source frames take the video's luminance over the cards'
+   sage tone, so the brick and the sodium light do not bring a warm field into the plate. */
+:root:not([data-depth='millions']) :is(.source__frame, .sheet__frames button, .step__figure[data-pipeline='video']) {
+  background-color: var(--mount);
+  background-blend-mode: luminosity;
+}
+.source__meta {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0 0;
+}
+
+.dial__stops {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border: var(--hair) solid var(--mount-ink);
+}
+.dial__stops label {
+  justify-content: center;
+  padding: 4px 0;
+  border-left: var(--hair) solid var(--mount-ink);
+}
+.dial__stops label:first-child {
+  border-left: 0;
+}
+.dial__stops input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.dial__stops label:has(input:checked) {
+  background: var(--mount-ink);
+  color: var(--mount);
+}
+.dial__stops label:has(input:focus-visible) {
+  outline: 1px dashed var(--mount-ink);
+  outline-offset: 2px;
+}
+
+.seg label,
+.checks label {
+  padding: 1px 0;
+}
+
+.clock__tc {
+  margin: 0;
+  font-size: var(--pixel-size-2x);
+  line-height: 1;
+}
+.clock__tc small {
+  font-family: var(--font-display);
+  font-size: var(--pixel-size);
+  color: color-mix(in oklab, var(--mount-ink) 60%, var(--mount));
+}
+.clock__wall {
+  margin: 6px 0 0;
+}
+
+/* Sequence sheet + timeline */
+.sheet {
+  position: absolute;
+  left: 24px;
+  right: calc(24px + 232px + var(--gap));
+  bottom: 24px;
+}
+
+.sheet__frames {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 4px;
+  margin: 0 0 10px;
+  padding: 0;
+  list-style: none;
+}
+.sheet__frames button {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  border: var(--hair) solid var(--ink);
+  background-color: var(--ink);
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  cursor: pointer;
+  position: relative;
+}
+.sheet__frames button span {
+  position: absolute;
+  left: 2px;
+  bottom: 1px;
+  font: var(--pixel-size) / 1 var(--font-pixel);
+  color: var(--mount);
+  mix-blend-mode: difference;
+}
+.sheet__frames button[aria-current='true'] {
+  /* Ink on the outside to stand apart from the sage card (aurora green only gives 1.4:1), and the
+     present's color on the inside, over the film frame. */
+  outline: 2px solid var(--mount-ink);
+  outline-offset: 1px;
+  box-shadow: inset 0 0 0 2px var(--accent-current, var(--accent-forward));
+}
+
+.sheet__legend {
+  margin: 0 0 8px;
+  font-stretch: 75%;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.timeline__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.timeline__play {
+  width: 22px;
+  height: 18px;
+  display: grid;
+  place-content: center;
+  padding: 0;
+  background: var(--mount);
+  border: var(--hair) solid var(--mount-ink);
+  cursor: pointer;
+}
+.timeline__play svg {
+  width: 10px;
+  height: 10px;
+  fill: var(--mount-ink);
+}
+.timeline__tc {
+  font-size: var(--pixel-size-2x);
+  line-height: 1;
+}
+.timeline__state {
+  margin-left: auto;
+  color: var(--mount-ink);
+}
+/* The direction reads in a pill in the present's color, as on the plate. */
+.timeline__state::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 7px;
+  background: var(--accent-current, var(--accent-hold));
+  box-shadow: 0 0 0 1px var(--mount-ink);
+}
+
+.timeline__track {
+  --playhead: 0;
+  position: relative;
+  height: 26px;
+  border-top: var(--hair) solid var(--mount-ink);
+  cursor: ew-resize;
+  touch-action: none;
+}
+.timeline__ruler {
+  position: absolute;
+  inset: 0;
+}
+.timeline__ruler i {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 5px;
+  background: var(--mount-ink);
+}
+.timeline__ruler i.is-major {
+  height: 9px;
+}
+.timeline__ruler b {
+  position: absolute;
+  top: 11px;
+  font-weight: 400;
+  transform: translateX(-50%);
+}
+/* The first mark does not stick out of the card. */
+.timeline__ruler b:first-of-type {
+  transform: none;
+}
+.timeline__playhead {
+  position: absolute;
+  top: -4px;
+  bottom: 0;
+  left: calc(var(--playhead) * 100%);
+  width: 1px;
+  background: var(--mount-ink);
+}
+.timeline__playhead::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -3px;
+  width: 7px;
+  height: 7px;
+  background: var(--accent-current, var(--mount-ink));
+  box-shadow: 0 0 0 1px var(--mount-ink);
+}
+
+/* Dialog with an echo: dragging it exposes it several times over the plate. */
+/* Below the caption and its controls: the center of the plate belongs to the millipede. With width to spare
+   it goes up into the sky, next to the column of cards, and leaves the full plate at the end of the hero clear. */
+.dialog {
+  position: absolute;
+  left: 32px;
+  top: clamp(330px, 40vh, 380px);
+  width: 216px;
+  z-index: 25;
+}
+@media (min-width: 1200px) {
+  .dialog {
+    left: auto;
+    right: calc(24px + 232px + 2 * var(--gap));
+    top: 24px;
+  }
+}
+/* Narrow, short desktop: the card does not fit between the controls and the sheet and would cover the
+   sheet's bar. It is put away, as on mobile. */
+@media (min-width: 761px) and (max-width: 1199px) and (max-height: 719px) {
+  .dialog {
+    display: none;
+  }
+}
+/* Short desktop (1280×720, 1366×768): the column of cards needs ~810 px and the fixed layer used to
+   crop it, cutting off the Clock at the bottom. It is compacted, as in C: without the secondary lines (the
+   frame and the wall-clock time) and with the layers in two columns. The Clock keeps the source timecode. */
+@media (min-width: 761px) and (min-height: 501px) and (max-height: 819px) {
+  .desk__rail .clock__wall,
+  .desk__rail .source__meta {
+    display: none;
+  }
+  .desk__rail .checks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 8px;
+  }
+}
+.dialog .win__body {
+  display: grid;
+  gap: 10px;
+  justify-items: end;
+}
+.dialog p {
+  justify-self: stretch;
+  margin: 0;
+}
+.dialog[hidden] {
+  display: none;
+}
+.win-echo {
+  position: absolute;
+  pointer-events: none;
+  z-index: 24;
+}
+
+/* Boot */
+.boot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 260px;
+  transform: translate(-50%, -50%);
+  z-index: 40;
+}
+.boot__bar {
+  height: 12px;
+  margin-top: 8px;
+  border: var(--hair) solid var(--mount-ink);
+  padding: 1px;
+}
+.boot__fill {
+  height: 100%;
+  width: calc(var(--progress, 0) * 100%);
+  background: repeating-linear-gradient(90deg, var(--mount-ink) 0 1px, transparent 1px 2px), var(--mount-ink);
+}
+.boot__pct {
+  margin: 6px 0 0;
+  text-align: right;
+}
+.boot.is-error .boot__fill {
+  background: var(--accent-rewind);
+}
+.boot[hidden] {
+  display: none;
+}
+
+/* ---------- Sheets ---------- */
+
+.plates {
+  position: relative;
+  z-index: 1;
+  padding: 0 32px;
+}
+
+.lede {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: end;
+  padding: 18vh 0 14vh;
+  border-top: var(--hair) solid var(--muted);
+}
+.lede__title {
+  margin: 0;
+  font-weight: 700;
+  font-stretch: 75%;
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  text-transform: uppercase;
+}
+.lede__text {
+  margin: 0;
+  max-width: 44ch;
+  font-size: 1.125rem;
+  color: color-mix(in oklab, var(--paper) 84%, var(--plate));
+}
+
+.plate {
+  padding: 12vh 0;
+  border-top: var(--hair) solid color-mix(in oklab, var(--muted) 60%, var(--plate));
+}
+.plate__title {
+  margin: 0 0 32px;
+  font-weight: 650;
+  font-stretch: 75%;
+  font-size: clamp(2rem, 4.4vw, 3.75rem);
+  line-height: 0.95;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.plate__num {
+  color: var(--accent-forward);
+}
+.plate__figure {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  max-height: 70vh;
+  border: var(--hair) solid var(--muted);
+}
+.plate__figure::before,
+.plate__figure::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 0 solid var(--paper);
+}
+.plate__figure::before {
+  left: -7px;
+  top: -7px;
+  border-left-width: 1px;
+  border-top-width: 1px;
+}
+.plate__figure::after {
+  right: -7px;
+  bottom: -7px;
+  border-right-width: 1px;
+  border-bottom-width: 1px;
+}
+.plate__caption {
+  max-width: 62ch;
+  margin: 18px 0 0;
+  color: color-mix(in oklab, var(--paper) 80%, var(--plate));
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+.step__figure {
+  aspect-ratio: 16 / 9;
+  border: var(--hair) solid var(--muted);
+  background-color: var(--ink);
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+.step__title {
+  margin: 14px 0 6px;
+  font-size: 1.25rem;
+  font-weight: 650;
+  font-stretch: 75%;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+.step p {
+  margin: 0;
+  max-width: 34ch;
+  color: color-mix(in oklab, var(--paper) 78%, var(--plate));
+}
+.notice {
+  margin: 40px 0 0;
+  max-width: 62ch;
+  padding: 12px 14px;
+  border: var(--hair) dashed var(--muted);
+  font-family: var(--font-pixel);
+  font-size: var(--pixel-size);
+  line-height: 1.6;
+}
+
+.plate__figure--wide {
+  aspect-ratio: 21 / 9;
+  max-height: 72vh;
+}
+
+.register {
+  max-width: 760px;
+  margin: 0;
+  border-top: var(--hair) solid var(--muted);
+}
+.register > div {
+  display: flex;
+  align-items: baseline;
+  padding: 12px 0;
+  border-bottom: var(--hair) solid color-mix(in oklab, var(--muted) 60%, var(--plate));
+  font-size: 1.25rem;
+}
+.register dt {
+  display: flex;
+  flex: 1;
+  align-items: baseline;
+  font-stretch: 75%;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+/* Registration guide dots, like the printed captions of the sheets. */
+.register dt::after {
+  content: '';
+  flex: 1;
+  margin: 0 12px;
+  border-bottom: 2px dotted color-mix(in oklab, var(--paper) 45%, var(--plate));
+  transform: translateY(-0.25em);
+}
+.register dd {
+  margin: 0;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.scenes {
+  display: grid;
+  gap: 10px;
+  max-width: 720px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.scene {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 14px 16px;
+  background: transparent;
+  color: var(--paper);
+  border: var(--hair) solid var(--muted);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.scene__name {
+  font-size: 1.4rem;
+  font-weight: 650;
+  font-stretch: 75%;
+  text-transform: uppercase;
+}
+.scene__meta {
+  font-family: var(--font-pixel);
+  font-size: var(--pixel-size);
+  color: var(--muted);
+}
+.scene.is-active {
+  background: var(--mount);
+  color: var(--mount-ink);
+  border-color: var(--mount);
+}
+.scene.is-active .scene__meta {
+  color: var(--mount-ink);
+}
+.scene[aria-disabled='true'] {
+  cursor: not-allowed;
+  border-style: dashed;
+  color: var(--muted);
+}
+
+.faq {
+  max-width: 820px;
+  border-top: var(--hair) solid var(--muted);
+}
+.faq:last-child {
+  border-bottom: var(--hair) solid var(--muted);
+}
+.faq summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+}
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+.faq summary::after {
+  content: '';
+  width: 11px;
+  height: 11px;
+  flex: none;
+  background:
+    linear-gradient(var(--paper), var(--paper)) center / 11px 1px no-repeat,
+    linear-gradient(var(--paper), var(--paper)) center / 1px 11px no-repeat;
+}
+.faq[open] summary::after {
+  background: linear-gradient(var(--paper), var(--paper)) center / 11px 1px no-repeat;
+}
+.faq p {
+  max-width: 64ch;
+  margin: 0 0 20px;
+  color: color-mix(in oklab, var(--paper) 80%, var(--plate));
+}
+
+/* ---------- Colophon ---------- */
+
+.colophon {
+  position: relative;
+  margin-top: 10vh;
+  padding: 0 32px 32px;
+  border-top: var(--hair) solid var(--muted);
+}
+.colophon__mark {
+  height: 62vh;
+  min-height: 360px;
+}
+.colophon__word {
+  position: absolute;
+  left: 50%;
+  top: calc(40px + 31vh);
+  z-index: 20;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  font-weight: 700;
+  font-stretch: 75%;
+  font-size: clamp(3.5rem, 11vw, 9rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--paper);
+  pointer-events: none;
+  mix-blend-mode: difference;
+}
+.colophon__line {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: var(--pixel-size);
+  color: var(--muted);
+}
+
+/* ---------- Narrow ---------- */
+
+/* Stacked windows: mobile in portrait and phone in landscape (too short for the floating desktop). */
+@media (max-width: 760px), (orientation: landscape) and (max-height: 500px) {
+  /* The caption sits on the charcoal, outside the glass: no glaze (and no overflow). */
+  .caption::before {
+    display: none;
+  }
+  .win {
+    --win-drag: 0;
+  }
+  /* Without dragging, the title bar does not hold on to the finger: swiping over it scrolls the page. */
+  .win__title {
+    touch-action: auto;
+    cursor: default;
+  }
+  /* The hero is pinned too: the fixed stage carries the caption (on charcoal) and the plate. */
+  .desk__track {
+    height: 260svh;
+  }
+  .desk__stage {
+    display: flex;
+    flex-direction: column;
+    min-height: 480px;
+  }
+  .caption {
+    position: static;
+    order: -1;
+    max-width: none;
+    padding: 16px 12px 12px;
+  }
+  .desk__plate {
+    position: relative;
+    inset: auto;
+    flex: 1;
+    min-height: 0;
+  }
+  /* The windows leave the stage: they go below the hero, stacked. */
+  .desk__windows {
+    position: static;
+    pointer-events: auto;
+  }
+  .desk__layer {
+    position: static;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    padding: 16px 12px;
+  }
+  .desk__graticule {
+    height: 50%;
+  }
+  .caption__note {
+    font-size: 0.95rem;
+  }
+  /* The main action (sequence sheet + play) comes right after the hero; the cards after that. */
+  .sheet {
+    order: 1;
+  }
+  .desk__rail {
+    order: 2;
+  }
+  /* In the flow, without the desktop offsets. The sheet is `relative`, not `static`: bindWindows sets
+     static windows to `relative` inline, and that mark would leave it in the flow on going back to
+     the desktop (rotating the phone, widening the window). */
+  .desk__rail {
+    position: static;
+    width: auto;
+    inset: auto;
+  }
+  .sheet {
+    position: relative;
+    width: auto;
+    inset: auto;
+  }
+  .desk__rail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+  .desk__rail [data-window='source'] {
+    grid-column: 1 / -1;
+  }
+  .dialog {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .plate__figure--wide {
+    aspect-ratio: 4 / 3;
+  }
+  .sheet__frames {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  .plates {
+    padding: 0 16px;
+  }
+  .lede,
+  .steps {
+    grid-template-columns: 1fr;
+  }
+  .register > div {
+    font-size: 1.05rem;
+  }
+  .colophon {
+    padding: 0 16px 24px;
+  }
+}
+
+/* Phone in landscape: the stage is exactly the screen's size and the caption goes in a charcoal column to the
+   left of the plate, so the whole glass is left for the scene. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .desk__stage {
+    flex-direction: row;
+    min-height: 0;
+  }
+  .caption {
+    flex: none;
+    width: clamp(220px, 34vw, 320px);
+    padding: 16px 16px 12px 20px;
+  }
+  .caption__title {
+    font-size: clamp(1.75rem, 8.5vh, 2.5rem);
+  }
+  .loupe {
+    flex-wrap: wrap;
+  }
+  .desk__rail {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+  .desk__rail [data-window='source'] {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

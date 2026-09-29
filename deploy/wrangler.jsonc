@@ -1,0 +1,13 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  // playground.crewtives.com: an assets-only Worker that serves dist/, with the museum at the root,
+  // 4D.OS under 4d-os/ and the other works in their own folders.
+  "name": "crewtives-playground",
+  "compatibility_date": "2026-09-24",
+  "assets": {
+    "directory": "../dist"
+  },
+  "routes": [{ "pattern": "playground.crewtives.com", "custom_domain": true }],
+  // Also keep the Worker reachable on its default Cloudflare subdomain.
+  "workers_dev": true
+}

@@ -1,0 +1,1019 @@
+/* World C — "Leader". An emulsion-gray field; leader bands; the strip is the clock. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--emulsion);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-stretch: 92%;
+  -webkit-font-smoothing: antialiased;
+  scrollbar-color: var(--leader) var(--emulsion);
+  scrollbar-width: thin;
+}
+
+body {
+  margin: 0;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--leader);
+  color: var(--paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--leader);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: 12px;
+  top: -40px;
+  z-index: 50;
+  padding: 4px 8px;
+  background: var(--leader);
+  color: var(--paper);
+  font: 600 var(--pixel-size) / 1 var(--font-pixel);
+}
+.skip:focus {
+  top: 12px;
+}
+
+/* Link back to the playground museum: a leader tab hanging from the top edge, in the free band
+   above the title and the cards (y < 16 px). Out of the flow: it moves or resizes no card, view
+   or canvas. None of C's fonts has ←: the arrow is an icon. */
+.playground-back {
+  position: absolute;
+  top: 0;
+  left: 24px;
+  /* Above all the page content (fixed stages, titles, windows), below the
+     skip link. */
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 16px;
+  padding: 0 7px;
+  background: var(--leader);
+  color: var(--paper);
+  font: 700 var(--pixel-size) / 1 var(--font-pixel);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.playground-back:hover {
+  text-decoration: underline;
+}
+.playground-back:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: -2px;
+}
+.playground-back__arrow {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  shape-rendering: crispEdges;
+}
+@media (max-width: 820px), (orientation: landscape) and (max-height: 500px) {
+  .playground-back {
+    left: 12px;
+  }
+}
+
+/* ---------- Leader cards (windows) ---------- */
+
+.win {
+  position: relative;
+  z-index: 20;
+  background: var(--paper);
+  color: var(--ink);
+  border: var(--hair) solid var(--leader);
+  font-size: 13px;
+}
+
+.win__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: var(--win-title-h);
+  margin: 0;
+  padding: 0 7px;
+  background: var(--leader);
+  color: var(--paper);
+  font: 700 var(--pixel-size) / var(--win-title-h) var(--font-pixel);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+/* Touch screen with draggable windows (tablet, phone in landscape): a vertical finger on the
+   bar scrolls the page; a horizontal one drags the window. */
+@media (pointer: coarse) {
+  .win__title {
+    touch-action: pan-y;
+  }
+}
+.win__code {
+  color: color-mix(in oklab, var(--paper) 70%, var(--leader));
+  letter-spacing: 0.08em;
+}
+.win:is(.is-active, .is-focused) > .win__title {
+  box-shadow: inset 0 -2px 0 var(--paper);
+}
+.win.is-dragging > .win__title {
+  cursor: grabbing;
+}
+
+.win__body {
+  padding: 8px 10px;
+}
+
+.win fieldset {
+  margin: 0 0 6px;
+  padding: 0;
+  border: 0;
+}
+.win fieldset:last-child {
+  margin-bottom: 0;
+}
+.win legend {
+  margin-bottom: 4px;
+  font: 700 12px / 1.2 var(--font-pixel);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.win label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 1px 0;
+  cursor: pointer;
+}
+.win input[type='radio'],
+.win input[type='checkbox'] {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin: 0;
+  border: 2px solid var(--leader);
+  background: var(--paper);
+}
+.win input[type='radio'] {
+  border-radius: 50%;
+}
+.win input:checked {
+  background: var(--leader);
+  box-shadow: inset 0 0 0 2px var(--paper);
+}
+
+.btn {
+  font: 700 12px / 1 var(--font-pixel);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 6px 14px;
+  background: var(--leader);
+  color: var(--paper);
+  border: 0;
+  cursor: pointer;
+}
+.btn:hover {
+  background: var(--pal-16-1);
+}
+
+/* ---------- Desktop ---------- */
+
+/* One screen tall, but never less than the cards need: on short screens the ruler (the strip)
+   sits just below the edge instead of overlapping the column of cards. */
+.desk {
+  position: relative;
+  height: 100svh;
+  min-height: 880px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 272px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'slate cards'
+    'gate cards'
+    'strip strip';
+  gap: 16px 20px;
+  padding: 20px 24px 20px;
+}
+
+.slate {
+  grid-area: slate;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 8px;
+  z-index: 20;
+}
+.slate__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.6rem, 5.6vw, 5.75rem);
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  text-transform: uppercase;
+}
+.slate__meta {
+  display: flex;
+  gap: 14px;
+  margin: 0;
+  font: 700 var(--pixel-size) / 1 var(--font-pixel);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.slate__tag {
+  padding: 3px 6px;
+  background: var(--leader);
+  color: var(--paper);
+}
+
+.gate {
+  grid-area: gate;
+  position: relative;
+  min-height: 0;
+  padding: 0 30px;
+  background: var(--leader);
+}
+.gate__perfs {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 30px;
+  background: linear-gradient(var(--emulsion), var(--emulsion)) center top / 12px 18px repeat-y;
+  -webkit-mask: repeating-linear-gradient(to bottom, #000 0 18px, transparent 18px 34px);
+  mask: repeating-linear-gradient(to bottom, #000 0 18px, transparent 18px 34px);
+}
+.gate__perfs--left {
+  left: 0;
+}
+.gate__perfs--right {
+  right: 0;
+}
+.gate__aperture {
+  position: relative;
+  height: 100%;
+  min-height: 260px;
+  overflow: hidden;
+}
+.gate__view {
+  position: absolute;
+  inset: 0;
+}
+/* Light leak: a burned texture generated on the pixel grid (film.ts), only when rewinding. */
+.gate__leak {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  pointer-events: none;
+  opacity: 0;
+  background: no-repeat right center / 100% 100%;
+  image-rendering: pixelated;
+  transition: opacity 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+:root[data-direction='-1'] .gate__leak {
+  opacity: 1;
+}
+.gate__edge {
+  position: absolute;
+  top: 0;
+  right: -22px;
+  margin: 0;
+  writing-mode: vertical-rl;
+  font: 700 12px / 1 var(--font-pixel);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.desk__cards {
+  grid-area: cards;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-left: 14px;
+  min-height: 0;
+}
+
+.clock__tc {
+  margin: 0;
+  font: 800 var(--pixel-size-2x) / 1 var(--font-display);
+  letter-spacing: 0.02em;
+}
+.clock__wall {
+  margin: 6px 0 0;
+  font-size: 12px;
+}
+.source__frame {
+  aspect-ratio: 16 / 9;
+  background-color: var(--leader);
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+.source__meta {
+  margin: 6px 0 0;
+  font: 700 12px / 1 var(--font-pixel);
+  text-transform: uppercase;
+}
+
+/* ---------- The strip ---------- */
+
+.strip {
+  grid-area: strip;
+  position: relative;
+  z-index: 20;
+}
+.strip__head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+.strip__play {
+  width: 30px;
+  height: 24px;
+  display: grid;
+  place-content: center;
+  padding: 0;
+  background: var(--leader);
+  border: 0;
+  cursor: pointer;
+}
+.strip__play svg {
+  width: 11px;
+  height: 11px;
+  fill: var(--paper);
+}
+.strip__tc {
+  font: 800 var(--pixel-size-2x) / 1 var(--font-display);
+  letter-spacing: 0.02em;
+}
+.strip__state {
+  margin-left: auto;
+  font: 700 var(--pixel-size) / 1 var(--font-pixel);
+  text-transform: uppercase;
+}
+.strip__state::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  background: var(--accent-current, var(--accent-hold));
+  box-shadow: 0 0 0 1px var(--leader);
+}
+
+.strip__window {
+  --frame-w: 160px;
+  --frame-gap: 6px;
+  position: relative;
+  height: calc(var(--frame-w) * 9 / 16 + 52px);
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(to right, var(--emulsion) 0 12px, transparent 12px 26px) 0 7px / 100% 9px no-repeat,
+    repeating-linear-gradient(to right, var(--emulsion) 0 12px, transparent 12px 26px) 0 calc(100% - 7px) / 100% 9px
+      no-repeat,
+    var(--leader);
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+.strip__window.is-pulling {
+  cursor: grabbing;
+}
+.strip__film {
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  display: flex;
+  gap: var(--frame-gap);
+  will-change: transform;
+}
+.strip__frame {
+  position: relative;
+  flex: none;
+  width: var(--frame-w);
+  aspect-ratio: 16 / 9;
+  border-radius: 4px;
+  background-color: var(--pal-16-1);
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+.strip__frame b {
+  position: absolute;
+  left: 5px;
+  bottom: 3px;
+  font: 400 15px / 1 var(--font-hand);
+  color: var(--grease);
+  text-shadow: 0 1px 0 var(--leader), 1px 0 0 var(--leader), -1px 0 0 var(--leader), 0 -1px 0 var(--leader);
+}
+/* Latent code between the perforations and the image, as on the edge of the film. */
+.strip__frame i {
+  position: absolute;
+  left: 2px;
+  top: -12px;
+  font: 700 10px / 1 var(--font-pixel);
+  font-style: normal;
+  color: var(--sepia);
+  letter-spacing: 0.08em;
+}
+.strip__frame .scratch,
+.gate__marks .scratch {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: color-mix(in oklab, var(--paper) 85%, transparent);
+}
+.gate__marks .scratch {
+  width: 2px;
+}
+/* Chemical stain: a generated organic texture (film.ts), scaled up without smoothing, tinted with multiply. */
+.strip__frame .stain,
+.gate__marks .stain {
+  position: absolute;
+  aspect-ratio: 1;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  image-rendering: pixelated;
+  mix-blend-mode: multiply;
+}
+.gate__marks {
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  pointer-events: none;
+}
+.strip__gate {
+  position: absolute;
+  top: 20px;
+  bottom: 18px;
+  left: 50%;
+  width: calc(var(--frame-w) + 12px);
+  transform: translateX(-50%);
+  border: 2px solid var(--paper);
+  border-radius: 7px;
+  pointer-events: none;
+  transition: border-color 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+:root[data-direction='-1'] .strip__gate {
+  border-color: var(--leak);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--leak) 45%, transparent), inset 0 0 22px color-mix(in oklab, var(--leak) 55%, transparent);
+}
+:root[data-direction='1'] .strip__gate {
+  border-color: var(--accent-forward);
+}
+
+.timeline__track {
+  --playhead: 0;
+  position: relative;
+  height: 24px;
+  margin-top: 10px;
+  border-top: 2px solid var(--leader);
+  cursor: ew-resize;
+  touch-action: none;
+}
+.timeline__ruler {
+  position: absolute;
+  inset: 0;
+}
+.timeline__ruler i {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 5px;
+  background: var(--leader);
+}
+.timeline__ruler i.is-major {
+  width: 2px;
+  height: 9px;
+}
+.timeline__ruler b {
+  position: absolute;
+  top: 11px;
+  transform: translateX(-50%);
+  font: 700 11px / 1 var(--font-pixel);
+}
+.timeline__playhead {
+  position: absolute;
+  top: -6px;
+  bottom: 0;
+  left: calc(var(--playhead) * 100%);
+  width: 2px;
+  background: var(--leader);
+}
+
+/* Dialog with an echo: in the title row, to the right of the title and above the gate. */
+.dialog {
+  position: absolute;
+  left: max(560px, 44%);
+  top: 16px;
+  width: 380px;
+  z-index: 25;
+}
+.dialog .win__body {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 4px 12px;
+}
+.dialog .btn {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+}
+.dialog p {
+  justify-self: stretch;
+  margin: 0;
+}
+.dialog .dialog__aside {
+  font-size: 12px;
+  color: color-mix(in oklab, var(--ink) 70%, var(--paper));
+}
+.dialog[hidden] {
+  display: none;
+}
+.win-echo {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* Boot */
+.boot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 280px;
+  transform: translate(-50%, -50%);
+  z-index: 40;
+}
+.boot__bar {
+  height: 14px;
+  margin-top: 8px;
+  background: var(--leader);
+  padding: 2px;
+}
+.boot__fill {
+  height: 100%;
+  width: calc(var(--progress, 0) * 100%);
+  background: repeating-linear-gradient(90deg, var(--paper) 0 6px, transparent 6px 8px);
+}
+.boot__pct {
+  margin: 6px 0 0;
+  text-align: right;
+  font: 700 12px / 1 var(--font-pixel);
+}
+.boot.is-error .boot__fill {
+  background: var(--pal-16-10);
+}
+.boot[hidden] {
+  display: none;
+}
+
+/* ---------- Reels ---------- */
+
+.reels {
+  padding: 0 24px;
+}
+
+.lede {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: end;
+  padding: 16vh 0 12vh;
+  border-top: 2px solid var(--leader);
+}
+.lede__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(3rem, 7.4vw, 6rem);
+  line-height: var(--display-leading);
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.lede__text {
+  margin: 0;
+  max-width: 46ch;
+  font-size: 1.125rem;
+  color: color-mix(in oklab, var(--ink) 80%, var(--emulsion));
+}
+
+.reel {
+  padding: 12vh 0;
+  border-top: var(--hair) solid var(--leader);
+}
+.reel__title {
+  display: block;
+  margin: 0 0 30px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.2rem, 4.8vw, 4rem);
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+.reel__num {
+  display: inline-block;
+  margin-right: 0.4em;
+  padding: 0.18em 0.4em 0.1em;
+  background: var(--leader);
+  font: 400 0.42em / 1 var(--font-hand);
+  color: var(--grease);
+  text-transform: none;
+  vertical-align: 0.35em;
+  transform: rotate(-4deg);
+}
+.reel__figure {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  max-height: 70vh;
+  border: 14px solid var(--leader);
+  border-radius: 18px;
+  background: var(--leader);
+}
+.reel__note {
+  max-width: 62ch;
+  margin: 18px 0 0;
+  color: color-mix(in oklab, var(--ink) 80%, var(--emulsion));
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  padding: 30px 16px 26px;
+  list-style: none;
+  counter-reset: frame;
+  background:
+    repeating-linear-gradient(to right, var(--emulsion) 0 12px, transparent 12px 26px) 0 8px / 100% 9px no-repeat,
+    repeating-linear-gradient(to right, var(--emulsion) 0 12px, transparent 12px 26px) 0 calc(100% - 8px) / 100% 9px
+      no-repeat,
+    var(--leader);
+  color: var(--paper);
+}
+.step {
+  position: relative;
+  padding: 0 8px;
+  counter-increment: frame;
+}
+/* Latent code over each film frame and a grease-pencil number, as on the desktop's strip. */
+.step::before {
+  content: '0923 000' counter(frame);
+  display: block;
+  margin-bottom: 5px;
+  font: 700 10px / 1 var(--font-pixel);
+  letter-spacing: 0.08em;
+  color: var(--sepia);
+}
+.step::after {
+  content: counter(frame);
+  position: absolute;
+  z-index: 20;
+  left: 16px;
+  top: 28px;
+  font: 400 1.1rem / 1 var(--font-hand);
+  color: var(--grease);
+  text-shadow: 0 1px 0 var(--leader), 1px 0 0 var(--leader), -1px 0 0 var(--leader), 0 -1px 0 var(--leader);
+}
+.step__figure {
+  aspect-ratio: 16 / 9;
+  border-radius: 4px;
+  background-color: var(--pal-16-1);
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+.step__title {
+  margin: 14px 0 6px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.6rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.step p {
+  margin: 0 0 6px;
+  max-width: 34ch;
+  color: color-mix(in oklab, var(--paper) 82%, var(--leader));
+}
+.notice {
+  margin: 36px 0 0;
+  max-width: 62ch;
+}
+.notice__mark {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 3px 7px 1px;
+  background: var(--leader);
+  font: 400 1.05rem / 1 var(--font-hand);
+  color: var(--grease);
+  transform: rotate(-3deg);
+}
+
+.reel--scroll {
+  height: 320vh;
+  padding: 0;
+}
+.reel--scroll__stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: 8vh 0 6vh;
+}
+.reel__figure--wide {
+  aspect-ratio: auto;
+  max-height: none;
+}
+
+.register {
+  max-width: 760px;
+  margin: 0;
+  padding: 18px 22px;
+  background: var(--paper);
+  border: var(--hair) solid var(--leader);
+}
+.register > div {
+  display: flex;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: var(--hair) dashed color-mix(in oklab, var(--leader) 40%, var(--paper));
+}
+.register > div:last-child {
+  border-bottom: 0;
+}
+.register dt {
+  display: flex;
+  flex: 1;
+  align-items: baseline;
+  font-weight: 650;
+  font-size: 1.05rem;
+}
+.register dt::after {
+  content: '';
+  flex: 1;
+  margin: 0 12px;
+  border-bottom: 2px dotted color-mix(in oklab, var(--leader) 55%, var(--paper));
+  transform: translateY(-0.25em);
+}
+.register dd {
+  margin: 0;
+  font: 800 1.35rem / 1 var(--font-pixel);
+}
+
+.cans {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  max-width: 900px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.can {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  /* Can lid: concentric leader rings on shadow gray. */
+  background:
+    radial-gradient(circle, var(--leader) 0 10%, transparent 10.5%),
+    repeating-radial-gradient(circle, var(--leader) 0 2px, var(--pal-16-1) 2px 9px);
+  box-shadow: inset 0 0 0 10px var(--leader);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+/* The paper tape across the lid, written in grease pencil. */
+.can__tape {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 50%;
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px 10px;
+  background: var(--paper);
+  transform: translateY(-50%) rotate(-4deg);
+  text-align: left;
+}
+.can__label {
+  font: 400 clamp(1.3rem, 2vw, 1.7rem) / 1.05 var(--font-hand);
+  color: var(--ink);
+}
+.can__meta {
+  font: 700 12px / 1.2 var(--font-pixel);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.can.is-active {
+  box-shadow: inset 0 0 0 10px var(--leader), 0 0 0 4px var(--paper), 0 0 0 5px var(--leader);
+}
+.can[aria-disabled='true'] {
+  cursor: not-allowed;
+  background: repeating-radial-gradient(circle, color-mix(in oklab, var(--leader) 55%, var(--emulsion)) 0 2px, var(--emulsion) 2px 9px);
+  box-shadow: inset 0 0 0 10px color-mix(in oklab, var(--leader) 55%, var(--emulsion));
+}
+.can[aria-disabled='true'] .can__tape {
+  background: color-mix(in oklab, var(--paper) 70%, var(--emulsion));
+  transform: translateY(-50%) rotate(3deg);
+}
+
+.faq {
+  max-width: 820px;
+  border-top: var(--hair) solid var(--leader);
+}
+.faq:last-child {
+  border-bottom: var(--hair) solid var(--leader);
+}
+.faq summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  font-size: 1.2rem;
+  font-weight: 650;
+  list-style: none;
+  cursor: pointer;
+}
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+.faq summary::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  flex: none;
+  background:
+    linear-gradient(var(--ink), var(--ink)) center / 12px 2px no-repeat,
+    linear-gradient(var(--ink), var(--ink)) center / 2px 12px no-repeat;
+}
+.faq[open] summary::after {
+  background: linear-gradient(var(--ink), var(--ink)) center / 12px 2px no-repeat;
+}
+.faq p {
+  max-width: 64ch;
+  margin: 0 0 20px;
+}
+
+/* ---------- Tail leader ---------- */
+
+.tail {
+  position: relative;
+  margin-top: 10vh;
+  padding: 40px 24px 28px;
+  background: var(--leader);
+  color: var(--paper);
+}
+.tail::before,
+.tail::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: repeating-linear-gradient(to right, transparent 0 12px, var(--emulsion) 12px 26px);
+}
+.tail::before {
+  top: 10px;
+}
+.tail::after {
+  bottom: 10px;
+}
+.tail__mark {
+  height: 56vh;
+  min-height: 340px;
+}
+.tail__end {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(3rem, 9vw, 6rem);
+  line-height: 0.85;
+  text-transform: uppercase;
+}
+.tail__edge {
+  margin: 12px 0 0;
+  font: 700 12px / 1 var(--font-pixel);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: color-mix(in oklab, var(--paper) 85%, var(--leader));
+}
+
+/* ---------- Narrow ---------- */
+
+/* The phone in landscape too: at 390 px tall the desktop (min-height 880) does not fit, and the
+   absolutely positioned dialog stuck out on the right (horizontal scroll). Same breakpoint as B. */
+@media (max-width: 820px), (orientation: landscape) and (max-height: 500px) {
+  .win {
+    --win-drag: 0;
+  }
+  /* Without dragging, the title bar does not hold on to the finger: swiping over it scrolls the page. */
+  .win__title {
+    touch-action: auto;
+    cursor: default;
+  }
+  .desk {
+    height: auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'slate'
+      'gate'
+      'strip'
+      'cards';
+    padding: 16px 12px;
+  }
+  .slate {
+    flex-direction: column;
+    align-items: start;
+    gap: 8px;
+  }
+  .gate {
+    height: 58svh;
+    padding: 0 18px;
+  }
+  .gate__perfs {
+    width: 18px;
+  }
+  .gate__edge {
+    display: none;
+  }
+  .desk__cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-left: 0;
+  }
+  .desk__cards [data-window='source'] {
+    grid-column: 1 / -1;
+  }
+  .strip__window {
+    --frame-w: 112px;
+  }
+  .dialog {
+    display: none;
+  }
+  .reels {
+    padding: 0 16px;
+  }
+  .lede,
+  .steps {
+    grid-template-columns: 1fr;
+  }
+  .tail {
+    padding: 36px 16px 24px;
+  }
+}
+
+/* Phone in landscape: the gate takes up almost the full height, like the first screen in portrait. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .gate {
+    height: 80svh;
+  }
+}
+
+/* Short screens: the cards drop their secondary lines (the frame and the time are already on the strip). */
+@media (min-width: 821px) and (max-height: 900px) {
+  .clock__wall,
+  .source__meta {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

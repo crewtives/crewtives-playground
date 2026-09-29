@@ -1,0 +1,101 @@
+/* Landing E — "Whale fall": the fall heard as a waterfall spectrogram. */
+
+@font-face {
+  font-family: 'Science Gothic';
+  src: url('./fonts/science-gothic-latin-wdth-wght.woff2') format('woff2');
+  font-weight: 100 900;
+  font-stretch: 50% 200%;
+  font-display: swap;
+}
+
+/* Instrument: Handjet for letters and signs. Its zero, split down the middle, reads as an eight at label
+   sizes ("0:00" passes for "8:88"), so the figures are set in Atkinson Hyperlegible Next, with a slashed
+   zero, at Handjet's cap height. The figures' face is defined last: it wins within its range. */
+@font-face {
+  font-family: 'E Instrument';
+  src: url('./fonts/handjet-latin-wght.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'E Instrument';
+  src: url('./fonts/atkinson-hyperlegible-next-latin-wght.woff2') format('woff2');
+  /* The same weight range as Handjet's face: Chromium only composes faces with equal descriptors. */
+  font-weight: 100 900;
+  unicode-range: U+0030-0039;
+  size-adjust: 95%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  src: url('./fonts/atkinson-hyperlegible-next-latin-wght.woff2') format('woff2');
+  font-weight: 200 800;
+  font-display: swap;
+}
+
+:root,
+[data-world='e'] {
+  /* 16-color palette: the void, the whale's cold channel (back and stars), the disk's heat ramp (which is
+     also the spectrograms' color map), the cyan of the "NOW" and the amber of rewind. */
+  --pal-1bit-0: #05060a;
+  --pal-1bit-1: #f4f1ea;
+
+  --pal-16-0: #05060a; /* void */
+  --pal-16-1: #f4f1ea; /* bone: the whale's belly, text · HOLD */
+  --pal-16-2: #0e1224; /* night */
+  --pal-16-3: #1d2748; /* deep blue: back */
+  --pal-16-4: #3b4f86; /* slate */
+  --pal-16-5: #7f9be0; /* periwinkle: stars, labels */
+  --pal-16-6: #cfe0ff; /* ice */
+  --pal-16-7: #fff0cf; /* photon-ring cream */
+  --pal-16-8: #ffc66b; /* gold */
+  --pal-16-9: #ff8a2e; /* orange */
+  --pal-16-10: #e0461f; /* flame */
+  --pal-16-11: #9c1f1c; /* ember */
+  --pal-16-12: #4a0f16; /* garnet */
+  --pal-16-13: #2fd0e0; /* present · FORWARD (the "NOW" only) */
+  --pal-16-14: #f0a030; /* present · REWIND */
+  --pal-16-15: #6a6f7c; /* gray for axes and grids */
+
+  --accent-forward: #2fd0e0;
+  --accent-rewind: #f0a030;
+  --accent-hold: #f4f1ea;
+
+  /* Viewer: scene roles (all members of --pal-16-*). */
+  --scene-bg: #05060a;
+  --trail: #cfe0ff;
+  --future: #3b4f86;
+  --frustum: #6a6f7c;
+  --trajectory: #3b4f86;
+
+  /* Display: the scene is a void with a very bright disk; a little more chroma so the redshift
+     lands on the heat ramp and not on gray. */
+  --display-chroma: 1.15;
+  --display-exposure: 1.05;
+
+  /* Chrome */
+  --void: #05060a;
+  --night: #0e1224;
+  --deep: #1d2748;
+  --slate: #3b4f86;
+  --periwinkle: #7f9be0;
+  --ice: #cfe0ff;
+  --bone: #f4f1ea;
+  --cream: #fff0cf;
+  --gold: #ffc66b;
+  --orange: #ff8a2e;
+  --flame: #e0461f;
+  --ember: #9c1f1c;
+  --garnet: #4a0f16;
+  --grid: #6a6f7c;
+
+  --font-display: 'Science Gothic', 'Arial Narrow', sans-serif;
+  --font-instrument: 'E Instrument', ui-monospace, monospace;
+  --font-text: 'Atkinson Hyperlegible Next', 'Helvetica Neue', Arial, sans-serif;
+
+  --render-scale: 3;
+  --hair: 1px;
+  --gutter: 24px;
+}

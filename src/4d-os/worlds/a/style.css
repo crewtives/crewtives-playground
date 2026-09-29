@@ -1,0 +1,1308 @@
+/* World A, "Vitrine": the scene hangs in a display case on the wall of a red room.
+   A single hard pixel grid for the render and the chrome: a 3 px unit, pixel type in
+   multiples of 11 px, display cases in multiples of 3 px so the dither blocks line up
+   with the frame. */
+
+:root {
+  --u: 3px;
+  --focus-ring: var(--ink);
+  --on-wall-soft: color-mix(in oklab, var(--wall-ink) 74%, var(--wall));
+  --on-paper-soft: color-mix(in oklab, var(--ink) 70%, var(--paper));
+  --accent-current: var(--accent-hold);
+  /* Width and height in multiples of 3 px: the dither blocks line up with the frame. */
+  --case-w: round(down, 64vw, 3px);
+  --case-h: round(down, calc(var(--case-w) * 9 / 16), 3px);
+  --case-top: calc(var(--u) * 28);
+  --engine-z: 5;
+  scrollbar-color: var(--ink) var(--paper);
+  background: var(--wall);
+  color: var(--wall-ink);
+  font: 400 17px/1.5 var(--font-display);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  caret-color: var(--wall);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 100;
+  padding: 6px 12px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 var(--pixel-size) / 1 var(--font-pixel);
+  text-transform: uppercase;
+}
+
+.skip:focus {
+  top: 12px;
+}
+
+/* Link back to the playground museum, hung in the free band above the windows (y < 24 px). Out of
+   the flow: it moves or resizes no window, view or canvas. Departure Mono includes ←. */
+.playground-back {
+  position: absolute;
+  top: 3px;
+  left: 24px;
+  /* Above all the page content (fixed stages, titles, windows), below the
+     skip link. */
+  z-index: 45;
+  height: var(--win-title-h);
+  padding: 0 calc(var(--u) * 2);
+  background: var(--ink);
+  color: var(--paper);
+  font: 400 var(--pixel-size) / var(--win-title-h) var(--font-pixel);
+  white-space: nowrap;
+  text-decoration: none;
+}
+.playground-back:hover {
+  text-decoration: underline;
+}
+.playground-back:focus-visible {
+  outline-offset: 1px;
+}
+@media (max-width: 760px) {
+  .playground-back {
+    left: 12px;
+  }
+}
+
+/* ------------------------------------------------------------------------------------------
+   Windows: an ink title bar in pixel mono, a paper body, a 1 px border. */
+
+.win {
+  --focus-ring: var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  border: var(--hair) solid var(--ink);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.win__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--u) * 4);
+  height: var(--win-title-h);
+  margin: 0;
+  padding: 0 calc(var(--u) * 2);
+  background: var(--ink);
+  color: var(--paper);
+  font: 400 var(--pixel-size) / 1 var(--font-pixel);
+  letter-spacing: 0;
+  white-space: nowrap;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+/* Touch screen with draggable windows (tablet, phone in landscape): a vertical finger on the
+   bar scrolls the page; a horizontal one drags the window. */
+@media (pointer: coarse) {
+  .win__title {
+    touch-action: pan-y;
+  }
+}
+
+/* The front window carries pixel stripes in its bar, like old desktops;
+   the text keeps a patch of ink so it can be read. */
+.win.is-active .win__title,
+.win:focus-within .win__title {
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--ink) 0 2px,
+    color-mix(in oklab, var(--paper) 42%, var(--ink)) 2px 3px
+  ) 0 3px / 100% calc(100% - 6px) no-repeat,
+    var(--ink);
+}
+
+.win__title > span,
+.win__title > .win__shade {
+  padding: 0 calc(var(--u) * 1);
+  background-color: var(--ink);
+}
+
+.win__title > .win__shade {
+  padding: 0;
+  outline: calc(var(--u) * 1) solid var(--ink);
+}
+
+.win.is-dragging .win__title {
+  cursor: grabbing;
+}
+
+.win__aside {
+  color: color-mix(in oklab, var(--paper) 78%, var(--ink));
+}
+
+.win__body {
+  padding: calc(var(--u) * 3);
+}
+
+.win__body[hidden] {
+  display: none;
+}
+
+/* Shade: the window folds up into its title bar, as on old desktops. */
+.win__shade {
+  width: 11px;
+  height: 11px;
+  margin-right: -3px;
+  padding: 0;
+  border: var(--hair) solid var(--paper);
+  background:
+    linear-gradient(var(--paper), var(--paper)) center / 5px 1px no-repeat,
+    transparent;
+  cursor: pointer;
+  --focus-ring: var(--paper);
+}
+
+.win__shade[aria-expanded='false'] {
+  background:
+    linear-gradient(var(--paper), var(--paper)) center / 5px 1px no-repeat,
+    linear-gradient(var(--paper), var(--paper)) center / 1px 5px no-repeat;
+}
+
+.win-echo {
+  pointer-events: none;
+}
+
+.tag {
+  display: inline-block;
+  margin: 0;
+  padding: 2px 5px 1px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 var(--pixel-size) / 1 var(--font-pixel);
+  text-transform: uppercase;
+  vertical-align: 1px;
+}
+
+.tag--ink {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.btn {
+  padding: 5px 15px 4px;
+  border: var(--hair) solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 var(--pixel-size) / 1 var(--font-pixel);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.btn:active {
+  translate: 0 1px;
+}
+
+/* Pixel controls: 11 px boxes drawn with backgrounds, with no shadows or rounded corners. */
+.field {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  gap: calc(var(--u) * 1);
+}
+
+.field + .field {
+  margin-top: calc(var(--u) * 3);
+  padding-top: calc(var(--u) * 3);
+  border-top: var(--hair) solid color-mix(in oklab, var(--ink) 25%, var(--paper));
+}
+
+.field legend {
+  padding: 0;
+  margin-bottom: calc(var(--u) * 1);
+  font: 400 var(--pixel-size) / 1 var(--font-pixel);
+  text-transform: uppercase;
+  color: var(--on-paper-soft);
+}
+
+.field label {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 2);
+  cursor: pointer;
+}
+
+.field input {
+  appearance: none;
+  flex: none;
+  width: 11px;
+  height: 11px;
+  margin: 0;
+  border: var(--hair) solid var(--ink);
+  background: var(--paper);
+  cursor: pointer;
+}
+
+.field input:checked {
+  background: linear-gradient(var(--ink), var(--ink)) center / 5px 5px no-repeat, var(--paper);
+}
+
+.field input[type='checkbox']:checked {
+  background: linear-gradient(var(--ink), var(--ink)) center / 7px 7px no-repeat, var(--paper);
+}
+
+.field label:hover input:not(:checked) {
+  background: linear-gradient(color-mix(in oklab, var(--ink) 30%, var(--paper)), color-mix(in oklab, var(--ink) 30%, var(--paper))) center / 5px 5px no-repeat, var(--paper);
+}
+
+/* ------------------------------------------------------------------------------------------
+   Room 4: the desktop. */
+
+.desk {
+  position: relative;
+  min-height: max(100svh, calc(var(--case-top) + var(--case-h) + 300px));
+  background: var(--wall);
+  color: var(--wall-ink);
+  --focus-ring: var(--paper);
+}
+
+.case {
+  position: relative;
+  margin: 0;
+}
+
+.desk > .case {
+  position: absolute;
+  left: round(down, calc((100% - var(--case-w)) / 2), 3px);
+  top: var(--case-top);
+  width: var(--case-w);
+  height: var(--case-h);
+}
+
+.case__glass {
+  position: absolute;
+  inset: 0;
+  outline: var(--hair) solid var(--ink);
+  background: var(--scene-bg);
+  cursor: grab;
+}
+
+.case__glass:active {
+  cursor: grabbing;
+}
+
+/* Crop marks at the corners, outside the frame: the display case in the room. */
+.case__crop {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+  --c: var(--wall-ink);
+  background:
+    linear-gradient(var(--c), var(--c)) var(--x) var(--y) / 12px 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) var(--x) var(--y) / 1px 12px no-repeat;
+}
+
+.case__crop--tl { left: -18px; top: -18px; --x: 100%; --y: 100%; }
+.case__crop--tr { right: -18px; top: -18px; --x: 0; --y: 100%; }
+.case__crop--bl { left: -18px; bottom: -18px; --x: 100%; --y: 0; }
+.case__crop--br { right: -18px; bottom: -18px; --x: 0; --y: 0; }
+
+.case__tag {
+  position: absolute;
+  left: 9px;
+  top: 9px;
+  z-index: 10;
+}
+/* Below ~1410 px the Plan window (24 + 230 px from the edge) covers the display case's corner,
+   which starts at 18vw: the badge moves to its right so "Synthetic" reads in full. */
+@media (min-width: 761px) {
+  .case__tag {
+    left: max(9px, calc(24px + 230px + 9px - 18vw));
+  }
+}
+
+.boot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 40;
+  width: 264px;
+  translate: -50% -50%;
+}
+
+.boot__message {
+  margin: 0 0 9px;
+}
+
+.boot__bar {
+  height: 12px;
+  border: var(--hair) solid var(--ink);
+  padding: 2px;
+}
+
+.boot__fill {
+  display: block;
+  height: 100%;
+  width: round(down, calc(var(--progress, 0) * 100%), 3px);
+  background: var(--ink);
+}
+
+.boot__pct {
+  margin: 6px 0 0;
+  font: 400 var(--pixel-size) / 1 var(--font-pixel);
+  text-transform: uppercase;
+  color: var(--on-paper-soft);
+}
+
+.boot.is-error .boot__message {
+  color: var(--wall);
+  font-weight: 600;
+}
+
+.boot.is-error .boot__bar,
+.boot.is-error .boot__pct {
+  display: none;
+}
+
+/* The rail: the timeline hangs below the display case at the same width. Below ~1366 px the display
+   case reaches the label column (Label, 222 px wide, 24 px from the edge): the rail gets shorter so it
+   does not slip underneath and cover the playback state. */
+.rail {
+  position: absolute;
+  left: round(down, calc((100% - var(--case-w)) / 2), 3px);
+  top: calc(var(--case-top) + var(--case-h) + 24px);
+  width: min(var(--case-w), calc(100% - 24px - 222px - 12px - round(down, calc((100% - var(--case-w)) / 2), 3px)));
+}
+
+.rail__body {
+  display: grid;
+  grid-template-columns: 33px auto 1fr auto;
+  align-items: center;
+  gap: calc(var(--u) * 4);
+  padding: calc(var(--u) * 2) calc(var(--u) * 3);
+}
+
+.rail__play {
+  width: 33px;
+  height: 33px;
+  padding: 0;
+  border: 0;
+  background: var(--ink);
+  color: var(--paper);
+  cursor: pointer;
+  --focus-ring: var(--ink);
+}
+
+.rail__play svg {
+  display: block;
+  width: 12px;
+  height: 12px;
+  margin: auto;
+  fill: currentColor;
+  shape-rendering: crispEdges;
+}
+
+.rail__play[aria-pressed='true'] {
+  background: var(--accent-current);
+  color: var(--ink);
+}
+
+.rail__tc {
+  font: 400 var(--pixel-size-2x) / 1 var(--font-pixel);
+  font-variant-numeric: tabular-nums;
+}
+
+.rail__state {
+  min-width: 15ch;
+  font: 400 var(--pixel-size) / 1 var(--font-pixel);
+  text-align: right;
+}
+
+.rail__track {
+  position: relative;
+  height: 33px;
+  cursor: ew-resize;
+  touch-action: none;
+  --focus-ring: var(--ink);
+}
+
+.rail__ruler {
+  position: absolute;
+  inset: 0;
+  border-bottom: var(--hair) solid var(--ink);
+}
+
+.rail__ruler i {
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  height: 6px;
+  background: var(--ink);
+}
+
+.rail__ruler i.is-major {
+  height: 12px;
+}
+
+.rail__ruler b {
+  position: absolute;
+  top: 0;
+  translate: -50% 0;
+  font: 400 var(--pixel-size) / 1 var(--font-pixel);
+  color: var(--on-paper-soft);
+}
+
+.rail__ruler b:first-of-type {
+  translate: 0 0;
+}
+
+.rail__head {
+  position: absolute;
+  top: 12px;
+  bottom: -3px;
+  left: round(down, calc(var(--playhead, 0) * 100%), 1px);
+  width: 3px;
+  margin-left: -1px;
+  background: var(--accent-current);
+  outline: var(--hair) solid var(--ink);
+}
+
+.rail__track.is-scrubbing .rail__head {
+  top: 0;
+}
+
+.desk__title {
+  position: absolute;
+  left: round(down, calc((100% - var(--case-w)) / 2), 3px);
+  top: calc(var(--case-top) + var(--case-h) + 108px);
+  max-width: var(--case-w);
+  margin: 0;
+  font-size: clamp(48px, 6.6vw, 96px);
+  font-weight: 700;
+  line-height: var(--display-leading);
+  letter-spacing: -0.04em;
+  color: var(--wall-ink);
+  text-wrap: balance;
+}
+
+/* Desktop windows in the room's margins. */
+.desk > .win,
+.drawers {
+  position: absolute;
+}
+
+.plan {
+  left: 24px;
+  top: 24px;
+}
+
+.plan .win__body {
+  padding: calc(var(--u) * 2);
+}
+
+.plan__map {
+  display: block;
+  width: 216px;
+  height: 144px;
+  image-rendering: pixelated;
+  background: var(--paper);
+}
+
+.plan__key {
+  display: flex;
+  gap: calc(var(--u) * 4);
+  margin: 6px 0 0;
+  font: 400 var(--pixel-size) / 1 var(--font-pixel);
+  text-transform: uppercase;
+}
+
+.plan__key span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.key {
+  width: 6px;
+  height: 6px;
+}
+
+.key--cat {
+  background: var(--accent-current);
+  outline: var(--hair) solid var(--ink);
+}
+
+.key--camera {
+  background: var(--ink);
+}
+
+.drawers {
+  left: 24px;
+  top: 243px;
+  display: grid;
+  gap: 12px;
+  width: 222px;
+}
+
+.drawers .win {
+  position: relative;
+}
+
+.clock {
+  right: 24px;
+  top: 24px;
+  width: 222px;
+}
+
+.clock__tc {
+  margin: 0;
+  font: 400 var(--pixel-size-2x) / 1 var(--font-pixel);
+  font-size: 33px;
+  font-variant-numeric: tabular-nums;
+}
+
+.clock__frame,
+.clock__wall {
+  margin: 6px 0 0;
+  font: 400 var(--pixel-size) / 1.2 var(--font-pixel);
+  color: var(--on-paper-soft);
+}
+
+.source {
+  right: 24px;
+  top: 165px;
+  width: 222px;
+}
+
+.source .win__body {
+  padding: calc(var(--u) * 1);
+}
+
+.source__frame {
+  width: 212px;
+  aspect-ratio: 16 / 9;
+  background-color: var(--ink);
+  background-repeat: no-repeat;
+}
+
+.label {
+  right: 24px;
+  top: calc(var(--case-top) + var(--case-h) + 24px);
+  width: 222px;
+}
+
+.label__title {
+  margin: 0 0 3px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.label__line {
+  margin: 0 0 6px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.label__maker {
+  margin: 0 0 6px;
+  font-size: 13px;
+  line-height: 1.35;
+  font-style: italic;
+}
+
+.label__credit {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--on-paper-soft);
+}
+
+.label__credit a,
+.foot__text a {
+  color: inherit;
+  text-underline-offset: 2px;
+}
+
+.label__no {
+  margin: 6px 0 0;
+  padding-top: 6px;
+  border-top: var(--hair) solid var(--ink);
+  font: 400 var(--pixel-size) / 1 var(--font-pixel);
+  text-align: right;
+}
+
+.label__dims {
+  margin: 6px 0 0;
+  padding-top: 6px;
+  border-top: var(--hair) solid var(--ink);
+  display: grid;
+  gap: 3px;
+}
+
+.label__dims div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.label__dims dt,
+.label__dims dd {
+  margin: 0;
+  font: 400 var(--pixel-size) / 1.2 var(--font-pixel);
+}
+
+.label__dims dt {
+  text-transform: uppercase;
+  color: var(--on-paper-soft);
+}
+
+.notice {
+  left: 24px;
+  top: 333px;
+  width: 222px;
+}
+
+.notice__body {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 9px 12px;
+  align-items: start;
+}
+
+.notice__body p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.notice__icon {
+  width: 22px;
+  height: 22px;
+  fill: var(--ink);
+  shape-rendering: crispEdges;
+}
+
+.notice__icon .notice__mark {
+  fill: var(--paper);
+}
+
+.notice .btn {
+  grid-column: 2;
+  justify-self: end;
+}
+
+/* ------------------------------------------------------------------------------------------
+   The story page: each chapter is a room, alternating red wall and paper. */
+
+.room {
+  position: relative;
+  padding: calc(var(--u) * 40) 24px calc(var(--u) * 44);
+}
+
+.room--wall {
+  background: var(--wall);
+  color: var(--wall-ink);
+  --focus-ring: var(--paper);
+}
+
+.room--paper {
+  background: var(--paper);
+  color: var(--ink);
+  --focus-ring: var(--ink);
+}
+
+.room--paper ::selection {
+  background: var(--wall);
+  color: var(--paper);
+}
+
+.room > * {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.room__head {
+  display: grid;
+  grid-template-columns: 108px 1fr;
+  align-items: baseline;
+  gap: 24px;
+  margin-bottom: calc(var(--u) * 16);
+}
+
+.room__no {
+  justify-self: start;
+  margin: 0;
+  padding: 5px 9px 4px;
+  border: var(--hair) solid currentColor;
+  font: 400 var(--pixel-size) / 1 var(--font-pixel);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.room__title {
+  margin: 0;
+  font-size: clamp(36px, 5vw, 72px);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.room__body {
+  display: grid;
+  grid-template-columns: minmax(0, 528px) minmax(0, 1fr);
+  gap: calc(var(--u) * 16);
+  align-items: start;
+}
+
+.room__text {
+  max-width: 62ch;
+  font-size: 19px;
+  line-height: 1.5;
+}
+
+.room__text p {
+  margin: 0 0 1em;
+}
+
+.room--wall .room__text {
+  color: var(--wall-ink);
+}
+
+.intro {
+  padding-top: calc(var(--u) * 48);
+}
+
+.intro__title {
+  max-width: 1200px;
+  margin: 0 auto 36px;
+  font-size: clamp(40px, 6.4vw, 96px);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.intro__text {
+  max-width: 58ch;
+  margin-left: max(0px, calc((100% - 1200px) / 2));
+  font-size: 21px;
+  line-height: 1.45;
+}
+
+.case--life {
+  width: round(down, min(528px, calc(100vw - 48px)), 3px);
+  height: round(down, calc(min(528px, calc(100vw - 48px)) * 9 / 16), 3px);
+}
+
+.case__caption {
+  position: absolute;
+  top: calc(100% + 24px);
+  left: 0;
+  right: 0;
+  max-width: 60ch;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--on-wall-soft);
+}
+
+.pipeline {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 36px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.case--figure {
+  aspect-ratio: 16 / 9;
+  margin-bottom: 18px;
+}
+
+.pipeline__video {
+  background-color: var(--ink);
+  background-repeat: no-repeat;
+  cursor: default;
+}
+
+.pipeline__title {
+  margin: 0 0 6px;
+  font-size: 22px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.pipeline__step p {
+  margin: 0;
+  max-width: 40ch;
+  color: var(--on-paper-soft);
+}
+
+.notice-line {
+  max-width: 58ch;
+  margin-left: max(0px, calc((100% - 1200px) / 2));
+  margin-top: 54px;
+  padding-top: 18px;
+  border-top: var(--hair) solid var(--ink);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.notice-line .tag {
+  margin-right: 9px;
+}
+
+/* Room 7: the stage stays fixed while the tall room is traversed by scrolling. */
+.scrolltime {
+  height: 360svh;
+  padding: 0;
+}
+
+.scrolltime__stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 18px;
+  max-width: none;
+  padding: 36px 24px 30px;
+}
+
+.scrolltime .room__head {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.scrolltime__hint {
+  grid-column: 2;
+  margin: 12px 0 0;
+  max-width: 50ch;
+  color: var(--on-wall-soft);
+}
+
+.case--wide {
+  justify-self: center;
+  align-self: center;
+  --wide-w: min(round(down, 88vw, 3px), round(down, calc((100svh - 260px) * 16 / 9), 3px));
+  width: var(--wide-w);
+  height: round(down, calc(var(--wide-w) * 9 / 16), 3px);
+}
+
+.scrolltime__read {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin: 0;
+  font: 400 var(--pixel-size-2x) / 1 var(--font-pixel);
+  font-variant-numeric: tabular-nums;
+}
+
+.scrolltime__read output:last-child {
+  color: var(--accent-current);
+}
+
+/* Room 8: a catalog card, not a dashboard of figures. */
+.catalogue {
+  display: grid;
+  grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+  gap: 48px;
+}
+
+.catalogue__lede {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.5;
+}
+
+.catalogue__entry {
+  margin: 0;
+  border-top: var(--hair) solid var(--ink);
+}
+
+.catalogue__entry div {
+  display: grid;
+  grid-template-columns: 216px 1fr;
+  gap: 24px;
+  padding: 12px 0 11px;
+  border-bottom: var(--hair) solid var(--ink);
+}
+
+.catalogue__entry dt {
+  font: 400 var(--pixel-size) / 1.9 var(--font-pixel);
+  text-transform: uppercase;
+  color: var(--on-paper-soft);
+}
+
+.catalogue__entry dd {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Room 9: the collection's inventory. */
+.scenes {
+  display: grid;
+  gap: 0;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  border-top: var(--hair) solid var(--wall-ink);
+}
+
+.scene {
+  display: grid;
+  grid-template-columns: 144px 1fr auto;
+  align-items: baseline;
+  gap: 24px;
+  width: 100%;
+  padding: 18px 0 17px;
+  border: 0;
+  border-bottom: var(--hair) solid var(--wall-ink);
+  background: none;
+  color: var(--wall-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.scene__no,
+.scene__state {
+  font: 400 var(--pixel-size) / 1 var(--font-pixel);
+  text-transform: uppercase;
+}
+
+.scene__name {
+  font-size: clamp(24px, 3vw, 40px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.scene.is-active .scene__state {
+  padding: 3px 6px 2px;
+  background: var(--wall-ink);
+  color: var(--wall);
+}
+
+.scene[aria-disabled='true'] {
+  cursor: not-allowed;
+  color: var(--on-wall-soft);
+}
+
+.scene[aria-disabled='true'] .scene__name {
+  font-weight: 400;
+}
+
+.scenes__status {
+  max-width: 58ch;
+  margin-left: max(0px, calc((100% - 1200px) / 2));
+  min-height: 1.5em;
+  margin-top: 18px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--on-wall-soft);
+}
+
+/* Room 10: questions. */
+.faq {
+  max-width: 900px;
+  border-top: var(--hair) solid var(--ink);
+}
+
+.faq details {
+  border-bottom: var(--hair) solid var(--ink);
+}
+
+.faq summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 0 17px;
+  font-size: clamp(20px, 2.2vw, 28px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq summary::after {
+  content: '';
+  flex: none;
+  width: 11px;
+  height: 11px;
+  margin-top: 0.5em;
+  background:
+    linear-gradient(currentColor, currentColor) center / 11px 1px no-repeat,
+    linear-gradient(currentColor, currentColor) center / 1px 11px no-repeat;
+}
+
+.faq details[open] summary::after {
+  background: linear-gradient(currentColor, currentColor) center / 11px 1px no-repeat;
+}
+
+.faq p {
+  max-width: 62ch;
+  margin: 0 0 24px;
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+/* Footer: the mark in dotted edges on ink. */
+.foot {
+  display: grid;
+  grid-template-columns: 288px 1fr;
+  align-items: center;
+  gap: 48px;
+  padding: 72px max(24px, calc((100% - 1200px) / 2)) 96px;
+  background: var(--ink);
+  color: var(--paper);
+  --focus-ring: var(--paper);
+}
+
+.foot__mark {
+  width: 288px;
+  height: 288px;
+}
+
+.foot__text p {
+  margin: 0 0 6px;
+  max-width: 60ch;
+  font-size: 14px;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--paper) 74%, var(--ink));
+}
+
+.foot__text .foot__name {
+  margin-bottom: 18px;
+  font: 700 clamp(48px, 7vw, 96px) / 0.9 var(--font-display);
+  letter-spacing: -0.04em;
+  color: var(--paper);
+}
+
+/* ------------------------------------------------------------------------------------------
+   Narrow screens: the display case full width and the windows stacked below, without dragging. */
+
+@media (max-width: 760px) {
+  :root {
+    --case-w: round(down, calc(100vw - 24px), 3px);
+    --case-top: 60px;
+  }
+
+  /* Without dragging, the title bar does not hold on to the finger: swiping over it scrolls the page. */
+  .win__title {
+    touch-action: auto;
+    cursor: default;
+  }
+
+  body {
+    font-size: 16px;
+  }
+
+  .desk {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+    padding: 12px 12px 36px;
+  }
+
+  .desk > .case {
+    position: relative;
+    left: auto;
+    top: auto;
+    align-self: center;
+    margin: 18px 0 12px;
+    order: 1;
+  }
+
+  .desk > .win,
+  .drawers {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    width: auto;
+    --win-drag: 0;
+  }
+
+  .desk .win {
+    --win-drag: 0;
+  }
+
+  .rail {
+    order: 2;
+    left: auto;
+    top: auto;
+    width: 100%;
+    position: relative;
+  }
+
+  .rail__body {
+    grid-template-columns: 33px 1fr auto;
+    grid-template-areas:
+      'play tc state'
+      'track track track';
+    row-gap: 6px;
+  }
+
+  .rail__play { grid-area: play; }
+  .rail__tc { grid-area: tc; }
+  .rail__state { grid-area: state; min-width: 0; }
+  .rail__track { grid-area: track; }
+
+  .desk__title {
+    order: 3;
+    position: relative;
+    left: auto;
+    top: auto;
+    margin: 12px 0 6px;
+    font-size: 48px;
+  }
+
+  .label { order: 4; }
+  .clock { order: 5; }
+  .source { order: 6; }
+  .drawers { order: 7; width: auto; }
+  .plan { order: 8; }
+  .notice { order: 9; }
+
+  .source__frame {
+    width: 100%;
+  }
+
+  /* With a 12 px margin, the crop marks move closer to the frame so they do not overflow. */
+  .case__crop {
+    width: 8px;
+    height: 8px;
+    background:
+      linear-gradient(var(--c), var(--c)) var(--x) var(--y) / 8px 1px no-repeat,
+      linear-gradient(var(--c), var(--c)) var(--x) var(--y) / 1px 8px no-repeat;
+  }
+
+  .case__crop--tl { left: -11px; top: -11px; }
+  .case__crop--tr { right: -11px; top: -11px; }
+  .case__crop--bl { left: -11px; bottom: -11px; }
+  .case__crop--br { right: -11px; bottom: -11px; }
+
+  .plan__map {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+  }
+
+  .room {
+    padding: 72px 20px 84px;
+  }
+
+  /* The room number sits on the title's line, never above it. */
+  .room__head {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .room__no {
+    padding: 4px 6px 3px;
+  }
+
+  .scrolltime__hint {
+    grid-column: 1 / -1;
+  }
+
+  .scrolltime {
+    padding: 0;
+  }
+
+  .scrolltime__stage {
+    padding: 24px 20px;
+    grid-template-rows: auto auto auto;
+    align-content: center;
+  }
+
+  /* Vertical display case: it fills the stage and the reading sits right below. */
+  .case--wide {
+    --wide-w: min(round(down, calc(100vw - 40px), 3px), round(down, calc((100svh - 220px) * 3 / 4), 3px));
+    height: round(down, calc(var(--wide-w) * 4 / 3), 3px);
+  }
+
+  .room__body,
+  .pipeline,
+  .catalogue,
+  .foot {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .case__caption {
+    position: static;
+    margin-top: 12px;
+  }
+
+  .catalogue__entry div,
+  .scene {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .scene__state {
+    justify-self: start;
+  }
+
+  .foot {
+    padding: 48px 20px 72px;
+  }
+
+  .foot__mark {
+    width: 216px;
+    height: 216px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn:active {
+    translate: none;
+  }
+}

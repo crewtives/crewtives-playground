@@ -1,0 +1,24 @@
+schema: spec-driven
+
+context: |
+  Language: en
+  All artifacts must be written in English (US spelling).
+  Keep OpenSpec structural headings and SHALL/MUST keywords in English.
+
+  This repository is public and meant to be read and learned from. Write for a reader
+  who was not part of the work:
+  - State requirements and decisions with their rationale, never who asked for them
+    ("the user said/asked/confirmed"). The person using a page is "the visitor".
+  - No machine-local details: no home, scratchpad or temp paths, local ports, preview or
+    workers.dev URLs, deployment/version IDs, account names, or agent/session/worktree names.
+  - Reference code by repo-relative path and design decisions as "<change-name> Dn".
+  - Stack: Vite, strict vanilla TypeScript, three.js (WebGL2), GSAP + Lenis on story pages,
+    Vitest; deployed as an assets-only Cloudflare Worker. All UI copy is English.
+  - Third-party assets: OFL-1.1/Apache-2.0 fonts, CC0/CC-BY models, each with a row in
+    LICENSES.md; CC-BY credits are shown on the page that uses them.
+
+rules:
+  tasks:
+    - Each task states a verifiable outcome and the command or check that proves it.
+  design:
+    - Each decision records the main alternative considered and why it was rejected.

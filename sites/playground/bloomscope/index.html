@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%23f39a1a' stroke='%231b0f2e' stroke-width='1.4'/%3E%3Ccircle cx='8' cy='8' r='4.2' fill='%23fdfdf6' stroke='%231b0f2e' stroke-width='1'/%3E%3Cpath d='M6.3 1.2h3.4L8 4z' fill='%23e8175d' stroke='%231b0f2e' stroke-width='.8' stroke-linejoin='round'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="../../../src/playground/bloomscope/tokens.css" />
+    <link rel="stylesheet" href="../../../src/playground/bloomscope/style.css" />
+    <title>Bloomscope · crewtives playground</title>
+    <meta
+      name="description"
+      content="A kaleidoscope loaded with flowers, succulents and honeycomb grown from equations in your browser, three growing toys, and the five worlds of 4D.OS."
+    />
+    <meta name="theme-color" content="#c8f03c" />
+  </head>
+  <body>
+    <svg class="sprite" aria-hidden="true" focusable="false">
+      <!-- "Baguette" gem for the text buttons: flat facets and an ink outline. -->
+      <symbol id="gem-bag" overflow="visible">
+        <rect width="100%" height="100%" style="fill: var(--g-base)" />
+        <rect width="100%" height="36%" style="fill: var(--g-lt)" />
+        <rect y="68%" width="100%" height="32%" style="fill: var(--g-dk)" />
+        <g transform="translate(14 3)"><rect width="100%" height="1.5" style="fill: var(--g-hi)" /></g>
+        <svg width="14" height="100%" viewBox="0 0 14 48" preserveAspectRatio="none">
+          <polygon points="0,24 14,0 14,24" style="fill: var(--g-hi)" />
+          <polygon points="0,24 14,24 14,48" style="fill: var(--g-deep)" />
+          <polyline points="14,0 0,24 14,48" fill="none" style="stroke: var(--ink)" stroke-width="3" vector-effect="non-scaling-stroke" />
+        </svg>
+        <g transform="translate(-14 0)">
+          <svg x="100%" width="14" height="100%" viewBox="0 0 14 48" preserveAspectRatio="none">
+            <polygon points="0,0 14,24 0,24" style="fill: var(--g-lt)" />
+            <polygon points="0,24 14,24 0,48" style="fill: var(--g-deep)" />
+            <polyline points="0,0 14,24 0,48" fill="none" style="stroke: var(--ink)" stroke-width="3" vector-effect="non-scaling-stroke" />
+          </svg>
+        </g>
+        <rect width="100%" height="2" style="fill: var(--ink)" />
+        <g transform="translate(0 -2)"><rect y="100%" width="100%" height="2" style="fill: var(--ink)" /></g>
+      </symbol>
+      <!-- Custom stroked icons: 1.75 px, round caps. -->
+      <symbol id="i-down" viewBox="0 0 20 20">
+        <path d="M10 3.5v12M4.5 10.5 10 16l5.5-5.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-right" viewBox="0 0 20 20">
+        <path d="M3.5 10h12M10.5 4.5 16 10l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-left" viewBox="0 0 20 20">
+        <path d="M16.5 10h-12M9.5 4.5 4 10l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-link" viewBox="0 0 20 20">
+        <path
+          d="M8.5 11.5a3.2 3.2 0 0 0 4.6 0l3-3a3.2 3.2 0 0 0-4.6-4.6l-1 1M11.5 8.5a3.2 3.2 0 0 0-4.6 0l-3 3a3.2 3.2 0 0 0 4.6 4.6l1-1"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </symbol>
+      <symbol id="i-speaker-off" viewBox="0 0 20 20">
+        <path d="M3 8h3l4-3.5v11L6 12H3z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+        <path d="M13 7.5l5 5M18 7.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+      </symbol>
+      <symbol id="i-speaker-on" viewBox="0 0 20 20">
+        <path d="M3 8h3l4-3.5v11L6 12H3z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+        <path d="M13 7a4.2 4.2 0 0 1 0 6M15.5 4.5a7.8 7.8 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+      </symbol>
+      <symbol id="i-seed" viewBox="0 0 20 20">
+        <path d="M10 3c3 2.5 4.2 5.8 3.2 9-.6 2-1.8 3.6-3.2 5-1.4-1.4-2.6-3-3.2-5-1-3.2.2-6.5 3.2-9z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" />
+        <path d="M10 7.5v6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+      </symbol>
+      <symbol id="i-drop" viewBox="0 0 20 20">
+        <path d="M10 2.8c2.6 3.4 5 6.3 5 9.2a5 5 0 0 1-10 0c0-2.9 2.4-5.8 5-9.2z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" />
+        <path d="M7.6 12.4a2.4 2.4 0 0 0 2 2.2" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+      </symbol>
+      <!-- Bronze rim of the peepholes: the same ring as the eyepiece, at a small size. -->
+      <symbol id="peep-rim" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="46" fill="none" style="stroke: var(--honey)" stroke-width="7" />
+        <circle cx="50" cy="50" r="46" fill="none" style="stroke: var(--propolis)" stroke-width="2.6" stroke-dasharray="1.2 3.6" />
+        <circle cx="50" cy="50" r="49.3" fill="none" style="stroke: var(--ink)" stroke-width="1.4" />
+        <circle cx="50" cy="50" r="42.6" fill="none" style="stroke: var(--ink)" stroke-width="1.4" />
+        <polygon points="46.5,0.6 53.5,0.6 50,6.5" style="fill: var(--now); stroke: var(--ink)" stroke-width="1.2" stroke-linejoin="round" />
+      </symbol>
+      <!-- Specimen chips for the chamber tray. -->
+      <symbol id="chip-sunflower" viewBox="0 0 24 24">
+        <g style="fill: var(--pollen); stroke: var(--ink)" stroke-width="1">
+          <path d="M12 1.5l2 5.2h-4zM12 22.5l-2-5.2h4zM1.5 12l5.2-2v4zM22.5 12l-5.2 2v-4zM4.6 4.6l5 2.3-2.7 2.7zM19.4 19.4l-5-2.3 2.7-2.7zM19.4 4.6l-2.3 5-2.7-2.7zM4.6 19.4l2.3-5 2.7 2.7z" />
+        </g>
+        <circle cx="12" cy="12" r="5.6" style="fill: var(--propolis); stroke: var(--ink)" stroke-width="1" />
+        <g style="fill: var(--chartreuse)">
+          <circle cx="12" cy="12" r="0.9" /><circle cx="13.9" cy="10.6" r="0.9" /><circle cx="10.2" cy="14.1" r="0.9" /><circle cx="11" cy="9.3" r="0.9" /><circle cx="14.6" cy="13.7" r="0.9" /><circle cx="9.1" cy="11.6" r="0.9" />
+        </g>
+      </symbol>
+      <symbol id="chip-echeveria" viewBox="0 0 24 24">
+        <g style="stroke: var(--ink)" stroke-width="1" stroke-linejoin="round">
+          <path d="M12 12 7 3.5a5 5 0 0 1 10 0z" style="fill: var(--glaucous)" transform="rotate(0 12 12)" />
+          <path d="M12 12 7 3.5a5 5 0 0 1 10 0z" style="fill: var(--glaucous)" transform="rotate(72 12 12)" />
+          <path d="M12 12 7 3.5a5 5 0 0 1 10 0z" style="fill: var(--glaucous)" transform="rotate(144 12 12)" />
+          <path d="M12 12 7 3.5a5 5 0 0 1 10 0z" style="fill: var(--glaucous)" transform="rotate(216 12 12)" />
+          <path d="M12 12 7 3.5a5 5 0 0 1 10 0z" style="fill: var(--glaucous)" transform="rotate(288 12 12)" />
+          <path d="M12 12 9.2 6.5a3 3 0 0 1 5.6 0z" style="fill: var(--lilac)" transform="rotate(36 12 12)" />
+          <path d="M12 12 9.2 6.5a3 3 0 0 1 5.6 0z" style="fill: var(--lilac)" transform="rotate(180 12 12)" />
+          <path d="M12 12 9.2 6.5a3 3 0 0 1 5.6 0z" style="fill: var(--lilac)" transform="rotate(300 12 12)" />
+        </g>
+      </symbol>
+      <symbol id="chip-aloe" viewBox="0 0 24 24">
+        <g style="fill: var(--leaf); stroke: var(--ink)" stroke-width="1" stroke-linejoin="round">
+          <path d="M12 12 10.4 2.2 15.2 3.6z" transform="rotate(0 12 12)" />
+          <path d="M12 12 10.4 2.2 15.2 3.6z" transform="rotate(72 12 12)" />
+          <path d="M12 12 10.4 2.2 15.2 3.6z" transform="rotate(144 12 12)" />
+          <path d="M12 12 10.4 2.2 15.2 3.6z" transform="rotate(216 12 12)" />
+          <path d="M12 12 10.4 2.2 15.2 3.6z" transform="rotate(288 12 12)" />
+        </g>
+        <g style="fill: var(--chartreuse); stroke: var(--ink)" stroke-width="0.8" stroke-linejoin="round">
+          <path d="M12 12 11.2 6.2 14 7z" transform="rotate(36 12 12)" />
+          <path d="M12 12 11.2 6.2 14 7z" transform="rotate(108 12 12)" />
+          <path d="M12 12 11.2 6.2 14 7z" transform="rotate(180 12 12)" />
+          <path d="M12 12 11.2 6.2 14 7z" transform="rotate(252 12 12)" />
+          <path d="M12 12 11.2 6.2 14 7z" transform="rotate(324 12 12)" />
+        </g>
+      </symbol>
+      <symbol id="chip-comb" viewBox="0 0 24 24">
+        <g style="fill: var(--honey); stroke: var(--ink)" stroke-width="1" stroke-linejoin="round">
+          <path d="M12 7.4 15.4 9.4v4L12 15.4 8.6 13.4v-4z" />
+          <path d="M12 7.4 15.4 9.4v4L12 15.4 8.6 13.4v-4z" transform="translate(0 -8)" />
+          <path d="M12 7.4 15.4 9.4v4L12 15.4 8.6 13.4v-4z" transform="translate(6.9 -4)" />
+          <path d="M12 7.4 15.4 9.4v4L12 15.4 8.6 13.4v-4z" transform="translate(6.9 4)" />
+          <path d="M12 7.4 15.4 9.4v4L12 15.4 8.6 13.4v-4z" transform="translate(0 8)" style="fill: var(--sheet)" />
+          <path d="M12 7.4 15.4 9.4v4L12 15.4 8.6 13.4v-4z" transform="translate(-6.9 4)" />
+          <path d="M12 7.4 15.4 9.4v4L12 15.4 8.6 13.4v-4z" transform="translate(-6.9 -4)" />
+        </g>
+      </symbol>
+      <symbol id="chip-head" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10.5" style="fill: var(--honey); stroke: var(--ink)" stroke-width="1" />
+        <g style="fill: var(--ink)">
+          <circle cx="12" cy="12" r="1" /><circle cx="10.3" cy="13.6" r="1" /><circle cx="14.2" cy="12.9" r="1" /><circle cx="10.8" cy="9.4" r="1" />
+          <circle cx="15.1" cy="9.6" r="1" /><circle cx="7.7" cy="12.1" r="1" /><circle cx="13" cy="16.4" r="1" /><circle cx="17" cy="14.6" r="1" />
+          <circle cx="8.1" cy="16.2" r="1" /><circle cx="13.4" cy="6.4" r="1" /><circle cx="6.8" cy="8.2" r="1" /><circle cx="17.9" cy="8.3" r="1" />
+        </g>
+      </symbol>
+    </svg>
+
+    <header class="topbar">
+      <a class="wordmark" href="/">crewtives playground</a>
+      <nav class="sections-nav" aria-label="Sections">
+        <ul>
+          <li><a href="#scope">Scope</a></li>
+          <li><a href="#worlds">Worlds</a></li>
+          <li><a href="#sow">Sow</a></li>
+          <li><a href="#lathe">Lathe</a></li>
+          <li><a href="#hive">Hive</a></li>
+        </ul>
+      </nav>
+      <button class="gem gem--small glass-clear sound-toggle" type="button" aria-pressed="false">
+        <svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg>
+        <svg class="icon icon-off" aria-hidden="true" focusable="false"><use href="#i-speaker-off" /></svg>
+        <svg class="icon icon-on" aria-hidden="true" focusable="false"><use href="#i-speaker-on" /></svg>
+        <span class="gem-text sound-label">Sound off</span>
+      </button>
+    </header>
+
+    <main>
+      <section id="scope" class="field hero" aria-labelledby="scope-title">
+        <canvas class="vogel" aria-hidden="true"></canvas>
+
+        <div class="hero-copy">
+          <h1 id="scope-title" class="slab hero-title"><span>Turn the</span> <span>garden.</span></h1>
+          <p class="hero-sub">
+            A kaleidoscope loaded with flowers, succulents and honeycomb, each grown from an equation in your browser. Drag the
+            brass ring to turn it; flick it to tumble what's inside.
+          </p>
+          <p class="ring-hint" aria-hidden="true">
+            <span>Drag the brass ring</span>
+            <svg class="hint-arrow" viewBox="0 0 80 44" focusable="false">
+              <path d="M4 34c18 8 44 6 66-16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+              <path d="M60 17.5 70.5 17l-1.5 10.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </p>
+
+          <div class="scope">
+            <div
+              class="ring-hit"
+              role="slider"
+              tabindex="0"
+              aria-label="Brass ring, turns the barrel"
+              aria-valuemin="0"
+              aria-valuemax="359"
+              aria-valuenow="0"
+              aria-valuetext="0 degrees"
+              aria-keyshortcuts="ArrowLeft ArrowRight Shift+ArrowLeft Shift+ArrowRight Space 1 2 3 4 E"
+            ></div>
+            <div class="eyepiece" role="img" aria-label="Five-fold kaleidoscope holding a sunflower, an echeveria, an aloe and 18 glass beads"></div>
+            <svg class="ring-art" viewBox="0 0 776 776" aria-hidden="true" focusable="false">
+              <circle class="ring-band" cx="388" cy="388" r="373" />
+              <defs>
+                <!-- Window light fixed at the top left: the diagonal cut does not turn with the drum (main.ts counter-rotates it). -->
+                <linearGradient id="knurl-lit-cw" class="knurl-light" gradientUnits="userSpaceOnUse" x1="0" y1="776" x2="776" y2="0">
+                  <stop class="knurl-hi" offset="0.5" /><stop class="knurl-lo" offset="0.5" />
+                </linearGradient>
+                <linearGradient id="knurl-lit-ccw" class="knurl-light" gradientUnits="userSpaceOnUse" x1="0" y1="776" x2="776" y2="0">
+                  <stop class="knurl-lo" offset="0.5" /><stop class="knurl-hi" offset="0.5" />
+                </linearGradient>
+              </defs>
+              <g class="knurl">
+                <path class="knurl-ccw" fill="url(#knurl-lit-ccw)" d="M376.7 28.2L388.0 28.0L388.0 2.0L375.9 2.2ZM408.1 28.6L419.4 29.4L421.6 3.5L409.5 2.6ZM439.3 31.7L450.5 33.5L455.0 7.9L443.1 5.9ZM470.2 37.5L481.2 40.3L487.9 15.2L476.1 12.2ZM500.4 46.0L511.1 49.7L520.0 25.3L508.6 21.3ZM529.8 57.1L540.1 61.7L551.1 38.2L540.1 33.2ZM558.1 70.7L568.0 76.2L581.0 53.7L570.4 47.8ZM585.1 86.8L594.5 93.1L609.4 71.8L599.4 65.0ZM610.6 105.1L619.4 112.2L636.1 92.3L626.7 84.7ZM634.4 125.6L642.6 133.4L660.9 115.1L652.2 106.6ZM656.4 148.0L663.8 156.6L683.7 139.9L675.8 130.7ZM676.3 172.4L682.9 181.5L704.2 166.6L697.1 156.8ZM694.0 198.3L699.8 208.0L722.3 195.0L716.1 184.6ZM709.3 225.7L714.3 235.9L737.8 224.9L732.5 214.0ZM722.3 254.3L726.3 264.9L750.7 256.0L746.4 244.7ZM732.6 283.9L735.7 294.8L760.8 288.1L757.5 276.4ZM740.4 314.4L742.5 325.5L768.1 321.0L765.8 309.1ZM745.5 345.4L746.6 356.6L772.5 354.4L771.3 342.3ZM747.8 376.7L748.0 388.0L774.0 388.0L773.8 375.9ZM747.4 408.1L746.6 419.4L772.5 421.6L773.4 409.5ZM744.3 439.3L742.5 450.5L768.1 455.0L770.1 443.1ZM738.5 470.2L735.7 481.2L760.8 487.9L763.8 476.1ZM730.0 500.4L726.3 511.1L750.7 520.0L754.7 508.6ZM718.9 529.8L714.3 540.1L737.8 551.1L742.8 540.1ZM705.3 558.1L699.8 568.0L722.3 581.0L728.2 570.4ZM689.2 585.1L682.9 594.5L704.2 609.4L711.0 599.4ZM670.9 610.6L663.8 619.4L683.7 636.1L691.3 626.7ZM650.4 634.4L642.6 642.6L660.9 660.9L669.4 652.2ZM628.0 656.4L619.4 663.8L636.1 683.7L645.3 675.8ZM603.6 676.3L594.5 682.9L609.4 704.2L619.2 697.1ZM577.7 694.0L568.0 699.8L581.0 722.3L591.4 716.1ZM550.3 709.3L540.1 714.3L551.1 737.8L562.0 732.5ZM521.7 722.3L511.1 726.3L520.0 750.7L531.3 746.4ZM492.1 732.6L481.2 735.7L487.9 760.8L499.6 757.5ZM461.6 740.4L450.5 742.5L455.0 768.1L466.9 765.8ZM430.6 745.5L419.4 746.6L421.6 772.5L433.7 771.3ZM399.3 747.8L388.0 748.0L388.0 774.0L400.1 773.8ZM367.9 747.4L356.6 746.6L354.4 772.5L366.5 773.4ZM336.7 744.3L325.5 742.5L321.0 768.1L332.9 770.1ZM305.8 738.5L294.8 735.7L288.1 760.8L299.9 763.8ZM275.6 730.0L264.9 726.3L256.0 750.7L267.4 754.7ZM246.2 718.9L235.9 714.3L224.9 737.8L235.9 742.8ZM217.9 705.3L208.0 699.8L195.0 722.3L205.6 728.2ZM190.9 689.2L181.5 682.9L166.6 704.2L176.6 711.0ZM165.4 670.9L156.6 663.8L139.9 683.7L149.3 691.3ZM141.6 650.4L133.4 642.6L115.1 660.9L123.8 669.4ZM119.6 628.0L112.2 619.4L92.3 636.1L100.2 645.3ZM99.7 603.6L93.1 594.5L71.8 609.4L78.9 619.2ZM82.0 577.7L76.2 568.0L53.7 581.0L59.9 591.4ZM66.7 550.3L61.7 540.1L38.2 551.1L43.5 562.0ZM53.7 521.7L49.7 511.1L25.3 520.0L29.6 531.3ZM43.4 492.1L40.3 481.2L15.2 487.9L18.5 499.6ZM35.6 461.6L33.5 450.5L7.9 455.0L10.2 466.9ZM30.5 430.6L29.4 419.4L3.5 421.6L4.7 433.7ZM28.2 399.3L28.0 388.0L2.0 388.0L2.2 400.1ZM28.6 367.9L29.4 356.6L3.5 354.4L2.6 366.5ZM31.7 336.7L33.5 325.5L7.9 321.0L5.9 332.9ZM37.5 305.8L40.3 294.8L15.2 288.1L12.2 299.9ZM46.0 275.6L49.7 264.9L25.3 256.0L21.3 267.4ZM57.1 246.2L61.7 235.9L38.2 224.9L33.2 235.9ZM70.7 217.9L76.2 208.0L53.7 195.0L47.8 205.6ZM86.8 190.9L93.1 181.5L71.8 166.6L65.0 176.6ZM105.1 165.4L112.2 156.6L92.3 139.9L84.7 149.3ZM125.6 141.6L133.4 133.4L115.1 115.1L106.6 123.8ZM148.0 119.6L156.6 112.2L139.9 92.3L130.7 100.2ZM172.4 99.7L181.5 93.1L166.6 71.8L156.8 78.9ZM198.3 82.0L208.0 76.2L195.0 53.7L184.6 59.9ZM225.7 66.7L235.9 61.7L224.9 38.2L214.0 43.5ZM254.3 53.7L264.9 49.7L256.0 25.3L244.7 29.6ZM283.9 43.4L294.8 40.3L288.1 15.2L276.4 18.5ZM314.4 35.6L325.5 33.5L321.0 7.9L309.1 10.2ZM345.4 30.5L356.6 29.4L354.4 3.5L342.3 4.7Z" />
+                <path class="knurl-cw" fill="url(#knurl-lit-cw)" d="M388.0 28.0L399.3 28.2L400.1 2.2L388.0 2.0ZM419.4 29.4L430.6 30.5L433.7 4.7L421.6 3.5ZM450.5 33.5L461.6 35.6L466.9 10.2L455.0 7.9ZM481.2 40.3L492.1 43.4L499.6 18.5L487.9 15.2ZM511.1 49.7L521.7 53.7L531.3 29.6L520.0 25.3ZM540.1 61.7L550.3 66.7L562.0 43.5L551.1 38.2ZM568.0 76.2L577.7 82.0L591.4 59.9L581.0 53.7ZM594.5 93.1L603.6 99.7L619.2 78.9L609.4 71.8ZM619.4 112.2L628.0 119.6L645.3 100.2L636.1 92.3ZM642.6 133.4L650.4 141.6L669.4 123.8L660.9 115.1ZM663.8 156.6L670.9 165.4L691.3 149.3L683.7 139.9ZM682.9 181.5L689.2 190.9L711.0 176.6L704.2 166.6ZM699.8 208.0L705.3 217.9L728.2 205.6L722.3 195.0ZM714.3 235.9L718.9 246.2L742.8 235.9L737.8 224.9ZM726.3 264.9L730.0 275.6L754.7 267.4L750.7 256.0ZM735.7 294.8L738.5 305.8L763.8 299.9L760.8 288.1ZM742.5 325.5L744.3 336.7L770.1 332.9L768.1 321.0ZM746.6 356.6L747.4 367.9L773.4 366.5L772.5 354.4ZM748.0 388.0L747.8 399.3L773.8 400.1L774.0 388.0ZM746.6 419.4L745.5 430.6L771.3 433.7L772.5 421.6ZM742.5 450.5L740.4 461.6L765.8 466.9L768.1 455.0ZM735.7 481.2L732.6 492.1L757.5 499.6L760.8 487.9ZM726.3 511.1L722.3 521.7L746.4 531.3L750.7 520.0ZM714.3 540.1L709.3 550.3L732.5 562.0L737.8 551.1ZM699.8 568.0L694.0 577.7L716.1 591.4L722.3 581.0ZM682.9 594.5L676.3 603.6L697.1 619.2L704.2 609.4ZM663.8 619.4L656.4 628.0L675.8 645.3L683.7 636.1ZM642.6 642.6L634.4 650.4L652.2 669.4L660.9 660.9ZM619.4 663.8L610.6 670.9L626.7 691.3L636.1 683.7ZM594.5 682.9L585.1 689.2L599.4 711.0L609.4 704.2ZM568.0 699.8L558.1 705.3L570.4 728.2L581.0 722.3ZM540.1 714.3L529.8 718.9L540.1 742.8L551.1 737.8ZM511.1 726.3L500.4 730.0L508.6 754.7L520.0 750.7ZM481.2 735.7L470.2 738.5L476.1 763.8L487.9 760.8ZM450.5 742.5L439.3 744.3L443.1 770.1L455.0 768.1ZM419.4 746.6L408.1 747.4L409.5 773.4L421.6 772.5ZM388.0 748.0L376.7 747.8L375.9 773.8L388.0 774.0ZM356.6 746.6L345.4 745.5L342.3 771.3L354.4 772.5ZM325.5 742.5L314.4 740.4L309.1 765.8L321.0 768.1ZM294.8 735.7L283.9 732.6L276.4 757.5L288.1 760.8ZM264.9 726.3L254.3 722.3L244.7 746.4L256.0 750.7ZM235.9 714.3L225.7 709.3L214.0 732.5L224.9 737.8ZM208.0 699.8L198.3 694.0L184.6 716.1L195.0 722.3ZM181.5 682.9L172.4 676.3L156.8 697.1L166.6 704.2ZM156.6 663.8L148.0 656.4L130.7 675.8L139.9 683.7ZM133.4 642.6L125.6 634.4L106.6 652.2L115.1 660.9ZM112.2 619.4L105.1 610.6L84.7 626.7L92.3 636.1ZM93.1 594.5L86.8 585.1L65.0 599.4L71.8 609.4ZM76.2 568.0L70.7 558.1L47.8 570.4L53.7 581.0ZM61.7 540.1L57.1 529.8L33.2 540.1L38.2 551.1ZM49.7 511.1L46.0 500.4L21.3 508.6L25.3 520.0ZM40.3 481.2L37.5 470.2L12.2 476.1L15.2 487.9ZM33.5 450.5L31.7 439.3L5.9 443.1L7.9 455.0ZM29.4 419.4L28.6 408.1L2.6 409.5L3.5 421.6ZM28.0 388.0L28.2 376.7L2.2 375.9L2.0 388.0ZM29.4 356.6L30.5 345.4L4.7 342.3L3.5 354.4ZM33.5 325.5L35.6 314.4L10.2 309.1L7.9 321.0ZM40.3 294.8L43.4 283.9L18.5 276.4L15.2 288.1ZM49.7 264.9L53.7 254.3L29.6 244.7L25.3 256.0ZM61.7 235.9L66.7 225.7L43.5 214.0L38.2 224.9ZM76.2 208.0L82.0 198.3L59.9 184.6L53.7 195.0ZM93.1 181.5L99.7 172.4L78.9 156.8L71.8 166.6ZM112.2 156.6L119.6 148.0L100.2 130.7L92.3 139.9ZM133.4 133.4L141.6 125.6L123.8 106.6L115.1 115.1ZM156.6 112.2L165.4 105.1L149.3 84.7L139.9 92.3ZM181.5 93.1L190.9 86.8L176.6 65.0L166.6 71.8ZM208.0 76.2L217.9 70.7L205.6 47.8L195.0 53.7ZM235.9 61.7L246.2 57.1L235.9 33.2L224.9 38.2ZM264.9 49.7L275.6 46.0L267.4 21.3L256.0 25.3ZM294.8 40.3L305.8 37.5L299.9 12.2L288.1 15.2ZM325.5 33.5L336.7 31.7L332.9 5.9L321.0 7.9ZM356.6 29.4L367.9 28.6L366.5 2.6L354.4 3.5Z" />
+              </g>
+              <circle class="ring-edge" cx="388" cy="388" r="386.5" />
+              <circle class="ring-edge" cx="388" cy="388" r="359" />
+              <polygon class="now-notch" points="377,-8 399,-8 388,14" />
+            </svg>
+            <p class="readout" aria-hidden="true"><span class="readout-text">D5 · 0° · 3 specimens · 18 beads</span></p>
+            <figure class="inset">
+              <div class="inset-view" role="img" aria-label="What the mirrors see: the object cell without mirrors, turning under two fixed mirror lines"></div>
+              <svg class="inset-lines" viewBox="-1 -1 2 2" aria-hidden="true" focusable="false"></svg>
+              <figcaption>What the <br />mirrors see</figcaption>
+            </figure>
+          </div>
+
+          <fieldset class="mirrors">
+            <legend class="sr-only">Mirrors</legend>
+            <label class="mirror glass-lilac">
+              <input type="radio" name="mirror" value="d3" />
+              <svg class="hexgem" viewBox="0 0 56 56" aria-hidden="true" focusable="false">
+                <polygon class="f-hi" points="5.5,15 28,2 28,14 15.9,21" />
+                <polygon class="f-lt" points="28,2 50.5,15 40.1,21 28,14" />
+                <polygon class="f-base" points="50.5,15 50.5,41 40.1,35 40.1,21" />
+                <polygon class="f-deep" points="50.5,41 28,54 28,42 40.1,35" />
+                <polygon class="f-dk" points="28,54 5.5,41 15.9,35 28,42" />
+                <polygon class="f-lt" points="5.5,41 5.5,15 15.9,21 15.9,35" />
+                <polygon class="f-table" points="28,14 40.1,21 40.1,35 28,42 15.9,35 15.9,21" />
+                <polygon class="glint" points="19,23 27,18.5 22,27" />
+                <g class="sym">
+                  <circle cx="28" cy="23.4" r="3.4" /><circle cx="24" cy="30.3" r="3.4" /><circle cx="32" cy="30.3" r="3.4" />
+                </g>
+                <polygon class="rim" points="28,2 50.5,15 50.5,41 28,54 5.5,41 5.5,15" />
+              </svg>
+              <span class="mirror-name">Lily · threes</span>
+            </label>
+            <label class="mirror glass-petal">
+              <input type="radio" name="mirror" value="d5" checked />
+              <svg class="hexgem" viewBox="0 0 56 56" aria-hidden="true" focusable="false">
+                <polygon class="f-hi" points="5.5,15 28,2 28,14 15.9,21" />
+                <polygon class="f-lt" points="28,2 50.5,15 40.1,21 28,14" />
+                <polygon class="f-base" points="50.5,15 50.5,41 40.1,35 40.1,21" />
+                <polygon class="f-deep" points="50.5,41 28,54 28,42 40.1,35" />
+                <polygon class="f-dk" points="28,54 5.5,41 15.9,35 28,42" />
+                <polygon class="f-lt" points="5.5,41 5.5,15 15.9,21 15.9,35" />
+                <polygon class="f-table" points="28,14 40.1,21 40.1,35 28,42 15.9,35 15.9,21" />
+                <polygon class="glint" points="19,23 27,18.5 22,27" />
+                <g class="sym">
+                  <circle cx="28" cy="22.6" r="2.8" /><circle cx="33.1" cy="26.3" r="2.8" /><circle cx="31.2" cy="32.4" r="2.8" /><circle cx="24.8" cy="32.4" r="2.8" /><circle cx="22.9" cy="26.3" r="2.8" />
+                </g>
+                <polygon class="rim" points="28,2 50.5,15 50.5,41 28,54 5.5,41 5.5,15" />
+              </svg>
+              <span class="mirror-name">Rose · fives</span>
+            </label>
+            <label class="mirror glass-pollen">
+              <input type="radio" name="mirror" value="p333" />
+              <svg class="hexgem" viewBox="0 0 56 56" aria-hidden="true" focusable="false">
+                <polygon class="f-hi" points="5.5,15 28,2 28,14 15.9,21" />
+                <polygon class="f-lt" points="28,2 50.5,15 40.1,21 28,14" />
+                <polygon class="f-base" points="50.5,15 50.5,41 40.1,35 40.1,21" />
+                <polygon class="f-deep" points="50.5,41 28,54 28,42 40.1,35" />
+                <polygon class="f-dk" points="28,54 5.5,41 15.9,35 28,42" />
+                <polygon class="f-lt" points="5.5,41 5.5,15 15.9,21 15.9,35" />
+                <polygon class="f-table" points="28,14 40.1,21 40.1,35 28,42 15.9,35 15.9,21" />
+                <polygon class="glint" points="19,23 27,18.5 22,27" />
+                <g class="sym sym-line"><polygon points="28,20.5 35,32.6 21,32.6" /></g>
+                <polygon class="rim" points="28,2 50.5,15 50.5,41 28,54 5.5,41 5.5,15" />
+              </svg>
+              <span class="mirror-name">Comb</span>
+            </label>
+            <label class="mirror glass-sky">
+              <input type="radio" name="mirror" value="p632" />
+              <svg class="hexgem" viewBox="0 0 56 56" aria-hidden="true" focusable="false">
+                <polygon class="f-hi" points="5.5,15 28,2 28,14 15.9,21" />
+                <polygon class="f-lt" points="28,2 50.5,15 40.1,21 28,14" />
+                <polygon class="f-base" points="50.5,15 50.5,41 40.1,35 40.1,21" />
+                <polygon class="f-deep" points="50.5,41 28,54 28,42 40.1,35" />
+                <polygon class="f-dk" points="28,54 5.5,41 15.9,35 28,42" />
+                <polygon class="f-lt" points="5.5,41 5.5,15 15.9,21 15.9,35" />
+                <polygon class="f-table" points="28,14 40.1,21 40.1,35 28,42 15.9,35 15.9,21" />
+                <polygon class="glint" points="19,23 27,18.5 22,27" />
+                <g class="sym sym-line"><polygon points="22,33 34,33 22,20.4" /><path d="M22 33 29.2 25.9" /></g>
+                <polygon class="rim" points="28,2 50.5,15 50.5,41 28,54 5.5,41 5.5,15" />
+              </svg>
+              <span class="mirror-name">Comb and star</span>
+            </label>
+          </fieldset>
+
+          <div class="actions">
+            <button class="gem glass-pollen gem--primary every-turn" type="button" aria-keyshortcuts="E">
+              <svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg>
+              <span class="gem-text">Every turn at once</span>
+            </button>
+            <button class="gem glass-clear shake" type="button">
+              <svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg>
+              <span class="gem-text">Shake</span>
+            </button>
+            <button class="switch exposures" type="button" aria-pressed="true">
+              <span class="switch-bead" aria-hidden="true"></span>
+              <span class="switch-text">Exposures</span>
+            </button>
+          </div>
+
+          <fieldset class="pixels" data-pixels>
+            <legend>Pixels</legend>
+            <label class="bead">
+              <input type="radio" name="pixels-scope" value="1bit" />
+              <span class="bead-glass bead-1bit" aria-hidden="true"></span>
+              <span class="bead-name">1-bit</span>
+            </label>
+            <label class="bead">
+              <input type="radio" name="pixels-scope" value="16" checked />
+              <span class="bead-glass bead-16" aria-hidden="true"></span>
+              <span class="bead-name">16</span>
+            </label>
+            <label class="bead">
+              <input type="radio" name="pixels-scope" value="millions" />
+              <span class="bead-glass bead-millions" aria-hidden="true"></span>
+              <span class="bead-name">Millions</span>
+            </label>
+          </fieldset>
+
+          <div class="tray">
+            <span class="tray-label" id="tray-label">In the chamber</span>
+            <ol class="tray-chips" aria-labelledby="tray-label">
+              <li><span class="chip"><svg aria-hidden="true" focusable="false"><use href="#chip-sunflower" /></svg><span class="sr-only">a sunflower</span></span></li>
+              <li><span class="chip"><svg aria-hidden="true" focusable="false"><use href="#chip-echeveria" /></svg><span class="sr-only">an echeveria</span></span></li>
+              <li><span class="chip"><svg aria-hidden="true" focusable="false"><use href="#chip-aloe" /></svg><span class="sr-only">an aloe</span></span></li>
+            </ol>
+            <p class="tray-empty" hidden>Empty. Put something in from the bench below.</p>
+          </div>
+
+          <p class="hero-links">
+            <a class="skip-link" href="#worlds">Or skip to the five 4D.OS worlds<svg class="icon" aria-hidden="true" focusable="false"><use href="#i-down" /></svg></a>
+            <button class="copy-garden" type="button"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-link" /></svg>Copy link to this garden</button>
+          </p>
+          <p class="copy-status" role="status"></p>
+        </div>
+
+        <p class="scope-live sr-only" aria-live="polite"></p>
+        <p class="nogl" hidden></p>
+      </section>
+
+      <section id="worlds" class="field index" aria-labelledby="worlds-title">
+        <div class="column">
+          <h2 id="worlds-title" class="slab">Load another wheel.</h2>
+
+          <div class="launcher-row">
+            <div class="wheel wheel--launcher" aria-hidden="true">
+              <svg class="tesseract" viewBox="0 0 400 400" focusable="false">
+                <!-- Tesseract in Petrie projection (B4): octagon, spokes and octagram, 8-fold symmetry. -->
+                <path class="tess-key" d="M223.8 257.4L223.8 142.6M223.8 257.4L142.6 176.2M142.6 223.8L257.4 223.8M142.6 223.8L223.8 142.6M257.4 223.8L176.2 142.6M176.2 257.4L257.4 176.2M176.2 257.4L176.2 142.6M142.6 176.2L257.4 176.2" />
+                <path class="tess-inner" d="M223.8 257.4L223.8 142.6M223.8 257.4L142.6 176.2M142.6 223.8L257.4 223.8M142.6 223.8L223.8 142.6M257.4 223.8L176.2 142.6M176.2 257.4L257.4 176.2M176.2 257.4L176.2 142.6M142.6 176.2L257.4 176.2" />
+                <path class="tess-key" d="M142.6 338.6L223.8 257.4M142.6 338.6L142.6 223.8M257.4 338.6L257.4 223.8M257.4 338.6L176.2 257.4M223.8 257.4L338.6 257.4M338.6 257.4L257.4 176.2M142.6 223.8L61.4 142.6M257.4 223.8L338.6 142.6M223.8 142.6L338.6 142.6M223.8 142.6L142.6 61.4M61.4 257.4L176.2 257.4M61.4 257.4L142.6 176.2M142.6 176.2L142.6 61.4M257.4 176.2L257.4 61.4M61.4 142.6L176.2 142.6M176.2 142.6L257.4 61.4" />
+                <path class="tess-spoke" d="M142.6 338.6L223.8 257.4M142.6 338.6L142.6 223.8M257.4 338.6L257.4 223.8M257.4 338.6L176.2 257.4M223.8 257.4L338.6 257.4M338.6 257.4L257.4 176.2M142.6 223.8L61.4 142.6M257.4 223.8L338.6 142.6M223.8 142.6L338.6 142.6M223.8 142.6L142.6 61.4M61.4 257.4L176.2 257.4M61.4 257.4L142.6 176.2M142.6 176.2L142.6 61.4M257.4 176.2L257.4 61.4M61.4 142.6L176.2 142.6M176.2 142.6L257.4 61.4" />
+                <path class="tess-key" d="M142.6 338.6L257.4 338.6M142.6 338.6L61.4 257.4M257.4 338.6L338.6 257.4M338.6 257.4L338.6 142.6M338.6 142.6L257.4 61.4M61.4 257.4L61.4 142.6M61.4 142.6L142.6 61.4M142.6 61.4L257.4 61.4" />
+                <path class="tess-outer" d="M142.6 338.6L257.4 338.6M142.6 338.6L61.4 257.4M257.4 338.6L338.6 257.4M338.6 257.4L338.6 142.6M338.6 142.6L257.4 61.4M61.4 257.4L61.4 142.6M61.4 142.6L142.6 61.4M142.6 61.4L257.4 61.4" />
+                <g class="tess-dots">
+                  <circle cx="142.6" cy="338.6" r="9" /><circle cx="257.4" cy="338.6" r="9" /><circle cx="223.8" cy="257.4" r="9" /><circle cx="338.6" cy="257.4" r="9" /><circle cx="142.6" cy="223.8" r="9" /><circle cx="257.4" cy="223.8" r="9" /><circle cx="223.8" cy="142.6" r="9" /><circle cx="338.6" cy="142.6" r="9" /><circle cx="61.4" cy="257.4" r="9" /><circle cx="176.2" cy="257.4" r="9" /><circle cx="142.6" cy="176.2" r="9" /><circle cx="257.4" cy="176.2" r="9" /><circle cx="61.4" cy="142.6" r="9" /><circle cx="176.2" cy="142.6" r="9" /><circle cx="142.6" cy="61.4" r="9" /><circle cx="257.4" cy="61.4" r="9" />
+                </g>
+              </svg>
+              <div class="tess-view"></div>
+            </div>
+            <div class="launcher-text">
+              <h3 class="slab launcher-name">4D.OS</h3>
+              <p class="launcher-line">The desktop that holds all five worlds.</p>
+              <a class="gem glass-pollen gem--primary enter" href="/4d-os/">
+                <svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg>
+                <span class="gem-text">Enter 4D.OS<svg class="icon" aria-hidden="true" focusable="false"><use href="#i-right" /></svg></span>
+              </a>
+            </div>
+          </div>
+
+          <ul class="rack">
+            <li class="wheel-card">
+              <a class="wheel-link" href="/4d-os/a/" aria-describedby="line-a">
+                <span class="wheel wheel--world"
+                  ><span class="wheel-crop" style="--x: 590; --y: 84; --s: 346"><img
+                    src="/landings/_shared/stills/a.webp"
+                    width="1200"
+                    height="900"
+                    loading="lazy"
+                    decoding="async"
+                    alt="World A, Vitrine: a black cat climbing stairs, drawn in points inside a red gallery room; its earlier steps stay behind it as a row of ghost cats."
+                /></span></span>
+                <span class="wheel-name">A · Vitrine</span>
+              </a>
+              <p class="wheel-line" id="line-a">A red gallery room. A black cat climbs a stairway, and every step it takes stays as points.</p>
+              <p class="wheel-path">/4d-os/a/</p>
+              <p class="wheel-tag">synthetic scene</p>
+              <p class="wheel-credit">"Cat" by J-Toastie, CC-BY 3.0</p>
+            </li>
+            <li class="wheel-card">
+              <a class="wheel-link" href="/4d-os/b/" aria-describedby="line-b">
+                <span class="wheel wheel--world"
+                  ><span class="wheel-crop" style="--x: 330; --y: 290; --s: 390"><img
+                    src="/landings/_shared/stills/b.webp"
+                    width="1200"
+                    height="900"
+                    loading="lazy"
+                    decoding="async"
+                    alt="World B, Plate: a staircase of white cats exposed onto one dark plate under a green and magenta aurora, the present cat in cyan at the top."
+                /></span></span>
+                <span class="wheel-name">B · Plate</span>
+              </a>
+              <p class="wheel-line" id="line-b">A chronophotographic plate under an aurora sky. The cat's whole climb, exposed at once.</p>
+              <p class="wheel-path">/4d-os/b/</p>
+              <p class="wheel-tag">synthetic scene</p>
+              <p class="wheel-credit">"Cat" by J-Toastie, CC-BY 3.0</p>
+            </li>
+            <li class="wheel-card">
+              <a class="wheel-link" href="/4d-os/c/" aria-describedby="line-c">
+                <span class="wheel wheel--world"
+                  ><span class="wheel-crop" style="--x: 600; --y: 136; --s: 500"><img
+                    src="/landings/_shared/stills/c.webp"
+                    width="1200"
+                    height="900"
+                    loading="lazy"
+                    decoding="async"
+                    alt="World C, Leader: a projector gate framed by film perforations, the cat’s climb over-exposed in orange with a strip of 16 mm frames below."
+                /></span></span>
+                <span class="wheel-name">C · Leader</span>
+              </a>
+              <p class="wheel-line" id="line-c">A 16 mm film leader. Scrub the strip and the night scene runs through it.</p>
+              <p class="wheel-path">/4d-os/c/</p>
+              <p class="wheel-tag">synthetic scene</p>
+              <p class="wheel-credit">"Cat" by J-Toastie, CC-BY 3.0</p>
+            </li>
+            <li class="wheel-card">
+              <a class="wheel-link" href="/4d-os/d/" aria-describedby="line-d">
+                <span class="wheel wheel--world"
+                  ><span class="wheel-crop" style="--x: 240; --y: 210; --s: 520"><img
+                    src="/landings/_shared/stills/d.webp"
+                    width="1200"
+                    height="900"
+                    loading="lazy"
+                    decoding="async"
+                    alt="World D, The golden stoop: a peregrine falcon computed from equations flies along a golden spiral through a city of points; its earlier moments trail behind it in phosphor green."
+                /></span></span>
+                <span class="wheel-name">D · The golden stoop</span>
+              </a>
+              <p class="wheel-line" id="line-d">A peregrine falcon computed from equations, stooping along a golden spiral.</p>
+              <p class="wheel-path">/4d-os/d/</p>
+              <p class="wheel-tag">synthetic scene</p>
+            </li>
+            <li class="wheel-card">
+              <a class="wheel-link" href="/4d-os/e/" aria-describedby="line-e">
+                <span class="wheel wheel--world"
+                  ><span class="wheel-crop" style="--x: 360; --y: 170; --s: 520"><img
+                    src="/landings/_shared/stills/e.webp"
+                    width="1200"
+                    height="900"
+                    loading="lazy"
+                    decoding="async"
+                    alt="World E, Whale fall: a humpback whale computed from equations spirals into a black hole whose lensed disk is traced live."
+                /></span></span>
+                <span class="wheel-name">E · Whale fall</span>
+              </a>
+              <p class="wheel-line" id="line-e">A whale spirals into a black hole. Two clocks disagree about how long it takes.</p>
+              <p class="wheel-path">/4d-os/e/</p>
+              <p class="wheel-tag">synthetic scene</p>
+            </li>
+          </ul>
+
+          <ul class="lab" aria-label="Lab">
+            <li>
+              <figure class="lab-wheel" data-lab-slot="1">
+                <span class="wheel wheel--lab" aria-hidden="true"><canvas class="stipple" width="80" height="80"></canvas></span>
+                <figcaption>Empty cell · a sketch in the lab, not public yet <span class="lab-kind">algorithmic art</span></figcaption>
+              </figure>
+            </li>
+            <li>
+              <figure class="lab-wheel" data-lab-slot="2">
+                <span class="wheel wheel--lab" aria-hidden="true"><canvas class="stipple" width="80" height="80"></canvas></span>
+                <figcaption>Empty cell · a sketch in the lab, not public yet <span class="lab-kind">a physics sketch</span></figcaption>
+              </figure>
+            </li>
+            <li>
+              <figure class="lab-wheel" data-lab-slot="3">
+                <span class="wheel wheel--lab" aria-hidden="true"><canvas class="stipple" width="80" height="80"></canvas></span>
+                <figcaption>Empty cell · a sketch in the lab, not public yet <span class="lab-kind">a retro-futuristic app</span></figcaption>
+              </figure>
+            </li>
+          </ul>
+
+          <p class="section-line">Each world is a real scene you can scrub through time. The empty cells are experiments still growing.</p>
+        </div>
+      </section>
+
+      <section id="sow" class="field bench bench--sow" aria-labelledby="sow-title">
+        <div class="peephole-rail">
+          <a class="peephole" href="#scope">
+            <span class="peephole-view" role="img" aria-label="The Scope, live"></span>
+            <svg class="peephole-rim" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#peep-rim" /></svg>
+            <span class="peephole-caption">The Scope, live</span>
+          </a>
+        </div>
+        <div class="column">
+          <h2 id="sow-title" class="slab"><span>The one angle</span> <span>no mirror can make.</span></h2>
+          <div class="bench-body bench-body--sow">
+            <div class="toy toy--sow">
+              <div class="sow-dial">
+                <div class="sow-view" role="img" aria-label="A seed head of 610 seeds at the golden angle, 137.508 degrees"></div>
+                <svg class="dial-art" viewBox="0 0 640 640" aria-hidden="true" focusable="false">
+                  <circle class="dial-band" cx="320" cy="320" r="296" />
+                  <circle class="dial-edge" cx="320" cy="320" r="317" />
+                  <circle class="dial-edge" cx="320" cy="320" r="275" />
+                  <g class="dial-scale"></g>
+                  <circle class="vernier-band" cx="320" cy="320" r="264" />
+                  <g class="vernier-ticks"></g>
+                  <circle class="dial-edge dial-edge--thin" cx="320" cy="320" r="255" />
+                  <g class="dial-knob">
+                    <polygon class="knob-pointer" points="312,44 328,44 320,58" />
+                    <polygon class="knob-f-lt" points="320,6 334,14 320,22" />
+                    <polygon class="knob-f-base" points="320,6 306,14 320,22" />
+                    <polygon class="knob-f-dk" points="306,14 306,30 320,38 320,22" />
+                    <polygon class="knob-f-deep" points="334,14 334,30 320,38 320,22" />
+                    <polygon class="knob-rim" points="320,6 334,14 334,30 320,38 306,30 306,14" />
+                  </g>
+                  <circle class="dial-grip dial-grip--outer" cx="320" cy="320" r="296" />
+                  <circle class="dial-grip dial-grip--vernier" cx="320" cy="320" r="264" />
+                </svg>
+                <p class="golden-stamp" aria-hidden="true">GOLDEN</p>
+                <p class="seed-tip mono" aria-hidden="true" hidden></p>
+                <label class="dial-input-wrap">
+                  <span class="sr-only">Divergence angle. Page Up and Page Down step through the named angles.</span>
+                  <input class="dial-input" type="range" min="120" max="160" step="0.001" value="137.508" aria-keyshortcuts="PageUp PageDown" />
+                </label>
+              </div>
+              <p class="toy-hint"><span class="for-fine">Turn the outer dial. Hold Shift, or use the thin inner ring, for thousandths of a degree.</span><span class="for-touch">Turn the outer dial with a finger; the thin inner ring moves it by thousandths of a degree.</span></p>
+            </div>
+            <div class="bench-copy">
+              <p class="bench-sub">
+                Mirrors only close into a pattern at 180°/n; the golden angle is not one of them. A sunflower sets each new seed
+                137.508° past the last, so no two seeds ever line up on a spoke. Every seed stays where it was born, so the head is a
+                picture of its own past. Nudge the dial off the golden angle and watch it break.
+              </p>
+              <p class="readouts mono">
+                <span class="sow-divergence">divergence 137.508°</span>
+                <span class="sow-seeds">seeds 610</span>
+                <span class="sow-pattern">visible spirals about 34 · 55 (estimated)</span>
+              </p>
+              <div class="named" role="group" aria-label="Named angles">
+                <button class="gem gem--small glass-clear named-state" type="button" aria-pressed="true"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Golden 137.508°</span></button>
+                <button class="gem gem--small glass-clear named-state" type="button" aria-pressed="false"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Spokes 137.3°</span></button>
+                <button class="gem gem--small glass-clear named-state" type="button" aria-pressed="false"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Near 137.6°</span></button>
+                <button class="gem gem--small glass-clear named-state" type="button" aria-pressed="false"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Fifths 144°</span></button>
+                <button class="gem gem--small glass-clear named-state" type="button" aria-pressed="false"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Thirds 120°</span></button>
+                <button class="gem gem--small glass-clear named-state" type="button" aria-pressed="false"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Root 2 turn 149.117°</span></button>
+              </div>
+              <div class="bench-actions">
+                <button class="gem glass-pollen gem--primary sow-hold" type="button" aria-pressed="false">
+                  <svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg>
+                  <span class="gem-text"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-seed" /></svg>Hold to sow</span>
+                </button>
+                <button class="gem glass-clear sow-100" type="button"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Sow 100</span></button>
+                <button class="gem glass-clear sow-clear" type="button"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Clear</span></button>
+              </div>
+              <div class="scrub">
+                <label class="scrub-label" for="sow-scrub">Scrub births</label>
+                <input id="sow-scrub" class="scrub-input" type="range" min="0" max="610" step="1" value="610" aria-valuetext="all 610 seeds" />
+                <span class="time-chip mono" data-dir="hold" aria-hidden="true">HOLD</span>
+              </div>
+              <div class="bench-actions">
+                <button class="gem glass-clear sow-press" type="button"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Press this head</span></button>
+                <button class="gem glass-pollen put-in sow-put" type="button"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Put in the Scope</span></button>
+              </div>
+              <fieldset class="pixels" data-pixels>
+                <legend>Pixels</legend>
+                <label class="bead"><input type="radio" name="pixels-sow" value="1bit" /><span class="bead-glass bead-1bit" aria-hidden="true"></span><span class="bead-name">1-bit</span></label>
+                <label class="bead"><input type="radio" name="pixels-sow" value="16" checked /><span class="bead-glass bead-16" aria-hidden="true"></span><span class="bead-name">16</span></label>
+                <label class="bead"><input type="radio" name="pixels-sow" value="millions" /><span class="bead-glass bead-millions" aria-hidden="true"></span><span class="bead-name">Millions</span></label>
+              </fieldset>
+              <p class="bench-note">With sound on, each seed plays a note set by its angle. That mapping is ours, not the sunflower's.</p>
+            </div>
+            <div class="herbarium">
+              <h3 class="herbarium-title" id="herbarium-title">Herbarium</h3>
+              <ol class="herbarium-strip" aria-labelledby="herbarium-title">
+                <li class="herb-empty">Pressed heads land here, newest first. The strip keeps eight.</li>
+              </ol>
+            </div>
+          </div>
+          <p class="sow-live sr-only" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section id="lathe" class="field bench bench--lathe" aria-labelledby="lathe-title">
+        <div class="peephole-rail">
+          <a class="peephole" href="#scope">
+            <span class="peephole-view" role="img" aria-label="The Scope, live"></span>
+            <svg class="peephole-rim" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#peep-rim" /></svg>
+            <span class="peephole-caption">The Scope, live</span>
+          </a>
+        </div>
+        <div class="column">
+          <h2 id="lathe-title" class="slab"><span>A rosette is a</span> <span>staircase, squashed.</span></h2>
+          <div class="bench-body bench-body--lathe">
+            <div class="bench-copy">
+              <p class="bench-sub">
+                Grow an echeveria leaf by leaf, or an aloe that spirals either way. Then pull time out of it and watch it unwind
+                into a spiral staircase, oldest leaf at the bottom.
+              </p>
+              <fieldset class="species">
+                <legend class="sr-only">Species</legend>
+                <label class="species-gem glass-glaucous"><input type="radio" name="species" value="echeveria" checked /><span class="gem gem--small"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Echeveria</span></span></label>
+                <label class="species-gem glass-chartreuse"><input type="radio" name="species" value="aloe-cw" /><span class="gem gem--small"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Aloe, clockwise</span></span></label>
+                <label class="species-gem glass-chartreuse"><input type="radio" name="species" value="aloe-ccw" /><span class="gem gem--small"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Aloe, counter-clockwise</span></span></label>
+              </fieldset>
+              <div class="slider-row">
+                <label class="slider-label" for="lathe-leaves">Leaves</label>
+                <input id="lathe-leaves" class="leaves-input" type="range" min="1" max="89" step="1" value="21" list="leaf-ticks" />
+                <output class="leaves-out mono" for="lathe-leaves">21 leaves</output>
+                <datalist id="leaf-ticks"><option value="8"></option><option value="13"></option><option value="21"></option><option value="34"></option><option value="55"></option><option value="89"></option></datalist>
+                <span class="tick-marks mono" aria-hidden="true"><span>8</span><span>13</span><span>21</span><span>34</span><span>55</span><span class="tick-89">89</span></span>
+              </div>
+              <div class="bench-actions">
+                <button class="gem gem--small glass-clear leaf-plus1" type="button"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">+1 leaf</span></button>
+                <button class="gem gem--small glass-clear leaf-plus8" type="button"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">+8</span></button>
+                <button class="gem gem--small glass-clear leaf-minus1" type="button" aria-label="Remove one leaf"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">−1</span></button>
+              </div>
+              <div class="slider-row slider-row--pair">
+                <label class="slider-label" for="lathe-plump">Plump</label>
+                <input id="lathe-plump" class="plump-input" type="range" min="0" max="1" step="0.01" value="0.5" />
+                <label class="slider-label" for="lathe-blush">Blush</label>
+                <input id="lathe-blush" class="blush-input" type="range" min="0" max="1" step="0.01" value="0.6" />
+              </div>
+              <div class="stretch">
+                <label class="slider-label" for="lathe-stretch">Stretch time</label>
+                <div class="pull-tab">
+                  <input id="lathe-stretch" class="stretch-input" type="range" min="0" max="1" step="0.001" value="0" aria-valuetext="Rosette" />
+                </div>
+                <div class="stretch-stops" role="group" aria-label="Stretch time stops">
+                  <button class="stop" type="button" aria-pressed="true">Rosette</button>
+                  <button class="stop" type="button" aria-pressed="false">Half</button>
+                  <button class="stop" type="button" aria-pressed="false">Staircase</button>
+                </div>
+              </div>
+              <div class="bench-actions">
+                <button class="gem glass-sky lathe-drop" type="button"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-drop" /></svg>Drop water</span></button>
+                <button class="gem glass-pollen put-in lathe-put" type="button"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Put in the Scope</span></button>
+              </div>
+              <fieldset class="pixels" data-pixels>
+                <legend>Pixels</legend>
+                <label class="bead"><input type="radio" name="pixels-lathe" value="1bit" /><span class="bead-glass bead-1bit" aria-hidden="true"></span><span class="bead-name">1-bit</span></label>
+                <label class="bead"><input type="radio" name="pixels-lathe" value="16" checked /><span class="bead-glass bead-16" aria-hidden="true"></span><span class="bead-name">16</span></label>
+                <label class="bead"><input type="radio" name="pixels-lathe" value="millions" /><span class="bead-glass bead-millions" aria-hidden="true"></span><span class="bead-name">Millions</span></label>
+              </fieldset>
+            </div>
+            <div class="toy toy--lathe">
+              <div
+                class="lathe-view"
+                role="img"
+                tabindex="0"
+                aria-label="An echeveria with 21 leaves, as a rosette. Enter drops water; arrow keys turn the plant and add or remove leaves."
+              ></div>
+              <p class="toy-hint"><span class="for-fine">Drag down on the plant to grow a leaf every 24 px, up to take one off, sideways to turn it. Click a leaf to drop water on it.</span><span class="for-touch">Swipe sideways to turn the plant and tap a leaf to drop water on it. The buttons add and take off leaves.</span></p>
+            </div>
+          </div>
+          <p class="lathe-live sr-only" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section id="hive" class="field bench bench--hive" aria-labelledby="hive-title">
+        <div class="peephole-rail">
+          <a class="peephole" href="#scope">
+            <span class="peephole-view" role="img" aria-label="The Scope, live"></span>
+            <svg class="peephole-rim" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#peep-rim" /></svg>
+            <span class="peephole-caption">The Scope, live</span>
+          </a>
+        </div>
+        <div class="column">
+          <h2 id="hive-title" class="slab"><span>Honeycomb keeps</span> <span>every generation.</span></h2>
+          <p class="bench-sub hive-sub">
+            Paint cells, press Run. It is a hexagonal cousin of Life (rule B2/S34), and it keeps each generation as a layer of
+            wax. Cells that last six generations get capped.
+          </p>
+          <div class="hive-frame">
+            <div
+              class="hive-view"
+              role="grid"
+              tabindex="0"
+              aria-label="Hive frame"
+              aria-describedby="hive-help"
+            ></div>
+          </div>
+          <div class="hive-controls">
+            <div class="bench-actions">
+              <button class="gem glass-pollen gem--primary hive-run" type="button" aria-pressed="false" aria-keyshortcuts="R"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Run</span></button>
+              <button class="gem glass-clear hive-step" type="button" aria-keyshortcuts="S"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Step</span></button>
+              <button class="gem glass-petal hive-rewind" type="button" aria-keyshortcuts="B"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Rewind</span></button>
+              <button class="gem glass-clear hive-clear" type="button"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Clear</span></button>
+              <button class="gem glass-clear hive-random" type="button"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Random (seed 0001)</span></button>
+              <output class="hive-generation mono">generation 31</output>
+            </div>
+            <div class="bench-actions">
+              <button class="gem glass-pollen put-in hive-put" type="button"><svg class="gem-art" aria-hidden="true" focusable="false"><use href="#gem-bag" /></svg><span class="gem-text">Put in the Scope</span></button>
+              <fieldset class="pixels" data-pixels>
+                <legend>Pixels</legend>
+                <label class="bead"><input type="radio" name="pixels-hive" value="1bit" /><span class="bead-glass bead-1bit" aria-hidden="true"></span><span class="bead-name">1-bit</span></label>
+                <label class="bead"><input type="radio" name="pixels-hive" value="16" checked /><span class="bead-glass bead-16" aria-hidden="true"></span><span class="bead-name">16</span></label>
+                <label class="bead"><input type="radio" name="pixels-hive" value="millions" /><span class="bead-glass bead-millions" aria-hidden="true"></span><span class="bead-name">Millions</span></label>
+              </fieldset>
+            </div>
+          </div>
+          <p id="hive-help" class="bench-note">
+            Keyboard: arrows move the cursor along the comb (Shift+Up and Shift+Down take the other diagonal), Enter paints or
+            erases, R runs, S steps, B rewinds. Put in the Scope takes the 37 cells around the cursor.
+          </p>
+          <p class="hive-live sr-only" aria-live="polite"></p>
+        </div>
+      </section>
+    </main>
+
+    <a class="chamber-gem" href="#scope" hidden>
+      <span class="chamber-count">3/7</span>
+      <span class="sr-only">specimens in the chamber. Back to the Scope</span>
+    </a>
+
+    <footer class="footer">
+      <div class="column footer-inner">
+        <p class="footer-stamp">Bloomscope · demo build 0.1</p>
+        <p class="footer-honest">
+          Everything here is computed in your browser from equations: no photographs, no downloaded 3D models. Spiral counts are
+          estimates. Toys reset when you reload; copy the link to keep a garden. This page sends nothing. It only remembers your
+          sound setting, in this browser.
+        </p>
+        <p class="footer-credits">
+          Type: Ultra by Astigmatic, under the Apache License 2.0, and Recursive by Arrow Type, under the SIL Open Font License.
+          Code in your browser: three.js (MIT), GSAP (GreenSock standard license) and Lenis (MIT). The index shows stills of five
+          synthetic scenes from 4D.OS; worlds A, B and C use
+          <a href="https://poly.pizza/m/8GJbfM8R1A">"Cat" by J-Toastie</a>,
+          <a href="https://creativecommons.org/licenses/by/3.0/">CC-BY 3.0</a>.
+        </p>
+        <p class="footer-back"><a href="/#sheet-004"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-left" /></svg>Playground · Sheet 004</a></p>
+        <p class="footer-made"><a href="https://crewtives.com">Made by crewtives</a></p>
+      </div>
+    </footer>
+
+    <script type="module" src="../../../src/playground/bloomscope/main.ts"></script>
+  </body>
+</html>

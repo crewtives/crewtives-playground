@@ -1,0 +1,161 @@
+/* Bloomscope: backlit colored glass on toy-tube paper. The world's tokens. */
+
+@font-face {
+  font-family: 'Ultra';
+  src: url('./fonts/ultra-latin-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  /* The hero's only display face: it blocks so the headline is never painted in a fallback font. */
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Recursive Casual';
+  src: url('./fonts/recursive-latin-casl-normal.woff2') format('woff2-variations');
+  font-weight: 300 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive Mono';
+  src: url('./fonts/recursive-latin-mono-normal.woff2') format('woff2-variations');
+  font-weight: 300 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+
+  /* Glass fields: each section is a whole piece of one color. */
+  --chartreuse: #c8f03c; /* Scope field */
+  --vogel: #b2db2a; /* tonal print of Vogel dots over the chartreuse */
+  --petal: #ff6fb5; /* index */
+  --lilac: #b99cff; /* Sow */
+  --glaucous: #8fd6b8; /* lathe */
+  --honey: #f39a1a; /* honeycomb; brass of the ring */
+  --ink: #1b0f2e; /* plum ink: all text on light fields; footer field */
+  --sheet: #fdfdf6; /* daylight paper: eyepiece background */
+
+  /* Glasses that only live inside gems, beads and the kaleidoscope. */
+  --pollen: #ffd21f;
+  --cobalt: #2b3fe0;
+  --sky: #5fb4ff;
+  --violet: #4a1d6b;
+  --bottle: #0e5a4a;
+  --leaf: #1fa85b;
+  --vermilion: #ff5a1f;
+  --propolis: #8a3a12;
+
+  /* The only NOW: ruby, always with a 2 px ink keyline. */
+  --now: #e8175d;
+  --now-keyline: 2px;
+
+  /* Display palette (16 glasses): four value ramps so flat faces dither cleanly. */
+  --pal-16-0: #1b0f2e; /* ink */
+  --pal-16-1: #4a1d6b; /* violeta */
+  --pal-16-2: #2b3fe0; /* cobalt: only as glass */
+  --pal-16-3: #5fb4ff; /* sky */
+  --pal-16-4: #0e5a4a; /* bottle green */
+  --pal-16-5: #1fa85b; /* leaf */
+  --pal-16-6: #8fd6b8; /* glaucous */
+  --pal-16-7: #c8f03c; /* chartreuse */
+  --pal-16-8: #ffd21f; /* pollen */
+  --pal-16-9: #f39a1a; /* honey */
+  --pal-16-10: #ff5a1f; /* vermilion */
+  --pal-16-11: #e8175d; /* ruby (NOW) */
+  --pal-16-12: #ff6fb5; /* petal */
+  --pal-16-13: #b99cff; /* lilac */
+  --pal-16-14: #fdfdf6; /* paper */
+  --pal-16-15: #8a3a12; /* propolis */
+
+  /* 1-bit: ink on the section's field (each section redefines the second one). */
+  --pal-1bit-0: #1b0f2e;
+  --pal-1bit-1: #c8f03c;
+
+  --engine-z: 5;
+  --over-engine: calc(var(--engine-z) + 1);
+
+  /* Typography. */
+  --font-slab: 'Ultra', 'Rockwell Extra Bold', serif;
+  --font-body: 'Recursive Casual', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Recursive Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Scale: display ≤ 96 px (6 rem). */
+  --size-hero: 6rem;
+  --size-slab: 5.5rem;
+  --size-wheel: 1.75rem;
+  --size-body: 1.0625rem;
+  --size-sub: 1.1875rem;
+  --size-label: 0.875rem;
+  --size-mono: 0.8125rem;
+
+  /* Motion. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --press: 140ms;
+  --facet: 220ms;
+  --state: 420ms;
+
+  /* Depth of the gems: a real shadow, with offset and blur. */
+  --gem-shadow: drop-shadow(0 3px 6px rgb(27 15 46 / 0.35));
+  --gem-shadow-lift: drop-shadow(0 6px 10px rgb(27 15 46 / 0.32));
+}
+
+/* Flat tones of each glass for the gem facets: light, base, dark, deep. */
+.glass-pollen {
+  --g-hi: #fff4b8;
+  --g-lt: #ffe46b;
+  --g-base: #ffd21f;
+  --g-dk: #e0a90a;
+  --g-deep: #b77d06;
+}
+.glass-lilac {
+  --g-hi: #efe8ff;
+  --g-lt: #d5c4ff;
+  --g-base: #b99cff;
+  --g-dk: #8f6fe0;
+  --g-deep: #6a4bb8;
+}
+.glass-petal {
+  --g-hi: #ffe0ef;
+  --g-lt: #ffa3d0;
+  --g-base: #ff6fb5;
+  --g-dk: #e0438f;
+  --g-deep: #b3286c;
+}
+.glass-sky {
+  --g-hi: #e2f1ff;
+  --g-lt: #a3d3ff;
+  --g-base: #5fb4ff;
+  --g-dk: #3a88d8;
+  --g-deep: #2b3fe0;
+}
+.glass-clear {
+  --g-hi: #ffffff;
+  --g-lt: #fdfdf6;
+  --g-base: #eef3dc;
+  --g-dk: #d6e0b8;
+  --g-deep: #b8c59a;
+}
+.glass-honey {
+  --g-hi: #ffe3b3;
+  --g-lt: #ffbf5c;
+  --g-base: #f39a1a;
+  --g-dk: #c9730b;
+  --g-deep: #8a3a12;
+}
+.glass-glaucous {
+  --g-hi: #e3f7ee;
+  --g-lt: #b9e8d3;
+  --g-base: #8fd6b8;
+  --g-dk: #5fb096;
+  --g-deep: #0e5a4a;
+}
+.glass-chartreuse {
+  --g-hi: #f2ffc4;
+  --g-lt: #ddf77e;
+  --g-base: #c8f03c;
+  --g-dk: #a3cc1c;
+  --g-deep: #6f8f0a;
+}

@@ -1,0 +1,1552 @@
+/* Landing D — "Golden stoop". The black glass is the surface; the chrome is phosphor stroke. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--glass);
+  color: var(--prose);
+  font-family: var(--font-text);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  scrollbar-color: var(--beam-dim) var(--glass);
+  scrollbar-width: thin;
+  caret-color: var(--beam-hot);
+}
+
+body {
+  margin: 0;
+  background: var(--glass);
+  line-height: 1.55;
+  font-weight: 500;
+}
+
+::selection {
+  background: var(--beam);
+  color: var(--glass);
+}
+
+:focus-visible {
+  outline: 1px dashed var(--beam-hot);
+  outline-offset: 3px;
+}
+
+a {
+  color: var(--beam-hot);
+  text-decoration-color: var(--beam-dim);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.28em;
+}
+a:hover {
+  text-decoration-color: var(--beam-hot);
+}
+
+b,
+strong {
+  font-weight: 600;
+  color: var(--beam-hot);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: 12px;
+  top: -48px;
+  z-index: 60;
+  padding: 6px 10px;
+  background: var(--glass);
+  color: var(--beam-hot);
+  border: 1px solid var(--beam-hot);
+  font: 600 12px / 1 var(--font-display);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.skip:focus {
+  top: 12px;
+}
+
+/* Back to the playground museum. On the desktop, in the tube's top margin (y < 20 px), above
+   "Plotter"; on the phone, to the right of the title, on two lines. Out of the flow: it does not move
+   or resize any view or canvas. Tektur includes ←. */
+.playground-back {
+  position: absolute;
+  top: 4px;
+  right: 24px;
+  /* Above all the page content (fixed stages, titles, windows), below the
+     skip link. */
+  z-index: 45;
+  color: var(--beam);
+  font: 500 12px / 14px var(--font-display);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.playground-back:hover {
+  color: var(--beam-hot);
+  text-decoration: underline;
+}
+@media (max-width: 760px), (orientation: landscape) and (max-height: 500px) {
+  .playground-back {
+    top: 12px;
+    right: 12px;
+    max-width: 8em;
+    text-align: right;
+    white-space: normal;
+  }
+}
+
+/* System text: Tektur with tabular figures; every live figure uses it. */
+.sys,
+.read dd,
+.timeline__head,
+.eq__now,
+.listing dd,
+.glance {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* ---------- Hero: fixed stage and tall track ---------- */
+
+.stoop {
+  position: relative;
+  --tube-w: clamp(340px, 38.2vw, 540px);
+}
+
+.stoop__track {
+  position: relative;
+  height: 300svh;
+}
+
+.stoop__stage {
+  position: sticky;
+  top: 0;
+  z-index: calc(var(--engine-z, 5) + 1);
+  height: 100svh;
+  min-height: 560px;
+  overflow: hidden;
+}
+
+.stoop__view {
+  position: absolute;
+  inset: 0;
+}
+
+/* The subject's leader: a 1 px line and a dot, in the color of the present. */
+.leader {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.leader polyline {
+  fill: none;
+  stroke: var(--accent-current);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.leader circle {
+  fill: var(--accent-current);
+}
+.leader.is-off {
+  display: none;
+}
+
+/* GIN cursor: a low-phosphor crosshair across the whole free glass and, next to the subject, the ring
+   and the ticks in the color of the present, with the letter of its detail. */
+.gin {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.gin path,
+.gin circle {
+  fill: none;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  shape-rendering: crispEdges;
+}
+.gin__arms {
+  stroke: var(--beam-dim);
+}
+.gin__ticks,
+.gin__ring {
+  stroke: var(--accent-current);
+}
+.gin__ring {
+  shape-rendering: geometricPrecision;
+}
+.gin__label {
+  font: 600 11px / 1 var(--font-display);
+  letter-spacing: 0.08em;
+  fill: var(--accent-current);
+}
+.gin.is-off,
+.gin:not(.has-detail) .gin__label {
+  display: none;
+}
+
+/* Detail A: a detail view in the corner of the glass, with a 1 px frame and the drawing's label. */
+.detail {
+  position: absolute;
+  top: 26px;
+  right: calc(var(--tube-w) + var(--gutter));
+  width: clamp(180px, 16vw, 236px);
+  margin: 0;
+  pointer-events: none;
+}
+.detail[hidden] {
+  display: none;
+}
+.inset__label {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 7px 4px;
+  background: var(--glass);
+  border: 1px solid var(--beam-dim);
+  border-bottom: 0;
+  font: 600 11px / 1 var(--font-display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-current);
+  white-space: nowrap;
+}
+.inset__aside {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
+  color: var(--beam);
+}
+/* The engine paints the view beneath the DOM: the frame is stroke only, with no background. */
+.detail__view {
+  aspect-ratio: 4 / 5;
+  border: 1px solid var(--beam-dim);
+}
+
+/* Title: top left, on the glass. */
+.mast {
+  position: absolute;
+  left: var(--gutter);
+  top: 26px;
+  max-width: min(36rem, calc(100% - var(--tube-w) - var(--gutter) * 3));
+  pointer-events: none;
+}
+
+.mast__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 6.4vw, var(--step-4));
+  font-weight: 500;
+  font-stretch: 75%;
+  line-height: 0.86;
+  letter-spacing: -0.012em;
+  color: var(--beam-hot);
+  text-wrap: balance;
+}
+
+.mast__line {
+  margin: 16px 0 0;
+  max-width: 27rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 500;
+  color: var(--prose);
+}
+/* Text written on the glass erases what is behind it, line by line, like the tube's alpha:
+   the scene's points stay behind the glass. */
+.mast__words,
+.deck__hint {
+  background: var(--glass);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding: 2px 6px;
+  margin-left: -6px;
+}
+.mast__glass {
+  background: var(--glass);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding: 0 8px;
+  margin-left: -8px;
+}
+
+.tag {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 3px 6px 2px;
+  border: 1px solid var(--beam);
+  font: 600 11px / 1 var(--font-display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--beam-hot);
+  background: var(--glass);
+  white-space: nowrap;
+  vertical-align: 1px;
+}
+
+/* At-a-glance readouts: only on phones, where the tube goes below. */
+.glance {
+  display: none;
+}
+
+/* ---------- Control strip: foot of the glass ---------- */
+
+.deck {
+  position: absolute;
+  left: var(--gutter);
+  right: calc(var(--tube-w) + var(--gutter));
+  bottom: 22px;
+  display: grid;
+  gap: 12px;
+}
+
+.deck__keys {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.deck__hint {
+  margin: 0 0 0 16px;
+  font: 500 12px / 1 var(--font-display);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--beam);
+}
+
+.key {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--beam);
+  background: var(--glass);
+  color: var(--beam-hot);
+  cursor: pointer;
+}
+.key svg {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+  shape-rendering: crispEdges;
+}
+.key:hover {
+  border-color: var(--beam-hot);
+}
+/* Active state: a second concentric stroke, never a fill (an idea taken from the lowbrow panel). */
+.key:active,
+.key[data-play][aria-pressed='true'] {
+  outline: 1px solid var(--beam);
+  outline-offset: 2px;
+}
+.key:focus-visible {
+  outline: 1px dashed var(--beam-hot);
+  outline-offset: 3px;
+}
+.key[aria-disabled='true'] {
+  border-color: var(--beam-dim);
+  color: var(--beam-dim);
+  cursor: default;
+}
+
+.timeline {
+  background: var(--glass);
+  border: 1px solid var(--beam-dim);
+  padding: 8px 10px 6px;
+}
+
+.timeline__head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.timeline__tc {
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--beam-hot);
+}
+
+.timeline__state {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--accent-current);
+}
+
+.timeline__frame {
+  margin-left: auto;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--beam);
+}
+
+.timeline__track {
+  position: relative;
+  height: 24px;
+  margin-top: 6px;
+  cursor: ew-resize;
+  touch-action: none;
+}
+
+.timeline__ruler {
+  position: absolute;
+  inset: 0;
+  border-top: 1px solid var(--beam-dim);
+}
+.timeline__ruler i {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 5px;
+  background: var(--beam-dim);
+}
+.timeline__ruler i.is-major {
+  height: 10px;
+  background: var(--beam);
+}
+.timeline__ruler b {
+  position: absolute;
+  top: 11px;
+  padding-left: 4px;
+  font: 500 10px / 1 var(--font-display);
+  color: var(--beam);
+}
+
+.timeline__playhead {
+  position: absolute;
+  top: -4px;
+  bottom: 0;
+  left: calc(var(--playhead, 0) * 100%);
+  width: 1px;
+  background: var(--accent-current);
+}
+.timeline__playhead::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -3px;
+  width: 7px;
+  height: 1px;
+  background: var(--accent-current);
+}
+
+/* ---------- Boot ---------- */
+
+.boot {
+  position: absolute;
+  left: var(--gutter);
+  bottom: 150px;
+  z-index: 3;
+  width: min(320px, calc(100% - var(--gutter) * 2));
+  padding: 14px 16px 12px;
+  border: 1px solid var(--beam);
+  background: var(--glass);
+  font-family: var(--font-display);
+}
+.boot[hidden] {
+  display: none;
+}
+.boot__title {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--beam);
+}
+.boot__message {
+  margin: 0 0 10px;
+  font-family: var(--font-text);
+  color: var(--beam-hot);
+}
+.boot__bar {
+  height: 9px;
+  border: 1px solid var(--beam-dim);
+  padding: 1px;
+}
+.boot__fill {
+  height: 100%;
+  width: calc(var(--progress, 0) * 100%);
+  /* One tick every 3 px, like a plotter: the bar is written, not filled. */
+  background: repeating-linear-gradient(90deg, var(--beam) 0 1px, transparent 1px 3px);
+}
+.boot__pct {
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--beam);
+}
+.boot.is-error {
+  border-style: dashed;
+}
+.boot.is-error .boot__message {
+  color: var(--beam-hot);
+}
+
+/* ---------- The tube: right column ---------- */
+
+.hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hud__layer {
+  position: sticky;
+  top: 0;
+  z-index: calc(var(--engine-z, 5) + 1);
+  height: 100svh;
+  min-height: 560px;
+  overflow: hidden;
+}
+.hud__layer > * {
+  pointer-events: auto;
+}
+
+.tube {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--tube-w);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 24px 18px;
+  background: var(--glass);
+  border-left: 1px solid var(--beam-dim);
+}
+
+.tube__title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 0;
+  font: 600 12px / 1 var(--font-display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--beam);
+}
+.tube__aside {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.tube__plot {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 150px;
+}
+.tube__plot canvas,
+.scope canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+/* PAGE: at the loop seam the tube floods with writing phosphor and decays in steps down the ramp
+   (writing → stored → low → glass), like a 4010 erasing its page. The scene joins in with a faint
+   flash while it dissolves (.flash). It is not chrome: it is an event of ~0.45 s. */
+.tube__plot.is-erasing::after,
+.flash.is-erasing {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation: erase 0.45s linear forwards;
+}
+.flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.flash.is-erasing {
+  --flash: 0.2;
+}
+.tube__plot.is-erasing::after {
+  --flash: 1;
+}
+@keyframes erase {
+  0%,
+  18% {
+    background-color: var(--beam-hot);
+    opacity: calc(0.8 * var(--flash));
+  }
+  19%,
+  42% {
+    background-color: var(--beam);
+    opacity: calc(0.5 * var(--flash));
+  }
+  43%,
+  72% {
+    background-color: var(--beam-dim);
+    opacity: calc(0.55 * var(--flash));
+  }
+  73%,
+  100% {
+    background-color: var(--beam-dim);
+    opacity: 0;
+  }
+}
+
+.eq {
+  margin: 0;
+}
+.eq p {
+  margin: 0;
+}
+.eq__law {
+  font-size: 1.45rem;
+  line-height: 1.2;
+  font-weight: 500;
+  color: var(--beam-hot);
+}
+.eq sup,
+.eq sub {
+  font-size: 0.64em;
+  line-height: 0;
+  vertical-align: 0.7em;
+}
+
+.eq__now {
+  margin-top: 4px !important;
+  font-size: 0.95rem;
+  color: var(--prose);
+}
+.eq__now b {
+  font-weight: 600;
+}
+.eq.is-off .eq__law,
+.eq.is-off .eq__now,
+.eq.is-off .eq__now b {
+  color: var(--quiet);
+}
+
+/* Readouts: label, value and unit. */
+.read {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+.read__row {
+  display: grid;
+  grid-template-columns: 9.5rem 1fr;
+  align-items: baseline;
+  gap: 10px;
+}
+.read__row--pair {
+  grid-template-columns: 9.5rem 1fr 3.4rem 1fr;
+}
+.read dt {
+  font: 600 12px / 1.2 var(--font-display);
+  letter-spacing: 0.08em;
+  color: var(--beam);
+}
+.read dt small {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--quiet);
+  text-transform: none;
+  margin-left: 4px;
+}
+.read dd {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--beam-hot);
+  white-space: nowrap;
+}
+.read__alt {
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--beam);
+}
+.read__row--phi dd b {
+  font-weight: 600;
+  color: var(--phi);
+}
+.read__row--theta dd {
+  font-size: 1.25rem;
+}
+
+/* θ can be dragged: dotted underline and a resize cursor (an idea taken from HyperCard). */
+.scrub {
+  cursor: ew-resize;
+  border-bottom: 1px dotted var(--beam);
+  touch-action: none;
+  user-select: none;
+}
+.scrub:hover {
+  border-bottom-color: var(--beam-hot);
+}
+.scrub.is-scrubbing {
+  outline: 1px solid var(--beam);
+  outline-offset: 3px;
+}
+
+.scope {
+  position: relative;
+  flex: 0 0 auto;
+  height: 92px;
+}
+
+/* Monitor: time and colors. 11 px boxes; the checked one gets a second stroke inside. */
+.monitor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  padding-top: 12px;
+  border-top: 1px solid var(--beam-dim);
+}
+.seg {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.seg legend {
+  float: left;
+  margin-right: 2px;
+  padding: 0;
+  font: 600 11px / 1 var(--font-display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--quiet);
+}
+.seg label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 500 12px / 1 var(--font-display);
+  letter-spacing: 0.06em;
+  color: var(--beam);
+  cursor: pointer;
+}
+.seg label:hover {
+  color: var(--beam-hot);
+}
+.seg input {
+  appearance: none;
+  width: 11px;
+  height: 11px;
+  margin: 0;
+  border: 1px solid var(--beam);
+  background: var(--glass);
+  cursor: pointer;
+}
+.seg input:checked {
+  border-color: var(--beam-hot);
+  box-shadow:
+    inset 0 0 0 2px var(--glass),
+    inset 0 0 0 3px var(--beam-hot);
+}
+.seg label:has(input:checked) {
+  color: var(--beam-hot);
+}
+.seg input:focus-visible {
+  outline: 1px dashed var(--beam-hot);
+  outline-offset: 2px;
+}
+
+/* ---------- Story: terminal pages ---------- */
+
+.story {
+  position: relative;
+}
+
+.page {
+  position: relative;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 150px var(--gutter) 110px;
+}
+.page::before {
+  content: '';
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  top: 0;
+  height: 1px;
+  background: var(--beam-dim);
+}
+.page::after {
+  content: '';
+  position: absolute;
+  left: var(--gutter);
+  top: -4px;
+  width: 1px;
+  height: 9px;
+  background: var(--beam);
+}
+
+.page__title {
+  margin: 0 0 42px;
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, var(--step-3));
+  font-weight: 500;
+  font-stretch: 75%;
+  line-height: 0.92;
+  letter-spacing: -0.01em;
+  color: var(--beam-hot);
+  text-wrap: balance;
+}
+
+.page__text {
+  max-width: 62ch;
+  margin: 0 0 18px;
+  font-size: 1.125rem;
+  line-height: 1.62;
+  color: var(--prose);
+  text-wrap: pretty;
+}
+.page__text--lede {
+  font-size: 1.3rem;
+  line-height: 1.55;
+  max-width: 58ch;
+  margin-bottom: 40px;
+}
+.page__text cite {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  font-style: normal;
+  color: var(--quiet);
+}
+
+.page__grid {
+  display: grid;
+  grid-template-columns: 1.618fr 1fr;
+  gap: 36px;
+  align-items: end;
+  margin: 0 0 44px;
+}
+
+.plot {
+  margin: 0;
+}
+.plot canvas {
+  display: block;
+  width: 100%;
+}
+.plot figcaption {
+  margin-top: 14px;
+  max-width: 52ch;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--prose);
+}
+.plot--rect canvas {
+  aspect-ratio: 1.618;
+}
+.plot--seeds canvas {
+  aspect-ratio: 1;
+}
+.law {
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--beam-hot);
+  white-space: nowrap;
+}
+.law sup,
+.law sub {
+  font-size: 0.66em;
+  line-height: 0;
+  vertical-align: 0.7em;
+}
+
+/* §1: the monumental figure, in gold: the only gold on the page is φ. */
+.phi {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.18em;
+  margin: 0 0 56px;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 10.4vw, 9.6rem);
+  font-weight: 400;
+  font-stretch: 75%;
+  line-height: 0.9;
+  color: var(--phi);
+  font-variant-numeric: tabular-nums;
+}
+.phi__eq {
+  color: var(--beam);
+}
+.phi__digits {
+  letter-spacing: 0.01em;
+}
+.phi__more {
+  color: var(--beam);
+}
+
+.measure {
+  max-width: 70ch;
+  margin: 26px 0 0;
+  padding: 14px 16px;
+  border: 1px solid var(--beam-dim);
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--prose);
+}
+.measure b {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+.measure__phi {
+  color: var(--phi) !important;
+}
+
+/* 3D views of the story: 1 px frame; multiples of 3 px are not needed (the display already snaps). */
+.figure3d {
+  position: relative;
+  border: 1px solid var(--beam-dim);
+}
+.figure3d--square {
+  aspect-ratio: 1;
+}
+/* Marey's plate: a wide strip, like his fixed plates; the row of exposures fills its height. */
+.figure3d--wide {
+  aspect-ratio: 3 / 1;
+  margin-bottom: 40px;
+}
+
+.page__split {
+  display: grid;
+  grid-template-columns: 1.618fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+.page__side {
+  padding-top: 4px;
+}
+
+.read--inline {
+  margin-top: 26px;
+  padding-top: 14px;
+  border-top: 1px solid var(--beam-dim);
+}
+.read--inline .read__row {
+  grid-template-columns: 9.5rem 1fr;
+}
+
+.page__grid--marey {
+  align-items: start;
+}
+.plot--stroke canvas {
+  aspect-ratio: 2.2;
+}
+
+.gun {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gun__frame {
+  position: relative;
+}
+.gun__image {
+  aspect-ratio: 16 / 9;
+  background-color: var(--glass);
+  background-repeat: no-repeat;
+  outline: 1px solid var(--beam-dim);
+  image-rendering: pixelated;
+}
+.gun__num {
+  display: block;
+  margin-top: 3px;
+  font: 500 10px / 1 var(--font-display);
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  color: var(--beam);
+}
+/* Outside Millions, the source frames show in phosphor: the tube has no color. */
+:root:not([data-depth='millions']) .gun__image,
+:root:not([data-depth='millions']) .station__still {
+  background-color: var(--beam);
+  background-blend-mode: luminosity;
+}
+
+/* §4: stations in a fixed order (an idea taken from the darkroom). */
+.stations {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: station;
+}
+.station {
+  position: relative;
+  padding: 0 18px 0 0;
+  counter-increment: station;
+}
+.station + .station {
+  padding-left: 18px;
+  border-left: 1px solid var(--beam-dim);
+}
+.station__title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 14px;
+  font: 600 13px / 1 var(--font-display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--beam-hot);
+}
+.station__title::before {
+  content: counter(station);
+  font-weight: 500;
+  color: var(--beam);
+}
+.station__figure {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  margin-bottom: 14px;
+  border: 1px solid var(--beam-dim);
+}
+.station__figure--eq,
+.station__figure--screen {
+  display: grid;
+  align-content: center;
+  gap: 10px;
+  padding: 12px;
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--beam-hot);
+}
+.station__figure--eq p,
+.station__figure--screen p {
+  margin: 0;
+}
+.station__figure--eq sup,
+.station__figure--eq sub {
+  font-size: 0.66em;
+  line-height: 0;
+}
+/* The source frame is landscape: it goes in whole, full width, centered in the box (main.ts sets the
+   proportions from the 4D pack). If it filled the square, the atlas's next row would peek in. */
+.station__figure--frame {
+  display: grid;
+  align-content: center;
+}
+.station__still {
+  aspect-ratio: 16 / 9;
+  background-color: var(--glass);
+  background-repeat: no-repeat;
+  outline: 1px solid var(--beam-dim);
+  image-rendering: pixelated;
+}
+.station > p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--prose);
+}
+
+/* §5: terminal listing, with dot leaders. */
+.listing {
+  max-width: 760px;
+  margin: 0 0 28px;
+}
+.listing div {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 7px 0;
+}
+.listing dt {
+  font: 600 13px / 1 var(--font-display);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--beam);
+  white-space: nowrap;
+}
+.listing div::after {
+  content: '';
+  order: 1;
+  flex: 1 1 auto;
+  border-bottom: 1px dotted var(--beam-dim);
+  transform: translateY(-3px);
+}
+.listing dd {
+  order: 2;
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: var(--beam-hot);
+  white-space: nowrap;
+}
+
+/* Where the bytes go: 1 px hatched bars, proportional to the size of each file. */
+.page__data {
+  display: grid;
+  grid-template-columns: minmax(0, 1.618fr) minmax(0, 1fr);
+  gap: 56px;
+  align-items: start;
+}
+.bytes {
+  margin: 0;
+}
+.bytes__title {
+  margin: 6px 0 18px;
+  font: 600 13px / 1 var(--font-display);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--beam);
+}
+.bytes__list {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.bytes__row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 12px;
+  align-items: baseline;
+}
+.bytes__name {
+  font-size: 0.95rem;
+  color: var(--prose);
+}
+.bytes__value {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.05rem;
+  color: var(--beam-hot);
+}
+.bytes__bar {
+  grid-column: 1 / -1;
+  height: 14px;
+  border: 1px solid var(--beam-dim);
+  background:
+    repeating-linear-gradient(90deg, var(--beam) 0 1px, transparent 1px 4px) left / calc(var(--share) * 100%) 100% no-repeat;
+}
+
+/* ---------- Footer ---------- */
+
+.colophon {
+  position: relative;
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 28px;
+  align-items: center;
+  max-width: 1240px;
+  margin: 40px auto 0;
+  padding: 44px var(--gutter) 56px;
+}
+.colophon::before {
+  content: '';
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  top: 0;
+  height: 1px;
+  background: var(--beam-dim);
+}
+.colophon__mark {
+  width: 140px;
+  height: 140px;
+}
+.colophon__word {
+  margin: 0 0 10px;
+  font: 700 var(--step-2) / 0.9 var(--font-display);
+  font-stretch: 75%;
+  color: var(--beam-hot);
+}
+.colophon__line {
+  max-width: 70ch;
+  margin: 0 0 14px;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--quiet);
+}
+.colophon__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  font: 600 12px / 1 var(--font-display);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ---------- Narrow screens and landscape phones: the tube goes below the hero ---------- */
+
+@media (max-width: 1100px) and (min-width: 761px) {
+  .read__row,
+  .read__row--pair {
+    grid-template-columns: 8rem 1fr;
+  }
+  .read__row--pair dt:nth-of-type(2),
+  .read__row--pair dd:nth-of-type(2) {
+    grid-column: auto;
+  }
+  .read__row--pair {
+    grid-template-columns: 8rem 1fr 3rem 1fr;
+  }
+}
+
+@media (max-width: 760px), (orientation: landscape) and (max-height: 500px) {
+  :root {
+    --gutter: 16px;
+  }
+
+  .stoop__track {
+    height: 260svh;
+  }
+
+  .stoop__stage,
+  .hud__layer {
+    min-height: 0;
+  }
+
+  .mast {
+    top: 16px;
+    right: var(--gutter);
+    max-width: none;
+  }
+  .mast__title {
+    font-size: clamp(2.3rem, 11.5vw, 3.4rem);
+  }
+  .mast__line {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    max-width: 22rem;
+  }
+
+  /* Readouts on the left and the pocket plotter on the right, aligned to the top. */
+  .glance {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--mini, 132px);
+    gap: 12px;
+    align-items: start;
+    margin: 12px 0 0;
+  }
+  .glance__read {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 6px 10px;
+    align-items: baseline;
+    justify-self: start;
+    margin: 0 0 0 -6px;
+    padding: 5px 6px;
+    background: var(--glass);
+  }
+  .glance__read div {
+    display: contents;
+  }
+  .glance__read dt {
+    font: 600 11px / 1.2 var(--font-display);
+    letter-spacing: 0.06em;
+    color: var(--beam);
+  }
+  .glance__read dd {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--beam);
+    white-space: nowrap;
+  }
+  .glance__read b {
+    font-weight: 600;
+    color: var(--beam-hot);
+  }
+  .glance__phi b {
+    color: var(--phi);
+  }
+  .glance__phi span {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  .glance__plot {
+    margin: 0;
+    background: var(--glass);
+  }
+  /* The plotter's label is in phosphor, like the tube's; the detail's, in the color of the present. */
+  .glance__plot .inset__label {
+    color: var(--beam);
+  }
+  .glance__plot canvas {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    border: 1px solid var(--beam-dim);
+  }
+  /* In the final state, detail A takes the same spot (the engine paints it beneath the DOM). */
+  .glance__plot.is-covered {
+    visibility: hidden;
+  }
+  .detail {
+    top: var(--slot-top, 0);
+    left: var(--slot-left, auto);
+    right: auto;
+    width: var(--slot-width, var(--mini, 132px));
+  }
+  .detail__view {
+    aspect-ratio: 1;
+  }
+  .inset__long {
+    display: none;
+  }
+
+  .deck {
+    right: var(--gutter);
+    bottom: 12px;
+    gap: 8px;
+  }
+  .deck__hint {
+    font-size: 11px;
+  }
+  .timeline__tc {
+    font-size: 1.25rem;
+  }
+
+  /* The monitor drops to the control strip (main.ts): two segmented rows under the timeline, 1 px
+     cells that share their stroke; the checked one gets the second stroke inside, the same double
+     stroke as the tube's boxes. The box is hidden: the whole cell is the finger's target. */
+  .deck .monitor {
+    display: grid;
+    gap: 6px;
+    padding: 0;
+    border: 0;
+  }
+  .deck .seg {
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 0;
+  }
+  .deck .seg legend {
+    flex: 0 0 4.6rem;
+    align-self: center;
+    margin: 0;
+    padding: 4px 6px 3px;
+    margin-left: -6px;
+    background: var(--glass);
+    color: var(--beam);
+  }
+  .deck .seg label {
+    position: relative;
+    flex: 1 1 0;
+    justify-content: center;
+    min-height: 30px;
+    padding: 0 6px;
+    border: 1px solid var(--beam-dim);
+    background: var(--glass);
+    white-space: nowrap;
+  }
+  .deck .seg label + label {
+    margin-left: -1px;
+  }
+  .deck .seg input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: none;
+    opacity: 0;
+  }
+  .deck .seg input:checked {
+    box-shadow: none;
+  }
+  .deck .seg label:has(input:checked) {
+    z-index: 1;
+    border-color: var(--beam-hot);
+    box-shadow:
+      inset 0 0 0 2px var(--glass),
+      inset 0 0 0 3px var(--beam-hot);
+  }
+  .deck .seg label:has(input:focus-visible) {
+    z-index: 2;
+    outline: 1px dashed var(--beam-hot);
+    outline-offset: 3px;
+  }
+
+  .boot {
+    bottom: 130px;
+  }
+
+  .hud,
+  .hud__layer {
+    position: static;
+    height: auto;
+    overflow: visible;
+    pointer-events: auto;
+  }
+  .tube {
+    position: relative;
+    width: auto;
+    padding: 28px var(--gutter) 24px;
+    border-left: 0;
+    border-top: 1px solid var(--beam-dim);
+  }
+  .tube__plot {
+    flex: 0 0 auto;
+    height: min(92vw, 380px);
+  }
+  /* The double rows split in two: "speed" and "phase" on a single row do not fit in 358 px and
+     widened the page (up to 433 px during the flapping). */
+  .read__row,
+  .read__row--pair {
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+  }
+
+  .page {
+    padding: 96px var(--gutter) 72px;
+  }
+  .page__title {
+    margin-bottom: 28px;
+  }
+  .page__text--lede {
+    font-size: 1.12rem;
+  }
+  .page__grid,
+  .page__split {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .phi {
+    margin-bottom: 36px;
+  }
+  .figure3d--wide {
+    aspect-ratio: 2 / 1;
+  }
+  .gun {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .stations {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .station,
+  .station + .station {
+    padding: 0;
+    border-left: 0;
+  }
+  .station__figure {
+    max-width: 260px;
+  }
+  .listing dd {
+    font-size: 1.1rem;
+  }
+  .page__data {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .colophon {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .colophon__mark {
+    width: 110px;
+    height: 110px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .mast__title {
+    font-size: 2.2rem;
+  }
+  .mast__line {
+    display: none;
+  }
+  .mast {
+    right: auto;
+  }
+  .glance {
+    --mini: 104px;
+    grid-template-columns: max-content var(--mini);
+  }
+  .inset__aside {
+    display: none;
+  }
+  /* Landscape: no height for two more rows. The monitor goes on a single row next to the controls and,
+     if it does not fit, moves above the timeline. */
+  .deck {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+  }
+  .timeline {
+    flex: 1 0 100%;
+    order: 2;
+  }
+  .deck .monitor {
+    display: flex;
+    gap: 14px;
+    margin-left: auto;
+  }
+  .deck .seg legend {
+    flex-basis: auto;
+    margin-right: 2px;
+  }
+  .deck .seg label {
+    flex: 0 0 auto;
+    padding: 0 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tube__plot.is-erasing::after,
+  .flash.is-erasing {
+    animation: none;
+    display: none;
+  }
+}
+
+.page__note {
+  max-width: 62ch;
+  margin: -24px 0 40px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--quiet);
+}
+
+.eq sub,
+.law sub {
+  vertical-align: -0.25em;
+}

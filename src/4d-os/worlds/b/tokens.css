@@ -1,0 +1,88 @@
+/* World B — "Plate": a chronophotographic plate (Marey / Muybridge). */
+
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('./fonts/bricolage-grotesque-latin-wdth.woff2') format('woff2');
+  font-weight: 200 800;
+  font-stretch: 75% 100%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Pixel';
+  src: url('./fonts/geist-pixel-latin-400.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root,
+[data-world='b'] {
+  /* Sage, teal, charcoal and magenta: the color set of an archival collage, opened up into an
+     aurora. The ramp runs from charcoal to teal and sage on one side, and to violet, plum and magenta
+     on the other; peach is the streetlamp. The present is the brightest tone. */
+  --pal-1bit-0: #1d211f;
+  --pal-1bit-1: #e2ece9;
+
+  --pal-16-0: #111312; /* charcoal black */
+  --pal-16-1: #1d211f; /* plate charcoal */
+  --pal-16-2: #16282c; /* teal night */
+  --pal-16-3: #1c4346; /* deep teal */
+  --pal-16-4: #74bdb5; /* window teal: does not fall into the present */
+  --pal-16-5: #2f9488; /* teal */
+  --pal-16-6: #f0b797; /* peach: streetlamp and windows */
+  --pal-16-7: #a5b4b1; /* sage */
+  --pal-16-8: #cfd9d6; /* silver: past exposures */
+  --pal-16-9: #e2ece9; /* sage white · HOLD */
+  --pal-16-10: #231a35; /* night violet */
+  --pal-16-11: #472a52; /* aubergine */
+  --pal-16-12: #7a3a70; /* plum */
+  --pal-16-13: #ef8fd6; /* neon: lighter than REWIND's magenta */
+  --pal-16-14: #5fe3c8; /* present · FORWARD (aurora green) */
+  --pal-16-15: #d65ca5; /* present · REWIND (magenta) */
+
+  --accent-forward: #5fe3c8;
+  --accent-rewind: #d65ca5;
+  --accent-hold: #e2ece9;
+
+  /* Viewer: scene roles (all members of --pal-16-*) */
+  --scene-bg: #16282c; /* teal night: the dimmed background blends into the aurora */
+  --trail: #cfd9d6; /* past exposures: silver figures */
+  --future: #a5b4b1; /* future exposures, in sage */
+  --frustum: #2f9488; /* source camera */
+  --trajectory: #7a3a70;
+
+  /* The plate's aurora sky (linear color in the shader; the display quantizes it to the palette). */
+  --aurora-base: #0d0f0f;
+  --aurora-high: #13232a;
+  --aurora-teal: #1f6e63;
+  --aurora-violet: #3b2150;
+  --aurora-magenta: #6e2a63;
+  --aurora-strength: 1.4;
+
+  /* Display: the scene is at night; more light and more chroma before quantizing to the aurora. */
+  --display-chroma: 1.5;
+  --display-exposure: 1.3;
+
+  --ink: #1d211f;
+  --paper: #e2ece9;
+  --plate: #1d211f; /* full-bleed background */
+  --mount: #a5b4b1; /* sage mounting card */
+  --mount-ink: #1d211f;
+  --tag: #d65ca5; /* magenta tag (synthetic), as on archive cards */
+  --tag-ink: #1d211f; /* ink on the magenta: 4.6:1 (white gives 3.8:1) */
+  --grid-line: rgba(226, 236, 233, 0.26); /* Muybridge's numbered grid */
+  --grid-number: rgba(226, 236, 233, 0.5);
+  --muted: #89908e;
+
+  --font-display: 'Bricolage Grotesque', 'Helvetica Neue', Arial, sans-serif;
+  --font-pixel: 'Geist Pixel', ui-monospace, monospace;
+  --pixel-size: 12px;
+  --pixel-size-2x: 24px;
+  --display-tracking: -0.02em;
+  --display-leading: 0.9;
+
+  --render-scale: 3;
+  --hair: 1px;
+  --win-title-h: 18px;
+  --gap: 12px;
+}

@@ -1,0 +1,120 @@
+/* Wind-Up Empire tokens: flat litho inks on tinplate. Each face of the box is
+   flooded with one ink; the tin and the paper are objects on those fields, never a neutral background. */
+
+@font-face {
+  font-family: 'Tilt Warp';
+  src: url('./fonts/tilt-warp-latin-full-normal.woff2') format('woff2-variations');
+  font-weight: 400;
+  font-style: normal;
+  /* The hero's only display face: it blocks, so the lid is never shown in another typeface. */
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Rampart One';
+  src: url('./fonts/rampart-one-latin-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Libre Franklin';
+  src: url('./fonts/libre-franklin-latin-500-normal.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Libre Franklin';
+  src: url('./fonts/libre-franklin-latin-700-normal.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sono';
+  src: url('./fonts/sono-latin-wght-normal.woff2') format('woff2-variations');
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --wind (0–1) is the accumulated wind: the page's only tension variable. */
+@property --wind {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+:root {
+  /* Page inks */
+  --ink: #15131c;
+  --space: #1b2cc4;
+  --space-deep: #0a0f4a;
+  --space-bright: #4f7dff;
+  --sky-tint: #a9c8ff;
+  --vermilion: #cc2216;
+  --oxblood: #8e1a12;
+  --chrome: #ffc81a;
+  --lemon: #fff27a;
+  --orange: #ff7a1a;
+  --turquoise: #17b7a0;
+  --teal-deep: #0b5f58;
+  --pink: #ff6fae;
+  --tin: #c7ccd4;
+  --tin-text: #3a3f4c;
+  --tin-shade: #6f7686;
+  --tin-hi: #eef0f3;
+  --paper: #fbfaf6;
+  --white: #ffffff;
+
+  /* Display palette: the 16-ink litho dither (8×8 Bayer) */
+  --pal-16-0: #15131c;
+  --pal-16-1: #0a0f4a;
+  --pal-16-2: #1b2cc4;
+  --pal-16-3: #4f7dff;
+  --pal-16-4: #a9c8ff;
+  --pal-16-5: #cc2216;
+  --pal-16-6: #8e1a12;
+  --pal-16-7: #ff7a1a;
+  --pal-16-8: #ffc81a;
+  --pal-16-9: #fff27a;
+  --pal-16-10: #17b7a0;
+  --pal-16-11: #0b5f58;
+  --pal-16-12: #ff6fae;
+  --pal-16-13: #c7ccd4;
+  --pal-16-14: #6f7686;
+  --pal-16-15: #fbfaf6;
+  /* One-ink press: cobalt ink on paper, so the lid stays cobalt in 1-bit */
+  --pal-1bit-0: #1b2cc4;
+  --pal-1bit-1: #fbfaf6;
+
+  /* Typography */
+  --font-box: 'Tilt Warp', 'Libre Franklin', sans-serif;
+  --font-plate: 'Rampart One', 'Libre Franklin', sans-serif;
+  --font-body: 'Libre Franklin', system-ui, sans-serif;
+  --font-num: 'Sono', ui-monospace, monospace;
+
+  /* Rhythm: an 8 px grid */
+  --strip-h: 56px;
+  --gutter: 24px;
+  --side: 32px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-stamp: cubic-bezier(0.2, 0.9, 0.1, 1);
+
+  /* The engine canvas sits above the DOM; anything shown on top of a view uses --over. */
+  --engine-z: 5;
+  --over: calc(var(--engine-z) + 1);
+
+  --wind: 0;
+}
+
+@media (max-width: 560px) {
+  :root {
+    --side: 16px;
+    --gutter: 16px;
+  }
+}

@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#ff4b26" />
+    <meta
+      name="description"
+      content="Game Center Yonjigen: the crewtives playground as a Tokyo arcade building. Fly Rain Run in a live dithered cabinet, then ride up to five 4D.OS worlds. A free demo that runs in your browser."
+    />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23140a24'/%3E%3Crect x='2' y='2' width='12' height='4' fill='%23ffcc17'/%3E%3Crect x='3' y='7' width='10' height='7' fill='%23ff4b26'/%3E%3C/svg%3E" />
+    <title>Game Center Yonjigen · crewtives playground</title>
+  </head>
+  <body class="gc">
+    <svg class="sprites" aria-hidden="true" focusable="false">
+      <symbol id="i-play" viewBox="0 0 12 12"><path d="M3 1.5 10.5 6 3 10.5Z" /></symbol>
+      <symbol id="i-up" viewBox="0 0 12 12"><path d="M6 2 10.5 8.5h-9Z" /></symbol>
+      <symbol id="i-down" viewBox="0 0 12 12"><path d="M6 10 1.5 3.5h9Z" /></symbol>
+      <symbol id="i-left" viewBox="0 0 12 12"><path d="M2 6 8.5 1.5v9Z" /></symbol>
+      <symbol id="i-right" viewBox="0 0 12 12"><path d="M10 6 3.5 10.5v-9Z" /></symbol>
+      <symbol id="i-back" viewBox="0 0 12 12"><path d="M1 6 6 1.5V4h5v4H6v2.5Z" /></symbol>
+      <symbol id="i-lift" viewBox="0 0 16 20">
+        <path d="M8 1 13 6H3Z" /><path d="M8 19 3 14h10Z" /><rect x="6.5" y="8" width="3" height="4" rx="1" />
+      </symbol>
+      <symbol id="i-grille" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="2" />
+        <g><circle cx="12" cy="12" r="1.6" /><circle cx="8" cy="12" r="1.4" /><circle cx="16" cy="12" r="1.4" /><circle cx="12" cy="8" r="1.4" /><circle cx="12" cy="16" r="1.4" /><circle cx="9" cy="9" r="1.2" /><circle cx="15" cy="9" r="1.2" /><circle cx="9" cy="15" r="1.2" /><circle cx="15" cy="15" r="1.2" /></g>
+      </symbol>
+      <symbol id="i-stick" viewBox="0 0 24 24">
+        <ellipse cx="12" cy="20" rx="9" ry="3" /><rect x="10.5" y="9" width="3" height="11" /><circle cx="12" cy="7" r="5" />
+      </symbol>
+      <symbol id="i-btn" viewBox="0 0 24 24"><ellipse cx="12" cy="16" rx="10" ry="4.5" /><ellipse cx="12" cy="12" rx="9" ry="5" /></symbol>
+      <symbol id="i-one" viewBox="0 0 32 32">
+        <circle cx="16" cy="16" r="13.5" fill="none" stroke="currentColor" stroke-width="3" /><path d="M13 11.5 17 9h1.5v14H15V13.2l-2 1.2Z" />
+      </symbol>
+      <symbol id="i-two" viewBox="0 0 32 32">
+        <circle cx="16" cy="16" r="13.5" fill="none" stroke="currentColor" stroke-width="3" /><path d="M11.4 13.2c0-2.7 2-4.4 4.8-4.4s4.7 1.6 4.7 4c0 1.9-1 3.2-3 4.9l-2.3 2h5.4V23h-9.8v-2.6l4.8-4.3c1.1-1 1.6-1.8 1.6-2.8 0-1.1-.7-1.8-1.9-1.8-1.3 0-2 .9-2 2.3Z" />
+      </symbol>
+      <symbol id="i-taxi" viewBox="0 0 24 12">
+        <path d="M4 7 7 3h10l3 4 3 1v2H1V8Z" /><circle cx="5" cy="10.5" r="1.5" /><circle cx="19" cy="10.5" r="1.5" />
+      </symbol>
+    </svg>
+
+    <a class="skip" href="#2f">Skip to the five worlds (2F)</a>
+
+    <nav class="directory" aria-label="Floor directory">
+      <div class="directory__display">
+        <svg class="directory__arrow" aria-hidden="true"><use href="#i-lift" /></svg>
+        <span class="directory__now" data-now>1F</span>
+      </div>
+      <ol class="directory__cells">
+        <li><a class="cell" href="#rf" data-floor="rf"><span class="cell__num">RF</span><span class="cell__genre"><span>ROOF</span></span></a></li>
+        <li><a class="cell" href="#5f" data-floor="5f"><span class="cell__num">5F</span><span class="cell__genre"><span>LAB</span></span></a></li>
+        <li><a class="cell" href="#4f" data-floor="4f"><span class="cell__num">4F</span><span class="cell__genre"><span>PARLOUR</span></span></a></li>
+        <li><a class="cell" href="#3f" data-floor="3f"><span class="cell__num">3F</span><span class="cell__genre"><span>PRIZE</span></span></a></li>
+        <li><a class="cell cell--index" href="#2f" data-floor="2f"><span class="cell__num">2F</span><span class="cell__genre"><span>4D.OS</span></span></a></li>
+        <li><a class="cell" href="#1f" data-floor="1f" aria-current="location"><span class="cell__num">1F</span><span class="cell__genre"><span>RAIN</span> <span>RUN</span></span></a></li>
+      </ol>
+      <button class="sound sound--grille" type="button" aria-pressed="false" data-sound>
+        <svg aria-hidden="true"><use href="#i-grille" /></svg>
+        <span class="sound__text" data-sound-text>Sound off</span>
+      </button>
+    </nav>
+
+    <main class="building">
+      <!-- 1F · RAIN RUN -->
+      <section id="1f" class="floor floor--1f" aria-labelledby="h-1f" data-floor-section="1f">
+        <div class="cabinet">
+          <span class="tmold tmold--l" aria-hidden="true"></span>
+          <span class="tmold tmold--r" aria-hidden="true"></span>
+
+          <header class="marquee">
+            <span class="marquee__tubes" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="marquee__side marquee__side--l" lang="ja" aria-hidden="true">ゲーム</span>
+            <h1 class="marquee__title">
+              <span class="marquee__word">Playground</span>
+              <span class="marquee__sub">Crewtives · <span class="marquee__sub-long">Game Center </span>Yonjigen</span>
+            </h1>
+            <span class="marquee__side marquee__side--r" lang="ja" aria-hidden="true">四次元</span>
+          </header>
+          <h2 id="h-1f" class="visually-hidden">1F, Rain Run</h2>
+
+          <div class="bezel">
+            <p class="bezel__strip">Live · 16 colours · Every moment stays on screen</p>
+
+            <div class="wing wing--l" id="rr-wing-l">
+              <p class="wing__title">How to play</p>
+              <ul class="wing__list">
+                <li><svg aria-hidden="true"><use href="#i-stick" /></svg><span>Stick = steer</span></li>
+                <li><svg class="btn-a" aria-hidden="true"><use href="#i-btn" /></svg><span>A = boost</span></li>
+                <li><svg class="btn-b" aria-hidden="true"><use href="#i-btn" /></svg><span>B = ghost</span></li>
+              </ul>
+            </div>
+
+            <div
+              class="crt"
+              id="rain-run"
+              tabindex="0"
+              role="application"
+              aria-roledescription="arcade game"
+              aria-label="Rain Run, a flying game. Arrow keys steer, Z boosts, C shows the whole flight."
+              aria-describedby="rr-desc rr-howto-keys"
+              data-state="attract"
+            >
+              <div class="crt__screen" data-rr-view></div>
+              <div class="crt__glass" aria-hidden="true"></div>
+              <div class="crt__power" aria-hidden="true"></div>
+              <div class="hud" aria-hidden="true">
+                <span class="hud__1up"><b>1UP</b> <span data-hud-score>000000</span></span>
+                <span class="hud__mid" data-hud-mid><span class="hud__demo">DEMO</span></span>
+                <span class="hud__hi"><b>HI</b> <span data-hud-hi>------</span></span>
+                <span class="hud__lives" data-hud-lives></span>
+                <span class="hud__timer" data-hud-time></span>
+                <span class="hud__combo" data-hud-combo></span>
+                <span class="hud__boost" data-hud-boost><i></i></span>
+                <span class="hud__center" data-hud-center><span class="hud__press">PRESS START</span></span>
+                <span class="hud__free">FREE PLAY</span>
+                <span class="hud__profile-label" data-hud-profile>LAST 6 S</span>
+              </div>
+              <p id="rr-desc" class="visually-hidden">
+                The screen shows a hover taxi flying down a rainy canyon of lit signs toward gates of light, drawn live
+                in 16 dithered colours. A strip along the bottom of the screen shows the last six seconds of the flight
+                from the side. Synthetic scene.
+              </p>
+              <noscript><p class="crt__noscript">This machine runs on JavaScript. The links on every floor work without it.</p></noscript>
+              <p class="crt__nogl" data-nogl hidden>This machine's screen needs WebGL2. Here is a still, and the links all work.</p>
+            </div>
+
+            <div class="wing wing--r">
+              <ul class="wing__list">
+                <li><svg class="btn-c" aria-hidden="true"><use href="#i-btn" /></svg><span>C = time view</span></li>
+                <li><svg class="btn-start" aria-hidden="true"><use href="#i-play" /></svg><span>Start = play</span></li>
+              </ul>
+              <div class="screen-switch" role="radiogroup" aria-label="Screen colours for every machine" data-screen-switch>
+                <p class="screen-switch__label" aria-hidden="true">Screen</p>
+                <div class="screen-switch__track">
+                  <button type="button" role="radio" aria-checked="true" data-mode="16" tabindex="0">16</button>
+                  <button type="button" role="radio" aria-checked="false" data-mode="1bit" tabindex="-1">1-bit</button>
+                  <button type="button" role="radio" aria-checked="false" data-mode="millions" tabindex="-1">Mil&shy;lions</button>
+                </div>
+              </div>
+              <p class="tag tag--screen">Synthetic scene</p>
+            </div>
+
+            <div class="timestrip" data-timestrip hidden>
+              <label class="visually-hidden" for="rr-scrub">Time strip: move through every moment of the flight</label>
+              <input id="rr-scrub" class="timestrip__range" type="range" min="0" max="0" step="1" value="0" />
+              <output class="timestrip__read" for="rr-scrub" data-timestrip-read>0.00 S</output>
+            </div>
+          </div>
+
+          <div class="deck">
+            <div class="deck__plate">
+              <div class="stick" data-stick>
+                <span class="stick__gate" data-stick-gate aria-hidden="true"><span class="stick__ball" data-stick-ball></span></span>
+                <button type="button" class="stick__dir stick__dir--up" data-dir="up" aria-label="Steer up"><svg aria-hidden="true"><use href="#i-up" /></svg></button>
+                <button type="button" class="stick__dir stick__dir--down" data-dir="down" aria-label="Steer down"><svg aria-hidden="true"><use href="#i-down" /></svg></button>
+                <button type="button" class="stick__dir stick__dir--left" data-dir="left" aria-label="Steer left"><svg aria-hidden="true"><use href="#i-left" /></svg></button>
+                <button type="button" class="stick__dir stick__dir--right" data-dir="right" aria-label="Steer right"><svg aria-hidden="true"><use href="#i-right" /></svg></button>
+              </div>
+
+              <div class="abc">
+                <button type="button" class="arcade arcade--a" data-btn="a" aria-label="A, boost (key Z)"><span class="arcade__cap"></span><span class="arcade__silk">A</span></button>
+                <button type="button" class="arcade arcade--b" data-btn="b" aria-label="B, show or hide the ghost (key X)" aria-pressed="true"><span class="arcade__cap"></span><span class="arcade__silk">B</span></button>
+                <button type="button" class="arcade arcade--c" data-btn="c" aria-label="C, time view (key C)"><span class="arcade__cap"></span><span class="arcade__silk">C</span></button>
+              </div>
+
+              <button type="button" class="start" data-start><span class="start__cap">1P Start</span></button>
+
+              <div class="deck__phone">
+                <button
+                  type="button"
+                  class="lift"
+                  aria-expanded="false"
+                  aria-controls="lift-panel"
+                  data-lift
+                ><span class="lift__num" data-lift-now>1F</span><span class="visually-hidden">Elevator: choose a floor</span></button>
+                <a class="deck__worlds" href="#2f" data-floor-link="2f"><span>2F</span> 5 worlds</a>
+                <button class="sound sound--deck" type="button" aria-pressed="false" data-sound>
+                  <svg aria-hidden="true"><use href="#i-grille" /></svg>
+                  <span class="sound__text" data-sound-text>Sound off</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="lift-panel" id="lift-panel" role="dialog" aria-label="Elevator" hidden data-lift-panel>
+            <p class="lift-panel__title">Elevator · 階</p>
+            <div class="lift-panel__grid">
+              <button type="button" data-go="rf"><span>RF</span>Roof</button>
+              <button type="button" data-go="5f"><span>5F</span>Lab</button>
+              <button type="button" data-go="4f"><span>4F</span>Parlour</button>
+              <button type="button" data-go="3f"><span>3F</span>Prize</button>
+              <button type="button" data-go="2f"><span>2F</span>4D.OS</button>
+              <button type="button" data-go="1f"><span>1F</span>Rain Run</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="coindoor">
+          <div class="coindoor__door" aria-hidden="true">
+            <span class="coindoor__face">
+              <span class="coindoor__lamp">FREE PLAY</span>
+              <span class="coindoor__jp" lang="ja">無料</span>
+              <span class="coindoor__mouth"></span>
+            </span>
+            <span class="coindoor__return"></span>
+            <span class="coindoor__lock"></span>
+          </div>
+          <div class="coindoor__copy">
+            <p class="coindoor__free"><span>FREE PLAY</span> / <span lang="ja">無料</span></p>
+            <p class="lead">
+              The crewtives playground: experiments in motion, time and light that run live in your browser. Everything
+              here is a demo; nothing costs anything.
+            </p>
+            <p class="coindoor__ride" id="ride-up">Ride up</p>
+            <ul class="guide" aria-labelledby="ride-up">
+              <li><a href="#2f" data-floor-link="2f"><b>2F</b>Five 4D.OS worlds</a></li>
+              <li><a href="#3f" data-floor-link="3f"><b>3F</b>A crane game</a></li>
+              <li><a href="#4f" data-floor-link="4f"><b>4F</b>A pachinko glass</a></li>
+              <li><a href="#5f" data-floor-link="5f"><b>5F</b>The lab</a></li>
+              <li><a href="#rf" data-floor-link="rf"><b>RF</b>The roof sign</a></li>
+            </ul>
+          </div>
+          <article class="card card--howto" id="rr-howto" aria-labelledby="rr-howto-title">
+            <h3 id="rr-howto-title" class="card__title">Rain Run · How to play</h3>
+            <p>
+              Fly the taxi through the lit gates. Your flight stays on screen; press C, or crash three times, and the
+              whole flight turns sideways, every moment at once.
+            </p>
+            <dl class="card__keys" id="rr-howto-keys">
+              <div><dt>Steer</dt><dd>Drag the stick, or arrow keys / WASD</dd></div>
+              <div><dt>A · Boost</dt><dd>Z key. 1.5× speed for 1.2 s, then 3 s to recharge</dd></div>
+              <div><dt>B · Ghost</dt><dd>X key. Your best run, flying beside you</dd></div>
+              <div><dt>C · Time view</dt><dd>C key. Pauses and shows the whole flight</dd></div>
+              <div><dt>Start</dt><dd>Enter, the 1P START button, or tap the screen</dd></div>
+            </dl>
+            <p class="card__rules">
+              90 seconds, 3 lives. Each gate scores 100 × your combo, up to ×8; a missed gate resets it. HI is kept in
+              this browser only.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <!-- 2F · 4D.OS: the index of the demos -->
+      <section id="2f" class="floor floor--2f" aria-labelledby="h-2f" data-floor-section="2f">
+        <div class="floor__inner">
+          <span class="floor__plate" aria-hidden="true">2F</span>
+          <h2 id="h-2f" class="floor__title"><span class="visually-hidden">2F, 4D.OS. </span>Five worlds. Every moment at once.</h2>
+          <p class="floor__lead">
+            4D.OS is the studio's live 4D engine: a scene rebuilt in space and time, with all of its moments visible
+            together, drawn on a real-time dithered display. Each cabinet opens one world. All five scenes are synthetic.
+          </p>
+
+          <div class="launcher-sign">
+            <p class="launcher-sign__mark" aria-hidden="true">4D.OS</p>
+            <p class="launcher-sign__line">Five worlds, one launcher. Every moment of a scene, all at once.</p>
+            <a class="launcher-sign__open" href="/4d-os/">
+              <svg aria-hidden="true"><use href="#i-play" /></svg>Open the launcher
+            </a>
+          </div>
+
+          <ul class="aisle" aria-label="Five 4D.OS worlds">
+            <li class="aisle__slot">
+              <a class="cab cab--a" href="/4d-os/a/">
+                <span class="cab__marquee" aria-hidden="true">A</span>
+                <span class="cab__body">
+                  <span class="cab__bezel">
+                    <span class="cab__crt">
+                      <img
+                        src="/landings/_shared/stills/a.webp"
+                        width="1200"
+                        height="900"
+                        loading="lazy"
+                        decoding="async"
+                        alt="World A, Vitrine: a black cat climbing stairs, drawn in points inside a red gallery room; its earlier steps stay behind it as a row of ghost cats."
+                      />
+                    </span>
+                    <span class="tag cab__tag">Synthetic scene</span>
+                  </span>
+                  <span class="cab__plate">
+                    <span class="cab__name">A · Vitrine</span>
+                    <span class="cab__line">A red gallery room. A black cat climbs a stairway, and every step it takes stays as points.</span>
+                  </span>
+                  <span class="cab__ledge">
+                    <span class="cab__switch" aria-hidden="true"><span class="cab__cap"></span></span>
+                    <span class="cab__open">Open<svg aria-hidden="true"><use href="#i-play" /></svg></span>
+                  </span>
+                </span>
+              </a>
+              <p class="cab__credit">
+                <a href="https://poly.pizza/m/8GJbfM8R1A">"Cat" by J-Toastie</a>, <a href="https://creativecommons.org/licenses/by/3.0/">CC-BY 3.0</a>
+              </p>
+            </li>
+            <li class="aisle__slot">
+              <a class="cab cab--b" href="/4d-os/b/">
+                <span class="cab__marquee" aria-hidden="true">B</span>
+                <span class="cab__body">
+                  <span class="cab__bezel">
+                    <span class="cab__crt">
+                      <img
+                        src="/landings/_shared/stills/b.webp"
+                        width="1200"
+                        height="900"
+                        loading="lazy"
+                        decoding="async"
+                        alt="World B, Plate: a staircase of white cats exposed onto one dark plate under a green and magenta aurora, the present cat in cyan at the top."
+                      />
+                    </span>
+                    <span class="tag cab__tag">Synthetic scene</span>
+                  </span>
+                  <span class="cab__plate">
+                    <span class="cab__name">B · Plate</span>
+                    <span class="cab__line">A chronophotographic plate under an aurora sky. The cat's whole climb, exposed at once.</span>
+                  </span>
+                  <span class="cab__ledge">
+                    <span class="cab__switch" aria-hidden="true"><span class="cab__cap"></span></span>
+                    <span class="cab__open">Open<svg aria-hidden="true"><use href="#i-play" /></svg></span>
+                  </span>
+                </span>
+              </a>
+              <p class="cab__credit">
+                <a href="https://poly.pizza/m/8GJbfM8R1A">"Cat" by J-Toastie</a>, <a href="https://creativecommons.org/licenses/by/3.0/">CC-BY 3.0</a>
+              </p>
+            </li>
+            <li class="aisle__slot">
+              <a class="cab cab--c" href="/4d-os/c/">
+                <span class="cab__marquee" aria-hidden="true">C</span>
+                <span class="cab__body">
+                  <span class="cab__bezel">
+                    <span class="cab__crt">
+                      <img
+                        src="/landings/_shared/stills/c.webp"
+                        width="1200"
+                        height="900"
+                        loading="lazy"
+                        decoding="async"
+                        alt="World C, Leader: a projector gate framed by film perforations, the cat’s climb over-exposed in orange with a strip of 16 mm frames below."
+                      />
+                    </span>
+                    <span class="tag cab__tag">Synthetic scene</span>
+                  </span>
+                  <span class="cab__plate">
+                    <span class="cab__name">C · Leader</span>
+                    <span class="cab__line">A 16 mm film leader. Scrub the strip and the night scene runs through it.</span>
+                  </span>
+                  <span class="cab__ledge">
+                    <span class="cab__switch" aria-hidden="true"><span class="cab__cap"></span></span>
+                    <span class="cab__open">Open<svg aria-hidden="true"><use href="#i-play" /></svg></span>
+                  </span>
+                </span>
+              </a>
+              <p class="cab__credit">
+                <a href="https://poly.pizza/m/8GJbfM8R1A">"Cat" by J-Toastie</a>, <a href="https://creativecommons.org/licenses/by/3.0/">CC-BY 3.0</a>
+              </p>
+            </li>
+            <li class="aisle__slot">
+              <a class="cab cab--d" href="/4d-os/d/">
+                <span class="cab__marquee" aria-hidden="true">D</span>
+                <span class="cab__body">
+                  <span class="cab__bezel">
+                    <span class="cab__crt">
+                      <img
+                        src="/landings/_shared/stills/d.webp"
+                        width="1200"
+                        height="900"
+                        loading="lazy"
+                        decoding="async"
+                        alt="World D, The golden stoop: a peregrine falcon computed from equations flies along a golden spiral through a city of points; its earlier moments trail behind it in phosphor green."
+                      />
+                    </span>
+                    <span class="tag cab__tag">Synthetic scene</span>
+                  </span>
+                  <span class="cab__plate">
+                    <span class="cab__name">D · The golden stoop</span>
+                    <span class="cab__line">A peregrine falcon computed from equations, stooping along a golden spiral.</span>
+                  </span>
+                  <span class="cab__ledge">
+                    <span class="cab__switch" aria-hidden="true"><span class="cab__cap"></span></span>
+                    <span class="cab__open">Open<svg aria-hidden="true"><use href="#i-play" /></svg></span>
+                  </span>
+                </span>
+              </a>
+            </li>
+            <li class="aisle__slot">
+              <a class="cab cab--e" href="/4d-os/e/">
+                <span class="cab__marquee" aria-hidden="true">E</span>
+                <span class="cab__body">
+                  <span class="cab__bezel">
+                    <span class="cab__crt">
+                      <img
+                        src="/landings/_shared/stills/e.webp"
+                        width="1200"
+                        height="900"
+                        loading="lazy"
+                        decoding="async"
+                        alt="World E, Whale fall: a humpback whale computed from equations spirals into a black hole whose lensed disk is traced live."
+                      />
+                    </span>
+                    <span class="tag cab__tag">Synthetic scene</span>
+                  </span>
+                  <span class="cab__plate">
+                    <span class="cab__name">E · Whale fall</span>
+                    <span class="cab__line">A whale spirals into a black hole. Two clocks disagree about how long it takes.</span>
+                  </span>
+                  <span class="cab__ledge">
+                    <span class="cab__switch" aria-hidden="true"><span class="cab__cap"></span></span>
+                    <span class="cab__open">Open<svg aria-hidden="true"><use href="#i-play" /></svg></span>
+                  </span>
+                </span>
+              </a>
+            </li>
+          </ul>
+
+          <div class="board">
+            <table class="board__table">
+              <caption class="board__caption">Route board <span>No ranks, no scores: just where each world lives.</span></caption>
+              <thead>
+                <tr><th scope="col">World</th><th scope="col">What you see</th><th scope="col">Route</th></tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">A</th><td>A red gallery room. A black cat climbs a stairway, and every step it takes stays as points.</td><td><a href="/4d-os/a/">/4d-os/a/</a></td></tr>
+                <tr><th scope="row">B</th><td>A chronophotographic plate under an aurora sky. The cat's whole climb, exposed at once.</td><td><a href="/4d-os/b/">/4d-os/b/</a></td></tr>
+                <tr><th scope="row">C</th><td>A 16 mm film leader. Scrub the strip and the night scene runs through it.</td><td><a href="/4d-os/c/">/4d-os/c/</a></td></tr>
+                <tr><th scope="row">D</th><td>A peregrine falcon computed from equations, stooping along a golden spiral.</td><td><a href="/4d-os/d/">/4d-os/d/</a></td></tr>
+                <tr><th scope="row">E</th><td>A whale spirals into a black hole. Two clocks disagree about how long it takes.</td><td><a href="/4d-os/e/">/4d-os/e/</a></td></tr>
+                <tr><th scope="row">Launcher</th><td>Five worlds, one launcher. Every moment of a scene, all at once.</td><td><a href="/4d-os/">/4d-os/</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3F · PRIZE -->
+      <section id="3f" class="floor floor--3f" aria-labelledby="h-3f" data-floor-section="3f">
+        <div class="floor__inner">
+          <span class="floor__plate" aria-hidden="true">3F</span>
+          <h2 id="h-3f" class="floor__title"><span class="visually-hidden">3F, Prize. </span>Win a world.</h2>
+          <div class="machine-row machine-row--crane">
+            <article class="card card--howto" id="crane-howto" aria-labelledby="crane-howto-title">
+              <h3 id="crane-howto-title" class="card__title">Win a World · How to play</h3>
+              <p>
+                Each capsule holds a 4D.OS world or a studio sticker. Two buttons, one try, like the real machines. The
+                claw grips 80% of the time. The only prizes are links, and all of them are listed below.
+              </p>
+              <dl class="card__keys" id="crane-howto-keys">
+                <div><dt>Button 1</dt><dd>Hold to move the claw right. Right arrow or 1</dd></div>
+                <div><dt>Button 2</dt><dd>Hold to move it back; let go and it drops. Up arrow or 2</dd></div>
+                <div><dt>One try</dt><dd>Each button works once per try, then both light up again</dd></div>
+              </dl>
+              <p class="card__rules">A near miss can still nudge a capsule over the lip of the prize chute.</p>
+            </article>
+
+            <div class="crane" data-crane data-phase="ready">
+              <p class="crane__marquee" aria-hidden="true"><span>Win a world</span></p>
+              <div class="crane__glass">
+                <div
+                  class="crane__view"
+                  data-crane-view
+                  tabindex="0"
+                  role="application"
+                  aria-roledescription="crane game"
+                  aria-label="Win a World crane. Hold the right arrow or 1 to move the claw right, then hold the up arrow or 2 to move it back; let go and it drops."
+                  aria-describedby="crane-desc"
+                ></div>
+                <p id="crane-desc" class="visually-hidden">
+                  Behind the glass, capsules sit in one layer on a carpet floor, each marked with a world letter, 4D for
+                  the launcher, or a sticker rosette. The prize chute is at the front left. Synthetic scene.
+                </p>
+                <div class="adjust__card crane__adjust" data-crane-adjust>
+                  <p class="adjust__jp" lang="ja">調整中</p>
+                  <p class="adjust__en">Under adjustment</p>
+                  <p class="adjust__note">This crane needs JavaScript and WebGL2 to run. Every prize is already in the list below.</p>
+                </div>
+              </div>
+              <div class="crane__deck">
+                <p class="crane__chute" aria-hidden="true"><span lang="ja">景品</span>Prize</p>
+                <div class="crane__buttons">
+                  <button type="button" class="crane-btn crane-btn--1" data-crane-btn="1" disabled aria-describedby="crane-howto-keys">
+                    <svg aria-hidden="true"><use href="#i-one" /></svg><span class="visually-hidden">Button 1: hold to move the claw right</span>
+                  </button>
+                  <button type="button" class="crane-btn crane-btn--2" data-crane-btn="2" disabled aria-describedby="crane-howto-keys">
+                    <svg aria-hidden="true"><use href="#i-two" /></svg><span class="visually-hidden">Button 2: hold to move the claw back, let go to drop</span>
+                  </button>
+                </div>
+                <p class="crane__readout" data-crane-readout aria-hidden="true">Free play · Hold 1</p>
+              </div>
+            </div>
+
+            <div class="rack">
+              <h3 class="rack__title" id="rack-title">Ticket rack</h3>
+              <p class="rack__empty" data-rack-empty>Win a capsule and its ticket prints here. The rack holds six; a seventh pushes out the oldest. Drag a ticket to move it.</p>
+              <ol class="rack__tickets" data-rack aria-labelledby="rack-title"></ol>
+            </div>
+          </div>
+          <nav class="prizes" aria-labelledby="prizes-title">
+            <h3 id="prizes-title" class="prizes__title">Prize list · <span lang="ja">景品</span> <span class="prizes__gloss">(prizes)</span></h3>
+            <ul class="prizes__list">
+              <li><a href="/4d-os/a/"><b>A</b> Vitrine</a></li>
+              <li><a href="/4d-os/b/"><b>B</b> Plate</a></li>
+              <li><a href="/4d-os/c/"><b>C</b> Leader</a></li>
+              <li><a href="/4d-os/d/"><b>D</b> The golden stoop</a></li>
+              <li><a href="/4d-os/e/"><b>E</b> Whale fall</a></li>
+              <li><a href="/4d-os/"><b>4D.OS</b> Launcher</a></li>
+            </ul>
+          </nav>
+        </div>
+      </section>
+
+      <!-- 4F · PARLOUR -->
+      <section id="4f" class="floor floor--4f" aria-labelledby="h-4f" data-floor-section="4f">
+        <div class="floor__inner">
+          <span class="floor__plate" aria-hidden="true">4F</span>
+          <h2 id="h-4f" class="floor__title"><span class="visually-hidden">4F, Parlour. </span>Every ball leaves its path.</h2>
+          <div class="machine-row machine-row--parlour">
+            <div class="parlour-side parlour-side--left">
+              <article class="card card--howto" id="parlour-howto" aria-labelledby="parlour-howto-title">
+                <h3 id="parlour-howto-title" class="card__title">Parlour Glass · How to play</h3>
+                <p>
+                  Turn the handle, pour, and leave the shutter open: every ball's path stays on the glass. Spin the wheel
+                  back and they all climb home.
+                </p>
+                <dl class="card__keys" id="parlour-howto-keys">
+                  <div><dt>Handle</dt><dd>Drag, or arrow keys: steps of 5, Shift for 20</dd></div>
+                  <div><dt>Launch</dt><dd>Hold the button, or hold Space on it</dd></div>
+                  <div><dt>Wheel</dt><dd>Turn the rim to step back 1/30 s at a time; twist the inner ring to shuttle. J rewinds, K holds, L plays</dd></div>
+                  <div><dt>Now</dt><dd>Back to the present</dd></div>
+                </dl>
+                <p class="card__rules">Free balls. No bets, no prizes, nothing saved.</p>
+              </article>
+
+              <div class="panel panel--time">
+                <div class="jogbox">
+                  <div
+                    class="jog"
+                    data-jog
+                    role="slider"
+                    tabindex="0"
+                    aria-label="Rewind wheel: seconds back in time"
+                    aria-describedby="parlour-howto-keys"
+                    aria-valuemin="0"
+                    aria-valuemax="0"
+                    aria-valuenow="0"
+                    aria-valuetext="Now, live"
+                  >
+                    <span class="jog__rim" aria-hidden="true"></span>
+                    <span class="jog__ring" aria-hidden="true"></span>
+                    <span class="jog__hub" aria-hidden="true">Jog</span>
+                  </div>
+                  <div class="jogbox__side">
+                    <output class="timecode" data-timecode aria-hidden="true">LIVE +1.00×</output>
+                    <button type="button" class="key key--now" data-jog-now>Now</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="parlour" data-parlour>
+              <p class="parlour__marquee" aria-hidden="true"><span>Parlour glass</span></p>
+              <div class="parlour__glass">
+                <svg class="parlour__lamps" data-lamps viewBox="0 0 100 100" aria-hidden="true" focusable="false"></svg>
+                <div
+                  class="parlour__view"
+                  data-parlour-view
+                  tabindex="0"
+                  role="application"
+                  aria-roledescription="pachinko glass"
+                  aria-label="Parlour Glass. Hold Space to launch balls; J rewinds, K holds, L plays."
+                  aria-describedby="parlour-desc"
+                ></div>
+                <p id="parlour-desc" class="visually-hidden">
+                  A round pachinko glass seen from the front: a rosette of nails set on the golden angle, a pocket in the
+                  centre, two tulips below it and two windmills. Chrome balls fall through the nails and their paths stay on
+                  the glass as coloured dots, newest in sodium, oldest in ultraviolet. Synthetic scene.
+                </p>
+                <p class="parlour__fever" aria-hidden="true">Fever</p>
+                <div class="adjust__card parlour__adjust">
+                  <p class="adjust__jp" lang="ja">調整中</p>
+                  <p class="adjust__en">Under adjustment</p>
+                  <p class="adjust__note">This glass needs JavaScript to run. No ball has been poured.</p>
+                </div>
+              </div>
+              <p class="parlour__counter" data-parlour-counter aria-hidden="true">BALLS 0 · IN PLAY 0 · IN THE POCKET 0</p>
+              <p class="parlour__note" data-parlour-note hidden>Flat screen: here the glass runs in 2D, with fewer balls, and the rewind wheel is off.</p>
+            </div>
+
+            <div class="parlour-side parlour-side--right">
+              <div class="panel panel--play">
+                <div class="handle">
+                  <div
+                    class="handle__knob"
+                    data-handle
+                    role="slider"
+                    tabindex="0"
+                    aria-label="Handle: launch strength"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="30"
+                    aria-valuetext="30 of 100"
+                  ><span class="handle__grip" aria-hidden="true"></span></div>
+                  <p class="handle__read" aria-hidden="true">Power <span data-handle-read>030</span></p>
+                </div>
+                <div class="panel__row">
+                  <button type="button" class="key key--launch" data-launch>Launch</button>
+                  <button type="button" class="key" data-pour>Pour 50</button>
+                </div>
+                <div class="rocker" role="radiogroup" aria-label="Nail symmetry" data-group="symmetry">
+                  <p class="rocker__label" aria-hidden="true">Symmetry</p>
+                  <div class="rocker__track rocker__track--4">
+                    <button type="button" role="radio" aria-checked="true" tabindex="0" data-value="mirror">Mirror</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" data-value="six">6-fold</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" data-value="eight">8-fold</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" data-value="free">Free</button>
+                  </div>
+                </div>
+                <div class="rocker" role="radiogroup" aria-label="Launchers" data-group="rails">
+                  <p class="rocker__label" aria-hidden="true">Launchers</p>
+                  <div class="rocker__track">
+                    <button type="button" role="radio" aria-checked="true" tabindex="0" data-value="twin">Twin</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" data-value="left">Left</button>
+                  </div>
+                </div>
+                <div class="rocker" role="radiogroup" aria-label="Shutter: how long paths stay on the glass" data-group="shutter">
+                  <p class="rocker__label" aria-hidden="true">Shutter</p>
+                  <div class="rocker__track">
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" data-value="now">Now</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" data-value="1">1 s</button>
+                    <button type="button" role="radio" aria-checked="true" tabindex="0" data-value="5">5 s</button>
+                    <button type="button" role="radio" aria-checked="false" tabindex="-1" data-value="all">Every moment</button>
+                  </div>
+                </div>
+                <div class="panel__row panel__row--small">
+                  <button type="button" class="key key--small" data-replay>Replay seed</button>
+                  <button type="button" class="key key--small" data-clear>Clear glass</button>
+                  <button type="button" class="key key--small" data-copy>Copy this machine</button>
+                </div>
+                <p class="panel__out" data-copy-out hidden></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5F · LAB -->
+      <section id="5f" class="floor floor--5f" aria-labelledby="h-5f" data-floor-section="5f">
+        <div class="floor__inner">
+          <span class="floor__plate" aria-hidden="true">5F</span>
+          <h2 id="h-5f" class="floor__title"><span class="visually-hidden">5F, Lab. </span><span lang="ja">調整中</span> · Under adjustment</h2>
+          <ul class="lab" aria-label="Three lab slots">
+            <li class="lab__cab" data-lab-slot>
+              <div class="lab__screen"><p class="lab__card lab__card--1">Lab slot 1: algorithmic art. Untitled. Not ready to play.</p></div>
+            </li>
+            <li class="lab__cab" data-lab-slot>
+              <div class="lab__screen"><p class="lab__card lab__card--2">Lab slot 2: a physics sketch. Untitled.</p></div>
+            </li>
+            <li class="lab__cab" data-lab-slot>
+              <div class="lab__screen"><p class="lab__card lab__card--3">Lab slot 3: a retro-futuristic app. Untitled.</p></div>
+            </li>
+          </ul>
+          <p class="lab__note">Machines get a marquee when they work. Nothing here has a name yet.</p>
+        </div>
+      </section>
+
+      <!-- RF · ROOF -->
+      <section id="rf" class="floor floor--rf" aria-labelledby="h-rf" data-floor-section="rf">
+        <h2 id="h-rf" class="visually-hidden">RF, Roof</h2>
+        <div class="roof">
+          <div class="roof__screen">
+            <div
+              class="roof__view"
+              data-roof-view
+              role="img"
+              aria-label="From the roof: the sign canyon below in the rain, hover taxis passing down the street, and a black hole hanging where the moon should be. Synthetic scene."
+            ></div>
+            <div class="adjust__card adjust__card--roof">
+              <p class="adjust__jp" lang="ja">調整中</p>
+              <p class="adjust__en">Under adjustment</p>
+              <p class="adjust__note">The roof screen, looking down into the sign canyon, needs JavaScript.</p>
+            </div>
+            <p class="tag roof__tag">Synthetic scene</p>
+          </div>
+          <p class="roof__moon">
+            <a href="/4d-os/e/">That's not the moon. It's the black hole from world E.</a>
+          </p>
+        </div>
+
+        <div class="floor__inner roof__deck">
+          <div class="gas" data-gas aria-labelledby="gas-title">
+            <h3 id="gas-title" class="gas__title">Gas tuner</h3>
+            <div class="gas__parapet">
+              <p class="gas__tate" lang="ja" aria-hidden="true">四次元</p>
+              <div class="gas__sign" data-gas-sign role="group" aria-label="YONJIGEN tube sign: eight letters"></div>
+              <p class="gas__tate gas__tate--r" lang="ja" aria-hidden="true">四次元</p>
+            </div>
+            <ol class="gas__strip" data-gas-strip aria-label="Strike log: No strikes yet"></ol>
+            <div class="gas__controls">
+              <div class="gas__dial" data-gas-dial role="radiogroup" aria-label="Gas in the tubes">
+                <span class="gas__knob" aria-hidden="true"></span>
+                <div class="gas__stops">
+                  <button type="button" role="radio" aria-checked="false" tabindex="-1" style="--gas: #ff4b1f"><i aria-hidden="true"></i>Neon</button>
+                  <button type="button" role="radio" aria-checked="false" tabindex="-1" style="--gas: #ffb08a"><i aria-hidden="true"></i>Helium</button>
+                  <button type="button" role="radio" aria-checked="true" tabindex="0" style="--gas: #9a7bff"><i aria-hidden="true"></i>Argon</button>
+                  <button type="button" role="radio" aria-checked="false" tabindex="-1" style="--gas: #e8ecff"><i aria-hidden="true"></i>Krypton</button>
+                  <button type="button" role="radio" aria-checked="false" tabindex="-1" style="--gas: #7fa8ff"><i aria-hidden="true"></i>Xenon</button>
+                </div>
+              </div>
+              <button type="button" class="key key--strike" data-gas-all>Strike all</button>
+            </div>
+            <p class="gas__caption">
+              Pick a gas. Pure argon glows lavender; the deep blue of most signs is argon with a drop of mercury.
+            </p>
+            <p class="gas__howto">Pick a gas with the dial (arrow keys), then press a letter to strike it, or Strike all. Each strike leaves a mark on the strip.</p>
+          </div>
+
+          <div class="service" data-service aria-labelledby="service-title">
+            <h3 id="service-title" class="service__title">Service: DIP switches</h3>
+            <p class="service__door">Machine room · staff only · settings stay in this browser</p>
+            <div class="dip">
+              <label class="dip__sw"><input type="checkbox" role="switch" data-sw="1" /><span class="dip__slot" aria-hidden="true"><span class="dip__lever"></span></span><span class="dip__num" aria-hidden="true">1</span><span class="dip__name">Sound</span></label>
+              <label class="dip__sw"><input type="checkbox" role="switch" data-sw="2" aria-describedby="sw-screen" /><span class="dip__slot" aria-hidden="true"><span class="dip__lever"></span></span><span class="dip__num" aria-hidden="true">2</span><span class="dip__name">Screen<span class="visually-hidden">, bit 1</span></span></label>
+              <label class="dip__sw"><input type="checkbox" role="switch" data-sw="3" aria-describedby="sw-screen" /><span class="dip__slot" aria-hidden="true"><span class="dip__lever"></span></span><span class="dip__num" aria-hidden="true">3</span><span class="dip__name">Screen<span class="visually-hidden">, bit 2</span></span></label>
+              <label class="dip__sw"><input type="checkbox" role="switch" data-sw="4" checked /><span class="dip__slot" aria-hidden="true"><span class="dip__lever"></span></span><span class="dip__num" aria-hidden="true">4</span><span class="dip__name">Rain</span></label>
+              <label class="dip__sw"><input type="checkbox" role="switch" data-sw="5" checked /><span class="dip__slot" aria-hidden="true"><span class="dip__lever"></span></span><span class="dip__num" aria-hidden="true">5</span><span class="dip__name">Ghosts</span></label>
+              <label class="dip__sw"><input type="checkbox" role="switch" data-sw="6" /><span class="dip__slot" aria-hidden="true"><span class="dip__lever"></span></span><span class="dip__num" aria-hidden="true">6</span><span class="dip__name">Flip</span></label>
+              <label class="dip__sw"><input type="checkbox" role="switch" data-sw="7" checked aria-describedby="sw-attract" /><span class="dip__slot" aria-hidden="true"><span class="dip__lever"></span></span><span class="dip__num" aria-hidden="true">7</span><span class="dip__name">Attract</span></label>
+              <label class="dip__sw"><input type="checkbox" role="switch" data-sw="8" checked disabled aria-describedby="sw-free" /><span class="dip__slot" aria-hidden="true"><span class="dip__lever"></span></span><span class="dip__num" aria-hidden="true">8</span><span class="dip__name">Free</span><span class="visually-hidden"> play</span></label>
+            </div>
+            <dl class="service__read">
+              <div><dt>Screen</dt><dd id="sw-screen" data-sw-screen>SW2–3 00 = 16 colours</dd></div>
+              <div><dt>Attract</dt><dd id="sw-attract">The self-playing demo on the 1F screen. <span data-sw-attract-note hidden>Off: your system asks for reduced motion.</span></dd></div>
+              <div><dt>Free play</dt><dd id="sw-free">Always free. This switch does not move.</dd></div>
+            </dl>
+          </div>
+        </div>
+
+        <div class="close" data-close>
+          <p class="close__continue" data-continue aria-hidden="true">Continue? <span data-continue-n>9</span></p>
+          <p class="close__over" data-over>Game over · Thanks for playing</p>
+          <button type="button" class="close__ride" data-ride>Ride back to 1F</button>
+        </div>
+
+        <footer class="credits">
+          <p class="credits__line">Scenes are synthetic and computed from equations.</p>
+          <dl class="credits__list">
+            <div>
+              <dt>Type</dt>
+              <dd>Bungee and Bungee Shade (The Bungee Project Authors), DotGothic16 (The DotGothic16 Project Authors), M PLUS Rounded 1c (The Rounded M+ Project Authors). All under the SIL Open Font License 1.1, served from this site.</dd>
+            </div>
+            <div>
+              <dt>Libraries</dt>
+              <dd>three.js (MIT), GSAP with ScrollTrigger (GSAP Standard "no charge" License), Lenis (MIT).</dd>
+            </div>
+            <div>
+              <dt>Cat model</dt>
+              <dd>Worlds A, B and C: <a href="https://poly.pizza/m/8GJbfM8R1A">"Cat" by J-Toastie</a>, <a href="https://creativecommons.org/licenses/by/3.0/">CC-BY 3.0</a>.</dd>
+            </div>
+            <div>
+              <dt>Glossary</dt>
+              <dd lang="ja"><span>ゲームセンター</span> <span lang="en">game center</span> · <span>四次元</span> <span lang="en">fourth dimension</span> · <span>調整中</span> <span lang="en">under adjustment</span> · <span>無料</span> <span lang="en">free</span> · <span>景品</span> <span lang="en">prizes</span> · <span>階</span> <span lang="en">floor</span> · <span>ゲーム</span> <span lang="en">games</span> · <span>カラオケ</span> <span lang="en">karaoke</span> · <span>ラーメン</span> <span lang="en">ramen</span> · <span>薬</span> <span lang="en">pharmacy</span> · <span>占い</span> <span lang="en">fortune telling</span> · <span>営業中</span> <span lang="en">open</span> · <span>両替</span> <span lang="en">change</span> · <span>時間</span> <span lang="en">time</span> · <span>未来</span> <span lang="en">future</span></dd>
+            </div>
+            <div>
+              <dt>Stored</dt>
+              <dd>This page keeps your sound setting, the service switches, and your Rain Run HI and best flight in this browser only. It sends nothing.</dd>
+            </div>
+          </dl>
+          <p class="credits__links">
+            <a href="https://crewtives.com">crewtives.com</a>
+            <a href="/4d-os/">4D.OS launcher</a>
+          </p>
+          <p class="credits__stamp">demo build 0.1</p>
+          <p class="credits__outside">Not in the collection yet · <a href="/"><svg aria-hidden="true" focusable="false"><use href="#i-back" /></svg>Playground</a></p>
+        </footer>
+      </section>
+    </main>
+
+    <p class="visually-hidden" aria-live="polite" data-live-game></p>
+    <p class="visually-hidden" aria-live="polite" data-live-floor></p>
+    <p class="visually-hidden" aria-live="polite" data-live-crane></p>
+    <p class="visually-hidden" aria-live="polite" data-live-parlour></p>
+
+    <script type="module" src="../../../../src/playground/game-center/main.ts"></script>
+  </body>
+</html>

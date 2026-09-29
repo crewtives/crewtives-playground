@@ -1,0 +1,47 @@
+---
+version: 1
+slug: "playground-landings-wind-up-empire-index-html"
+primary_target: "sites/playground/landings/wind-up-empire/index.html"
+related_targets: []
+---
+
+# Surface brief — candidate landing "Wind-Up Empire" (`sites/playground/landings/wind-up-empire/index.html`)
+
+**Scope and mode:** a full playground landing at `/landings/wind-up-empire/`, one of three candidates (change `add-playground-landings`). *Experience* mode: the world rules from the first screen. Acceptance criteria: the specs `landing-wind-up-empire` and `playground-hub`; decisions D1–D21 of the change's `design.md`; `directions/critique.md` §8–§9 wins over `directions/wind-up-empire.md` (all three in `openspec/changes/archive/2026-09-25-add-playground-landings/`).
+
+**Audience and task:** creative-coding and spatial-computing people, plus anyone who grew up with the browser strategy games of the 2000s (rising resources, a build queue, `[g:s:p]` coordinates). They arrive on a laptop between tasks, or on the phone from a link, with about ninety seconds of curiosity. The task: play with a toy that needs no instructions, and find and open the five real 4D.OS worlds (the index is the second section, linked from the first screen).
+
+**Constraints:**
+- visible text in English;
+- a fake economy, labeled three times, that resets on reload; "This page stores nothing and sends nothing." with the sound preference as the only exception; never the phrase "no tracking";
+- no new dependencies; OFL typefaces served from the site: Tilt Warp (box lettering, XROT/YROT axes), Rampart One (plates ≥ 16 px), Libre Franklin 500/700 (body), Sono (figures only); none shared with another landing or with 4D.OS; no reference to Japanese manufacturers;
+- synthesized sound only, off by default; reduced motion jumps each toy to its printed result; without WebGL2, Canvas2D fallbacks drawn at runtime (nothing baked into the build);
+- stills: the shared WebP, not re-dithered, with the cat's credit next to A, B and C;
+- a single Engine, DOM over the views with a `z-index` above `--engine-z`, only 2D transforms on elements that host views;
+- budget: ≤ 350 KB gz of JS per entry, ≤ 2 MB of first load, zero frames at rest;
+- the tray's 16-ink palettes are written by hand in the code (`src/playground/wind-up-empire/worldInks.ts`), not read from 4D.OS at build time or at runtime, and a drift test fails if any of them differs from its `src/4d-os/worlds/*/tokens.css`;
+- the economy runs on its own 10 Hz timer (D6), independent of the views and the engine, and when a hidden tab comes back it catches up with a 5-minute cap.
+
+**Memorable moment:** pulling the tin rocket back on the home top, feeling the 12 detents, letting go and watching it whip around the Whirl, leaving stamped copies of itself that age from full ink to stipple.
+
+**How the direction was chosen:** impeccable's *new-work* process ran as a draft, where a draw with seed `852db97b` assigned index 7 (the lithographed tin toy), a judge merged two designers' directions (`orbit-world` as the base, with grafts from `orbit-toy`), and a critic of the set of three landings moved the lid from a bilateral mirror to diagonal C2 symmetry, set the body face to Libre Franklin and fixed the route; code-led, because no image generation was configured, so the ambition lives in this contract, in the exact first screen and in the signature interaction.
+
+## Direction contract
+
+THESIS: A space empire you wind by hand. The playground is a lithographed tin space-toy playset: a mainspring key runs the build queue, pull-back friction rockets are the fleet, and humming-top planets are the five real 4D.OS worlds orbiting a spinning tin black hole, the Whirl. It refuses the near-black sci-fi dashboard with one neon accent and a table of resources, and its opposite, the white space-startup hero with a 3D planet and a pill button.
+
+OWN-WORLD: Flat litho inks at page scale, the box unfolded with one ink per face: cobalt #1B2CC4 lid (printed space, never a black screen), turquoise #17B7A0 die-cut tray (the index), vermilion #CC2216 box side (command deck), orange #FF7A1A leaflet (chrome yellow #FFC81A stays on the H1, the lip band and the yellow buttons; as a field it read as the same yellow as Game Center's sodium), night cobalt #0A0F4A proof. Tin #C7CCD4 plates with rivets and crimped edges, celluloid pink #FF6FAE windows and the newest exposure, ink #15131C. No neutral ground anywhere: tin and paper are objects on drenched fields. Tilt Warp box lettering that tilts back as the spring winds (its own XROT/YROT axes, no stacked shadows), Rampart One embossed nameplates, Libre Franklin leaflet voice, Sono odometer drums. One 16-ink Bayer 8×8 litho screen shared by the WebGL display and the CSS edge shading. State lives in the stroke: solid done, dashed queued, dotted locked.
+
+STORY: The visitor finds a toy empire already running: a demo rocket whips past the Whirl and stamps copies of itself while the counters roll. They pull a rocket back and slingshot it, wind the key and a build clacks, flick a planet and it hums. Then the lid lifts onto a tray of five real worlds; they open one. At the bottom they take home a print of every moment of their visit.
+
+FIRST VIEWPORT (1440×900): Pressed-tin resource strip (y 0–56: wordmark + pink "DEMO MODEL · FAKE ECONOMY" sticker left, Tin/Spring/Spark odometer drums with the spark wheel center, Worlds / How to play / bell "Sound off" right). Below, the cobalt lid inside a 4 px chrome + 2 px vermilion litho frame (inset 16 px), composed as box art with C2 point symmetry on a diagonal, not a mirror: the chrome H1 "WIND-UP EMPIRE" (Tilt Warp) slanted −8° across the upper left, overlapping the orrery's upper-left quadrant and drawn above the scene, with the subline "A demo space empire that runs on springs. Five real worlds orbit the Whirl."; the 16-ink dithered low-poly orrery centered at ≈(800, 520): the Whirl, seven √φ rings, five world tops resting 72° apart on a golden spiral, three bare lab sockets, five-point stars, the home top parked front-center with the red tin rocket in its cradle over the tin plate "PULL BACK TO LAUNCH" and the Aim / Pull-back / Launch row, and the demo flight's stamped exposures; BUILD (butterfly key + tag "WIND ME" + build-queue ticket) top-right; FLEET (round tin gauge + survey log) bottom-left, the two groups' centres rotating onto each other through the orrery center. The chrome lip band along the bottom: "DEMO MODEL · FAKE ECONOMY · RESETS ON RELOAD" left, the ink button "Five real worlds inside · Open the box" with an SVG arrow-down right, the primary route to the tray. At 390×844 the lid stacks: two-row strip, H1 centered in two lines, subline, orrery with the rocket (grab zone ≥ 120 px), rail plate, key and gauge as two tiles, lip band with its button; ticket and log start just below the fold. At ≤ 900 px the instruments leave the corners for a two-tile row under the orrery.
+
+FORM: Mid-century lithographed tin space toy with its box and die-cut tray, candidate 7 of 7 on the ordered list, seed key 852db97b.
+
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+
+**Signature interaction:** the pull-back rocket. Grab it on the home top and drag it back like a slingshot: 12 detents (tick, 1 px cradle shake, more sparks), aim ±60° from "toward the Whirl", a dashed ghost path previewing 3 s of flight recomputed on every change. Release flies a real velocity-Verlet orbit around the Whirl (planets are capture targets only); every 1/12 s of flight is stamped along the path and ages from full ink to 1-bit stipple by dither density, never by alpha; the newest is pink. Surveys chain; swallowed, escape and timeout always land in the log with a refund.
+
+**Motion grammar — "a spring unwinding":** settle by exponential decay; detent snaps from a stiff spring with a 1 px shake; stamps press in (scale 1.035 → 1, 110 ms); CLACK (1.06 → 1, 90 ms, 1 px jolt); one authored scroll moment, the lid lift (lid translates 1.35× scroll, camera pitches 0 → 10°, overlays 1 → 0.96, cast shadow on the tray), and no other entrances. ≤ 3 flashes/s; sparks local, ≤ 120.
+
+**Memory test:** "That toy-box space game printed on tin. I wound a chrome key and it printed a flower of keys while a little mine clacked up and the counters rolled. I pulled back a red rocket and it whipped round a spinning red-and-yellow whirl, leaving stamped copies of itself. The planets were spinning tops, and each one was a real demo I could open. At the bottom it gave me a print of my whole visit."

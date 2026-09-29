@@ -1,0 +1,73 @@
+/* World A — "Vitrine": a museum exhibition, red room. */
+
+@font-face {
+  font-family: 'Host Grotesk';
+  src: url('./fonts/host-grotesk-latin-wght.woff2') format('woff2');
+  font-weight: 300 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Departure Mono';
+  src: url('./fonts/departure-mono-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root,
+[data-world='a'] {
+  /* Display palette: the scene is quantized to these colors. */
+  --pal-1bit-0: #121110;
+  --pal-1bit-1: #f3f4f2;
+
+  --pal-16-0: #121110; /* display-case interior / ink */
+  --pal-16-1: #f3f4f2; /* label paper · HOLD */
+  --pal-16-2: #4f8c88; /* teal windows and door: they do not fall into the present's cyan */
+  --pal-16-3: #1d1a1e; /* asphalt */
+  --pal-16-4: #2b140d; /* brick in shadow */
+  --pal-16-5: #57504f; /* stair treads */
+  --pal-16-6: #e46fc9; /* magenta neon: falls into neither brick nor REWIND's amber */
+  --pal-16-7: #434e66; /* moonlight */
+  --pal-16-8: #52291a; /* brick next to the streetlamp */
+  --pal-16-9: #7b4325; /* lit brick */
+  --pal-16-10: #a67b52; /* wet reflection on the asphalt */
+  --pal-16-11: #6c717b; /* the cat's rim light */
+  --pal-16-12: #b4bccb; /* moon silver */
+  --pal-16-13: #ffd49a; /* sodium streetlamp, windows: paler than REWIND's amber */
+  --pal-16-14: #3ed6e6; /* present · FORWARD */
+  --pal-16-15: #f2a43a; /* present · REWIND */
+
+  --accent-forward: #3ed6e6;
+  --accent-rewind: #f2a43a;
+  --accent-hold: #f3f4f2;
+
+  /* Viewer: scene roles (all members of --pal-16-*) */
+  --scene-bg: #121110; /* display-case interior */
+  --trail: #b4bccb; /* trail: a moon-silver ghost, a tone the alley hardly uses */
+  --future: #6c717b; /* future in all mode: the rim-light gray, fainter */
+  --frustum: #f3f4f2; /* source camera: label paper */
+  --trajectory: #b4bccb; /* trajectory: moon silver */
+
+  /* Room */
+  --ink: #121110;
+  --paper: #f3f4f2;
+  --wall: #5a1a1c; /* oxblood: the committed wall of the first room */
+  --wall-deep: #401113;
+  --wall-ink: #f3f4f2; /* text on the red wall */
+  --label: #f3f4f2; /* labels */
+  --rule: #121110;
+  --muted: #6d6a66;
+
+  /* Typography */
+  --font-display: 'Host Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  --font-pixel: 'Departure Mono', ui-monospace, monospace;
+  --pixel-size: 11px; /* Departure Mono renders crisp at multiples of 11px */
+  --pixel-size-2x: 22px;
+  --display-leading: 0.86;
+
+  /* Hard pixel grid shared by the render and the chrome */
+  --render-scale: 3; /* display resolution fraction (1/3) */
+  --hair: 1px;
+  --win-title-h: 18px;
+  --gap: 12px;
+}

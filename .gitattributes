@@ -1,0 +1,16 @@
+# Text files are checked out with LF on every platform. The museum hashes the bytes of each work's
+# sources to decide whether its loop is stale, so a CRLF checkout would mark every loop stale.
+* text=auto eol=lf
+
+# Binary files: never converted, never diffed as text.
+*.bin   binary
+*.gz    binary
+*.png   binary
+*.webp  binary
+*.glb   binary
+*.woff2 binary
+
+# GitHub: collapse the lockfile in diffs and leave the specs and docs out of the language stats.
+package-lock.json linguist-generated
+openspec/**       linguist-documentation
+docs/**           linguist-documentation

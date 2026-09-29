@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en" data-world="d">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The golden stoop — 4D.OS</title>
+    <link rel="icon" href="data:," />
+    <meta name="theme-color" content="#07060b" />
+    <meta
+      name="description"
+      content="A peregrine falcon computed from equations dives along a golden spiral through a city of points: every moment of the flight at once, live, with the mathematics read from the same code that made it."
+    />
+  </head>
+  <body>
+    <a class="skip" href="#story">Skip to the story</a>
+    <a class="playground-back" href="/#sheet-002"><span aria-hidden="true">←</span> Playground · Sheet 002</a>
+
+    <main>
+      <!-- First screen: the hero with its gesture. The tall track runs through the zoom and the ending while the
+           stage stays pinned; on desktop the tube floats on the right, on mobile it stacks below the hero. -->
+      <section class="stoop" aria-label="The golden stoop, live">
+        <div class="stoop__track" data-hero>
+          <div class="stoop__stage">
+            <div class="stoop__view" data-view="scene" role="img" aria-describedby="scene-desc"></div>
+            <p id="scene-desc" class="sr-only">
+              A live 4D scene, followed from beside the subject: a peregrine falcon computed from equations flies over a
+              night city of points and dives along a golden spiral around a tower mast. Every earlier moment of the flight stays drawn as a green falcon along its path; the present moment
+              is highlighted. The flight loops on its own. Scrolling down draws the camera back until the whole spiral is in
+              view, then carries the flight to its last frame, the falcon perched on the mast, before the page moves on;
+              in that last frame a crosshair marks the falcon and a detail view shows it close up. Scrolling up
+              reverses it. A pinch, or the plus and minus keys, bring the camera closer or farther. The scene
+              is synthetic.
+            </p>
+            <svg class="leader" data-leader aria-hidden="true" focusable="false">
+              <polyline data-leader-line points="0,0 0,0 0,0" />
+              <circle data-leader-dot r="2.5" cx="-10" cy="-10" />
+            </svg>
+            <!-- The 4010's GIN cursor: a 1 px crosshair that marks the NOW on the full plate. -->
+            <svg class="gin is-off" data-gin aria-hidden="true" focusable="false">
+              <path class="gin__arms" data-gin-arms d="" />
+              <path class="gin__ticks" data-gin-ticks d="" />
+              <circle class="gin__ring" data-gin-ring r="9" cx="-20" cy="-20" />
+              <text class="gin__label" data-gin-label x="-20" y="-20">A</text>
+            </svg>
+            <!-- Detail A: the posed portrait at a readable scale, like the detail view on a technical drawing. -->
+            <figure class="detail" data-detail hidden>
+              <figcaption class="inset__label"><span>Detail A</span> <span class="inset__aside"><span class="inset__long">frame </span><span data-detail-frame>449</span><span class="inset__long"> · perched</span></span></figcaption>
+              <div
+                class="detail__view"
+                data-view="detail"
+                role="img"
+                aria-label="Detail of the last frame: the falcon perched on the antenna of the tower mast, wings folded, looking at the drone camera."
+              ></div>
+            </figure>
+
+            <header class="mast">
+              <h1 class="mast__title"><span class="mast__glass">The golden stoop.</span></h1>
+              <p class="mast__line">
+                <span class="mast__words">A peregrine falcon computed from equations, diving on a golden spiral through a city of points.</span>
+                <span class="tag">Synthetic</span>
+              </p>
+              <!-- Phone only: the readouts of the NOW and a pocket plotter driven by the same clock
+                   (the whole tube goes below the hero). -->
+              <div class="glance" aria-hidden="true">
+                <dl class="glance__read">
+                  <div><dt>θ</dt><dd><b data-read="theta">0.000</b> rad</dd></div>
+                  <div><dt>r</dt><dd><b data-read="radius">0.00</b> m</dd></div>
+                  <div class="glance__phi">
+                    <dt>r(θ−π/2) ÷ r(θ)</dt>
+                    <dd><b data-read="ratio">—</b> <span data-read="ratioBrief">first ¼ turn</span></dd>
+                  </div>
+                  <div><dt>phase</dt><dd data-read="phase">—</dd></div>
+                </dl>
+                <figure class="glance__plot" data-mini-slot>
+                  <figcaption class="inset__label"><span>Plotter</span> <span class="inset__aside">plan</span></figcaption>
+                  <canvas data-plot="mini"></canvas>
+                </figure>
+              </div>
+            </header>
+
+            <div class="deck">
+              <div class="deck__keys" role="group" aria-label="Scene controls">
+                <button class="key" type="button" data-play aria-label="Hold">
+                  <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 2 H5 V10 H3 Z M7 2 H9 V10 H7 Z" /></svg>
+                </button>
+                <button class="key" type="button" data-zoom="out" aria-label="Draw the camera back">
+                  <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 5.5 H10 V6.5 H2 Z" /></svg>
+                </button>
+                <button class="key" type="button" data-zoom="in" aria-label="Bring the camera closer">
+                  <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M5.5 2 H6.5 V5.5 H10 V6.5 H6.5 V10 H5.5 V6.5 H2 V5.5 H5.5 Z" /></svg>
+                </button>
+                <p class="deck__hint" data-hero-hint aria-hidden="true">Scroll to see every moment</p>
+              </div>
+              <div class="timeline" data-timeline>
+                <div class="timeline__head">
+                  <span class="timeline__tc" data-now="timecode">00:00:00</span>
+                  <output class="timeline__state" data-now="state">HOLD 0.00×</output>
+                  <span class="timeline__frame">frame <span data-now="frame">000</span></span>
+                </div>
+                <div class="timeline__track" data-track role="slider" tabindex="0" aria-label="Time" aria-valuemin="0" aria-valuenow="0">
+                  <div class="timeline__ruler" data-ruler aria-hidden="true"></div>
+                  <div class="timeline__playhead" aria-hidden="true"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Erase flash (PAGE): over the whole glass, text included, like the flood of the storage tube. -->
+            <div class="flash" data-flash aria-hidden="true"></div>
+
+            <section class="boot" data-boot aria-live="polite" aria-labelledby="boot-title">
+              <h2 class="boot__title" id="boot-title">4D.OS · falcon-phi</h2>
+              <p class="boot__message" data-boot-message>Computing the falcon…</p>
+              <div class="boot__bar"><div class="boot__fill" data-boot-fill></div></div>
+              <p class="boot__pct"><span data-boot-pct>0</span>%</p>
+            </section>
+          </div>
+        </div>
+
+        <div class="hud">
+          <div class="hud__layer">
+            <aside class="tube" aria-label="Plotter: the equations of the flight, live">
+              <h2 class="tube__title" id="tube-title">
+                <span>Plotter</span> <span class="tube__aside" aria-hidden="true">plan view · <span data-read="clock">t = 0.00 s</span></span>
+              </h2>
+              <div class="tube__plot">
+                <canvas data-plot="plan" role="img" aria-label="The falcon's path seen from above, plotted as it flies: a golden spiral closing around the tower, drawn up to the present moment, over the nested golden rectangles it follows."></canvas>
+              </div>
+
+              <div class="eq" data-eq>
+                <p class="eq__law">r(θ) = r<sub>0</sub> · φ<sup>−2θ/π</sup></p>
+                <p class="eq__now">
+                  = <span data-read="r0">18.5</span> · φ<sup data-read="thetaSup">0.000</sup> = <b data-read="rLaw">18.50</b> m
+                </p>
+              </div>
+
+              <dl class="read">
+                <div class="read__row read__row--theta">
+                  <dt>θ <small>angle</small></dt>
+                  <dd>
+                    <span class="scrub" data-theta role="slider" tabindex="0" aria-label="Angle θ along the spiral: drag or use the arrow keys to move the present">
+                      <span data-read="theta">0.000</span>
+                    </span>
+                    rad <span class="read__alt"><span data-read="thetaDeg">0.0</span>°</span>
+                  </dd>
+                </div>
+                <div class="read__row">
+                  <dt>r <small>to the axis</small></dt>
+                  <dd><span data-read="radius">0.00</span> m</dd>
+                </div>
+                <div class="read__row read__row--phi">
+                  <dt>r(θ − π/2) ÷ r(θ)</dt>
+                  <dd><b data-read="ratio">—</b> <span class="read__alt" data-read="ratioNote">first quarter turn</span></dd>
+                </div>
+                <div class="read__row">
+                  <dt>wingbeat</dt>
+                  <dd><span data-read="beat">—</span> <span class="read__alt" data-read="beatNote">wings held</span></dd>
+                </div>
+                <div class="read__row read__row--pair">
+                  <dt>span</dt>
+                  <dd><span data-read="span">0.00</span> m</dd>
+                  <dt>alt</dt>
+                  <dd><span data-read="alt">0.0</span> m</dd>
+                </div>
+                <div class="read__row read__row--pair">
+                  <dt>speed</dt>
+                  <dd><span data-read="speed">0.0</span> m/s</dd>
+                  <dt>phase</dt>
+                  <dd data-read="phase">—</dd>
+                </div>
+              </dl>
+
+              <div class="scope">
+                <canvas data-plot="scope" role="img" aria-label="The wingbeat over the whole flight: the stroke of the wings and the wingspan, drawn up to the present moment. The strokes are fast bursts at the start and before landing; the span drops to a fifth in the dive."></canvas>
+              </div>
+
+              <div class="monitor" role="group" aria-label="Monitor">
+                <fieldset class="seg">
+                  <legend>Time</legend>
+                  <label><input type="radio" name="mode" value="all" checked /> All at once</label>
+                  <label><input type="radio" name="mode" value="memory" /> Memory</label>
+                </fieldset>
+                <fieldset class="seg">
+                  <legend>Colors</legend>
+                  <label><input type="radio" name="depth" value="1bit" /> 1-bit</label>
+                  <label><input type="radio" name="depth" value="16" checked /> 16</label>
+                  <label><input type="radio" name="depth" value="millions" /> Millions</label>
+                </fieldset>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- Story page: terminal pages -->
+      <div id="story" class="story">
+        <section class="page page--phi" aria-labelledby="h-phi">
+          <h2 id="h-phi" class="page__title">A ratio that keeps its shape.</h2>
+          <p class="phi" aria-label="phi equals one point six one eight zero three three nine eight eight seven, and so on">
+            <span class="phi__sym">φ</span><span class="phi__eq">=</span><span class="phi__digits" data-phi-digits>1.6180339887</span><span class="phi__more">…</span>
+          </p>
+          <div class="page__grid">
+            <figure class="plot plot--rect">
+              <canvas data-plot="rectangles" role="img" aria-label="A golden rectangle cut into a square and a smaller golden rectangle, again and again; a spiral joins the corners of the squares and grows by φ every quarter turn."></canvas>
+              <figcaption>
+                Cut a square off a golden rectangle and what is left is the same rectangle, turned and shrunk by φ.
+                Join the corners of the squares and the curve grows by φ every quarter turn:
+                <span class="law">r(θ) = r<sub>0</sub> · φ<sup>−2θ/π</sup></span>.
+              </figcaption>
+            </figure>
+            <figure class="plot plot--seeds">
+              <canvas data-plot="seeds" role="img" aria-label="A disk of seeds, each turned 137.5 degrees from the last and a little farther out: they fill the disk in interlocking spirals and never line up."></canvas>
+              <figcaption>
+                Turn each seed <span class="law">360° ÷ φ² = <span data-golden-angle>137.508</span>°</span> from the last and they never line
+                up. The plaza under the tower is paved with this disk.
+              </figcaption>
+            </figure>
+          </div>
+          <p class="page__text">
+            φ = (1 + √5) ÷ 2 is the only number that becomes its own square by adding one: φ² = φ + 1. It is why the rectangle
+            keeps its shape and why the seeds never repeat. It is also a spiral a falcon can fly.
+          </p>
+          <p class="measure" data-measure>Measuring the spiral on the points of this pack…</p>
+        </section>
+
+        <section class="page page--plan" aria-labelledby="h-plan">
+          <h2 id="h-plan" class="page__title">The spiral, from above.</h2>
+          <div class="page__split">
+            <div
+              class="figure3d figure3d--square"
+              data-view="plan"
+              role="img"
+              aria-label="The whole flight seen from straight above: a spiral of green falcons closes around the tower mast, over the golden rectangles and the disk of seeds in the plaza, with the present falcon moving through them."
+            ></div>
+            <div class="page__side">
+              <p class="page__text">
+                A peregrine does not dive straight at its prey. The sharpest part of its eye looks sideways, so to keep the
+                prey in view without turning its head it flies a logarithmic spiral, closing in by a constant ratio every turn.
+                <cite>Tucker, 2000, Journal of Experimental Biology 203:3745.</cite>
+              </p>
+              <p class="page__text">
+                This falcon flies one member of that family, the golden spiral, and every moment of the flight is still there.
+              </p>
+              <dl class="read read--inline">
+                <div class="read__row"><dt>θ</dt><dd><span data-plan-read="theta">0.000</span> rad</dd></div>
+                <div class="read__row read__row--phi"><dt>r(θ − π/2) ÷ r(θ)</dt><dd><b data-plan-read="ratio">—</b> <span class="read__alt" data-plan-read="ratioNote">first quarter turn</span></dd></div>
+                <div class="read__row"><dt>phase</dt><dd data-plan-read="phase">—</dd></div>
+              </dl>
+            </div>
+          </div>
+        </section>
+
+        <section class="page page--marey" aria-labelledby="h-marey">
+          <h2 id="h-marey" class="page__title">Twelve a second.</h2>
+          <p class="page__text page__text--lede">
+            In 1882 Étienne-Jules Marey built a photographic gun to catch birds in flight: twelve exposures a second on one
+            turning plate. In 1887 he cast the successive positions of a gull’s wingbeat as a sculpture. Here the wingbeat is an
+            equation, and every stroke stays on the plate.
+          </p>
+          <div
+            class="figure3d figure3d--wide"
+            data-view="marey"
+            role="img"
+            aria-label="The first second or so of the flight seen from the side against black, one exposure every three frames: a row of separate falcons with their wings up, level and down, like a Marey chronophotograph, with the present falcon at the head of the row."
+          ></div>
+          <p class="page__note">Against black, like the shed Marey photographed in: the city is switched off. This plate keeps one exposure every three frames, ten a second, so that each stroke stands apart; the gun’s twelve are below.</p>
+          <div class="page__grid page__grid--marey">
+            <figure class="plot plot--stroke">
+              <canvas data-plot="stroke" role="img" aria-label="The wing stroke of the first three seconds: each beat is a fast downstroke followed by a slower upstroke, with slightly different lengths."></canvas>
+              <figcaption>
+                The downstroke takes <b data-beat="down">40</b>% of each beat. The beats average
+                <b data-beat="hz">4.4</b> Hz and vary by <b data-beat="cv">5</b>% from one to the next, like a living rhythm, not
+                a loop.
+              </figcaption>
+            </figure>
+            <figure class="plot plot--gun">
+              <ol class="gun" data-gun aria-label="Twelve source frames from one second of the flight, as Marey’s gun would have taken them"></ol>
+              <figcaption>One second through Marey’s gun: twelve source frames of the same flight.</figcaption>
+            </figure>
+          </div>
+        </section>
+
+        <section class="page page--pipe" aria-labelledby="h-pipe">
+          <h2 id="h-pipe" class="page__title">From equations to points.</h2>
+          <p class="page__text page__text--lede">
+            In a real capture the video comes first. Here the equations come first, and everything else is computed from them,
+            in this order.
+          </p>
+          <ol class="stations">
+            <li class="station">
+              <h3 class="station__title">Equations</h3>
+              <div class="station__figure station__figure--eq" aria-hidden="true">
+                <p>r = r<sub>0</sub> · φ<sup>−2θ/π</sup></p>
+                <p>y = y<sub>a</sub> + D · (r / r<sub>0</sub>)<sup>0.3</sup></p>
+                <p>ψ(p): down in 0.4 of p</p>
+              </div>
+              <p>Path, funnel and wingbeat are functions of time. The page reads the same functions.</p>
+            </li>
+            <li class="station">
+              <h3 class="station__title">Skeleton</h3>
+              <canvas class="station__figure" data-plot="skeleton" role="img" aria-label="The falcon's skeleton at this moment, drawn from the equations: body axis, three-segment wings and the primaries at the tips."></canvas>
+              <p>Body, three-segment wings, primaries and tail are posed for every frame. No model, no capture.</p>
+            </li>
+            <li class="station">
+              <h3 class="station__title">Points</h3>
+              <div
+                class="station__figure station__figure--view"
+                data-view="points"
+                role="img"
+                aria-label="One frame of the falcon in close-up, as a cloud of points, in a banked glide over the city."
+              ></div>
+              <p>
+                <span data-stat-d="perFrame">···</span> points per frame, taken once and kept on the same place of the body in
+                every frame.
+              </p>
+            </li>
+            <li class="station">
+              <h3 class="station__title">Frame</h3>
+              <!-- The whole source frame, at its own aspect ratio, inside the station's box (a square crop would not fit it). -->
+              <div class="station__figure station__figure--frame" role="img" aria-label="The source frame of the same moment: the falcon seen by the drone camera that follows it.">
+                <div class="station__still" data-source-still></div>
+              </div>
+              <p>A drone camera renders the frame a real video would have given, to stand in for it.</p>
+            </li>
+            <li class="station">
+              <h3 class="station__title">Screen</h3>
+              <div class="station__figure station__figure--screen" aria-hidden="true">
+                <p><span data-stat="frames">···</span> frames</p>
+                <p><span data-stat="bytes">···</span></p>
+                <p>16 colors, live</p>
+              </div>
+              <p>Your browser draws every moment at once and dithers it to sixteen colors, every frame.</p>
+            </li>
+          </ol>
+        </section>
+
+        <section class="page page--data" aria-labelledby="h-data">
+          <h2 id="h-data" class="page__title">What the pack holds.</h2>
+          <div class="page__data">
+            <div>
+              <dl class="listing">
+                <div><dt>Frames</dt><dd data-stat="frames">···</dd></div>
+                <div><dt>Duration</dt><dd data-stat="duration">···</dd></div>
+                <div><dt>Frame rate</dt><dd data-stat="fps">···</dd></div>
+                <div><dt>Moving points</dt><dd data-stat="dynamic">···</dd></div>
+                <div><dt>Points per frame</dt><dd data-stat-d="perFrame">···</dd></div>
+                <div><dt>Same points in every frame</dt><dd data-stat-d="correspondence">···</dd></div>
+                <div><dt>Still points</dt><dd data-stat="static">···</dd></div>
+                <div><dt>Source frames</dt><dd data-stat-d="source">···</dd></div>
+                <div><dt>Weight on disk</dt><dd data-stat="bytes">···</dd></div>
+                <div><dt>Scene</dt><dd data-stat-d="synthetic">···</dd></div>
+              </dl>
+              <p class="page__text">Read from the pack loaded right now, not typed by hand.</p>
+            </div>
+            <figure class="bytes">
+              <figcaption class="bytes__title">Where the bytes go</figcaption>
+              <ul class="bytes__list" data-bytes></ul>
+            </figure>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="colophon">
+      <div class="colophon__mark" data-view="tesseract" role="img" aria-label="The 4D.OS mark: a tesseract drawn in dashed lines, turning toward the pointer."></div>
+      <div class="colophon__text">
+        <p class="colophon__word">4D.OS</p>
+        <p class="colophon__line">
+          The golden stoop · A local experiment, 2026 · falcon-phi is our own work, computed from equations, with no
+          third-party model · Type: Tektur and Jura, SIL Open Font License
+        </p>
+        <nav class="colophon__nav" aria-label="Other worlds">
+          <a href="../">All worlds</a>
+          <a href="../a/">Vitrine</a>
+          <a href="../b/">Plate</a>
+          <a href="../c/">Leader</a>
+          <a href="../e/">Whale fall</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script type="module" src="../../../src/4d-os/worlds/d/main.ts"></script>
+  </body>
+</html>

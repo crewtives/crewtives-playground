@@ -1,0 +1,4 @@
+{
+  "prompt": "Pre-existing raster, not generated: the still of 4D.OS world E · Whale fall (/4d-os/e/). Origin: sites/4d-os/public/launcher/e-whale-fall.png. Method: Crop of the review screenshot docs/images/world-e-whale-fall.png (live render of /e/, pack whale-fall, hero at 55 %; Chromium with Metal at 1440×900), 4:3 (1200×900 from x=0, checked pixel for pixel); converted to WebP with cwebp -lossless -z 9, not resized, retouched or re-dithered. Captured: 2026-09-24. Synthetic scene. Credit: none (own work). Full record: provenance.json.",
+  "createdAt": "2026-09-25T01:01:37.677Z"
+}

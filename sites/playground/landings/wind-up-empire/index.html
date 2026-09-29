@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <title>Wind-Up Empire · crewtives playground</title>
+    <meta
+      name="description"
+      content="A demo space empire printed on tin. Pull back a friction rocket, wind the key, flick the planets, then open the five real 4D.OS worlds in the tray. The economy is fake and resets on reload."
+    />
+    <meta name="theme-color" content="#1b2cc4" />
+    <link rel="stylesheet" href="../../../../src/playground/wind-up-empire/tokens.css" />
+    <link rel="stylesheet" href="../../../../src/playground/wind-up-empire/wind-up-empire.css" />
+  </head>
+  <body>
+    <svg class="sprite" aria-hidden="true" focusable="false">
+      <symbol id="i-arrow-down" viewBox="0 0 20 20"><path d="M10 3v13M4.5 10.5 10 16l5.5-5.5" /></symbol>
+      <symbol id="i-arrow-up-right" viewBox="0 0 20 20"><path d="M6 14 14.5 5.5M7.5 5h7.5v7.5" /></symbol>
+      <symbol id="i-arrow-right" viewBox="0 0 20 20"><path d="M3 10h13M10.5 4.5 16 10l-5.5 5.5" /></symbol>
+      <symbol id="i-arrow-left" viewBox="0 0 20 20"><path d="M17 10H4M9.5 4.5 4 10l5.5 5.5" /></symbol>
+      <symbol id="i-bell" viewBox="0 0 20 20"><path d="M5 14.5h10l-1.4-2.2V8.6a3.6 3.6 0 0 0-7.2 0v3.7ZM8.3 16.6a1.9 1.9 0 0 0 3.4 0M10 3.4v1.6" /></symbol>
+      <symbol id="i-bell-slash" viewBox="0 0 20 20"><path d="M5 14.5h10l-1.4-2.2V8.6a3.6 3.6 0 0 0-7.2 0v3.7ZM8.3 16.6a1.9 1.9 0 0 0 3.4 0M3.5 3.5l13 13" /></symbol>
+      <symbol id="i-lever" viewBox="0 0 20 20"><path d="M4 16.5h12M7 16.5l6-11M13 5.5a1.8 1.8 0 1 0 0-.01" /></symbol>
+      <symbol id="i-rocket" viewBox="0 0 20 20"><path d="M10 2.5c2.6 2 3.4 5 3 8.8l1.9 2.6-2.8.2L11.4 16H8.6l-.7-1.9-2.8-.2 1.9-2.6c-.4-3.8.4-6.8 3-8.8ZM10 7.2v1.6" /></symbol>
+      <symbol id="i-key" viewBox="0 0 20 20"><path d="M10 11v6.5M8.3 17.5h3.4M10 11c-4.5 0-6.5-2.2-6.5-4.6S6 3 10 6.3C14 3 16.5 4 16.5 6.4S14.5 11 10 11Z" /></symbol>
+      <symbol id="i-spark" viewBox="0 0 20 20"><path d="M10 2.5v4M10 13.5v4M2.5 10h4M13.5 10h4M4.7 4.7l2.6 2.6M12.7 12.7l2.6 2.6M4.7 15.3l2.6-2.6M12.7 7.3l2.6-2.6" /></symbol>
+      <symbol id="i-menu" viewBox="0 0 20 20"><path d="M3.5 5.5h13M3.5 10h13M3.5 14.5h13" /></symbol>
+      <symbol id="i-house" viewBox="0 0 20 20"><path d="M3.5 9.5 10 4l6.5 5.5M5.5 8v8h9V8" /></symbol>
+    </svg>
+
+    <a class="skip" href="#worlds">Skip to the worlds</a>
+
+    <header class="strip" id="strip">
+      <div class="strip-brand">
+        <a class="wordmark" href="#lid" aria-label="Wind-Up Empire, back to the lid"><span class="wordmark-word">WIND-UP</span> EMPIRE</a>
+        <span class="sticker"><span class="sticker-line">Demo model ·</span> <span class="sticker-line">Fake economy</span></span>
+      </div>
+
+      <div class="strip-drums" role="group" aria-label="Resources (fake demo economy)">
+        <div class="drum" data-resource="tin">
+          <span class="drum-label" id="drum-tin-label">Tin</span>
+          <span class="drum-well" aria-labelledby="drum-tin-label" data-value="60"><span class="drum-digits">000060</span></span>
+          <span class="drum-rate"><span class="num">+1.2</span>/s</span>
+        </div>
+        <div class="drum" data-resource="spring">
+          <span class="drum-label" id="drum-spring-label">Spring</span>
+          <span class="drum-well" aria-labelledby="drum-spring-label" data-value="0"><span class="drum-digits">000000</span></span>
+          <span class="drum-rate"><span class="num">0</span> of <span class="num">12</span> turns</span>
+        </div>
+        <div class="drum" data-resource="spark">
+          <span class="drum-label" id="drum-spark-label">Spark</span>
+          <span class="drum-well" aria-labelledby="drum-spark-label" data-value="0"><span class="drum-digits">000000</span></span>
+          <span class="drum-rate"><span class="num">+0</span>/s</span>
+        </div>
+        <button class="spark-wheel" type="button" data-spark-wheel aria-label="Rub the spark wheel" title="Rub the spark wheel">
+          <canvas class="spark-wheel-canvas" width="64" height="36" aria-hidden="true"></canvas>
+        </button>
+      </div>
+
+      <nav class="strip-nav" aria-label="Page">
+        <div class="strip-links" id="strip-links">
+          <a class="tin-tab" href="#worlds">Worlds</a>
+          <a class="tin-tab" href="#leaflet">How to play</a>
+        </div>
+        <button class="bell" type="button" aria-pressed="false" data-sound-toggle>
+          <svg class="icon icon-on" aria-hidden="true"><use href="#i-bell" /></svg>
+          <svg class="icon icon-off" aria-hidden="true"><use href="#i-bell-slash" /></svg>
+          <span class="bell-text">Sound off</span>
+        </button>
+        <button class="menu-button" type="button" aria-expanded="false" aria-controls="strip-links" data-strip-menu>
+          <svg class="icon" aria-hidden="true"><use href="#i-menu" /></svg><span class="vh">Menu</span>
+        </button>
+      </nav>
+    </header>
+    <canvas class="spark-spray" aria-hidden="true"></canvas>
+
+    <main id="main">
+      <!-- 1 · The lid -->
+      <section class="face lid" id="lid" aria-labelledby="lid-title">
+        <div class="lid-scene" id="orrery" role="img" aria-label="Tin orrery: five 4D.OS worlds as spinning tops around a black hole called the Whirl" aria-describedby="orrery-summary"></div>
+        <p class="vh" id="orrery-summary" aria-live="polite">No planets charted yet. Five world tops are spinning.</p>
+        <div class="lid-frame" aria-hidden="true"></div>
+        <div class="lid-shade" aria-hidden="true"></div>
+
+        <div class="lid-comp">
+          <hgroup class="lid-title">
+            <h1 id="lid-title"><span class="h1-line">WIND-UP</span> <span class="h1-line">EMPIRE</span></h1>
+            <p class="subline">A demo space empire that runs on springs. Five real worlds orbit the&nbsp;Whirl.</p>
+          </hgroup>
+
+          <div class="orrery-anchor" aria-hidden="true"></div>
+
+          <div class="launch" id="launch">
+            <button class="rocket-grab" type="button" id="rocket-grab" aria-describedby="rail-status" aria-label="Rocket on the launch cradle. Hold Space to pull back, Left and Right to aim, release Space to launch."></button>
+            <div class="rail">
+              <p class="rail-plate" id="rail-status"><span class="rail-title">Pull back to launch</span> <span class="rail-hint rail-hint-keys">Hold Space to pull, let go to fly</span><span class="rail-hint rail-hint-touch">Drag the rocket back, let go to fly</span></p>
+              <div class="rail-controls" role="group" aria-label="Launch controls">
+                <label class="rail-field">
+                  <span>Aim</span>
+                  <input type="range" id="aim" min="-60" max="60" step="5" value="0" aria-valuetext="straight at the Whirl" />
+                </label>
+                <label class="rail-field">
+                  <span>Pull-back</span>
+                  <input type="range" id="pull" min="0" max="12" step="1" value="12" aria-valuetext="12 of 12 detents" />
+                </label>
+                <button class="tin-button rail-launch" type="button" id="launch-button">
+                  <svg class="icon" aria-hidden="true"><use href="#i-rocket" /></svg>Launch
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="instrument build" aria-labelledby="build-title">
+            <h2 class="vh" id="build-title">Build</h2>
+            <div class="key-wrap">
+              <div class="key-socket" id="key" data-key aria-label="Mainspring key. Drag round clockwise, or hold Space, to wind. Enter lets go." aria-describedby="spring-chip">
+                <svg class="key-flat key-fallback" viewBox="-60 -60 120 120" aria-hidden="true" hidden><path class="key-flat-path" /><circle class="key-flat-hub" r="8" /></svg>
+              </div>
+              <p class="key-tag" aria-hidden="true"><span class="key-tag-title">Wind me</span><span class="key-tag-hint">drag round · or hold Space</span></p>
+            </div>
+            <div class="slip ticket" id="ticket">
+              <p class="slip-title">Build queue</p>
+              <p class="ticket-job" id="ticket-job">Tin mine <svg class="icon arrow" aria-hidden="true"><use href="#i-arrow-right" /></svg><span class="vh">to</span> Lv 2 · <span class="num">30</span> tin · <span class="num">6</span> s</p>
+              <div class="coil" aria-hidden="true"><span class="coil-fill" id="ticket-coil"></span></div>
+              <p class="ticket-turns" id="ticket-turns"><span class="num">2</span> turns needed · <span class="num">0</span> wound</p>
+              <div class="ticket-buttons">
+                <button class="tin-button" type="button" data-wind-turn>+1 turn</button>
+                <button class="tin-button" type="button" data-let-go>Let go</button>
+              </div>
+              <p class="chip" id="spring-chip" hidden></p>
+            </div>
+          </div>
+
+          <div class="instrument fleet" aria-labelledby="fleet-title">
+            <h2 class="vh" id="fleet-title">Fleet</h2>
+            <figure class="gauge" id="gauge">
+              <svg class="gauge-face" viewBox="0 0 200 200" role="img" aria-labelledby="gauge-caption">
+                <circle class="gauge-rim" cx="100" cy="100" r="94" />
+                <circle class="gauge-dial" cx="100" cy="100" r="84" />
+                <g class="gauge-scale"></g>
+                <g class="gauge-labels"></g>
+                <g class="gauge-needle" id="gauge-needle">
+                  <path d="M100 100 L100 30" />
+                  <circle cx="100" cy="100" r="7" />
+                </g>
+                <text class="gauge-word" x="100" y="146" text-anchor="middle">FLEET</text>
+              </svg>
+              <figcaption class="gauge-readout" id="gauge-caption"><span class="vh">Latest rocket: </span><span id="gauge-r">r 3.33</span> · <span id="gauge-v">v 0.00</span> · <span id="gauge-t">t 00:00.0</span></figcaption>
+            </figure>
+            <div class="slip log">
+              <p class="slip-title" id="log-title">Survey log</p>
+              <ol class="log-lines" id="log" aria-labelledby="log-title" aria-live="polite" reversed>
+                <li>Tin mine running. Tin +1.2/s.</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="lip">
+            <p class="lip-text">Demo model · Fake economy · Resets on reload</p>
+            <a class="lip-button" href="#worlds">Five real worlds inside · Open the box <svg class="icon" aria-hidden="true"><use href="#i-arrow-down" /></svg></a>
+          </div>
+        </div>
+        <p class="no-webgl" hidden><strong>Printed flight (static view).</strong> This browser has no WebGL2, so the tin orrery is printed flat. Pull back or press Launch to print a new flight.</p>
+      </section>
+
+      <!-- 2 · The inner tray: the index -->
+      <section class="face tray" id="worlds" aria-labelledby="worlds-title">
+        <div class="face-inner">
+          <h2 class="face-title" id="worlds-title">Five worlds in the box</h2>
+          <p class="lede">Nothing here is locked. Every world opens now; the game only decides which planets spin.</p>
+
+          <ul class="tray-grid" role="list">
+            <li class="cavity cavity-world" data-world="a">
+              <div class="well" aria-hidden="true"></div>
+              <div class="cavity-window">
+                <img src="/landings/_shared/stills/a.webp" width="1200" height="900" loading="lazy" decoding="async" alt="World A, Vitrine: a black cat climbing stairs, drawn in points inside a red gallery room; its earlier steps stay behind it as a row of ghost cats." />
+                <span class="stamp-synthetic">Synthetic scene</span>
+              </div>
+              <div class="cavity-plate">
+                <div class="tin-nameplate">
+                  <h3 class="nameplate"><span class="nameplate-letter">A</span><span class="nameplate-name">Vitrine</span></h3>
+                  <p class="coord">[1:1:3]</p>
+                </div>
+                <div class="top-socket" data-top="a" aria-hidden="true"></div>
+              </div>
+              <div class="cavity-body">
+                <p class="cavity-line">A red gallery room. A black cat climbs a stairway, and every step it takes stays as points.</p>
+                <p class="provenance"><a class="credit" href="https://poly.pizza/m/8GJbfM8R1A">"Cat" by J-Toastie, CC-BY 3.0</a></p>
+                <a class="open-world" href="/4d-os/a/">Open world<span class="vh"> A · Vitrine</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right" /></svg></a>
+              </div>
+            </li>
+            <li class="cavity cavity-world cavity-featured" data-world="b">
+              <div class="well" aria-hidden="true"></div>
+              <div class="cavity-window">
+                <img src="/landings/_shared/stills/b.webp" width="1200" height="900" loading="lazy" decoding="async" alt="World B, Plate: a staircase of white cats exposed onto one dark plate under a green and magenta aurora, the present cat in cyan at the top." />
+                <span class="stamp-synthetic">Synthetic scene</span>
+              </div>
+              <div class="cavity-plate">
+                <div class="tin-nameplate">
+                  <h3 class="nameplate"><span class="nameplate-letter">B</span><span class="nameplate-name">Plate</span></h3>
+                  <p class="coord">[1:1:4]</p>
+                </div>
+                <div class="top-socket" data-top="b" aria-hidden="true"></div>
+              </div>
+              <div class="cavity-body">
+                <p class="cavity-line">A chronophotographic plate under an aurora sky. The cat's whole climb, exposed at once.</p>
+                <p class="provenance"><a class="credit" href="https://poly.pizza/m/8GJbfM8R1A">"Cat" by J-Toastie, CC-BY 3.0</a></p>
+                <a class="open-world" href="/4d-os/b/">Open world<span class="vh"> B · Plate</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right" /></svg></a>
+              </div>
+            </li>
+            <li class="cavity cavity-world" data-world="c">
+              <div class="well" aria-hidden="true"></div>
+              <div class="cavity-window">
+                <img src="/landings/_shared/stills/c.webp" width="1200" height="900" loading="lazy" decoding="async" alt="World C, Leader: a projector gate framed by film perforations, the cat’s climb over-exposed in orange with a strip of 16 mm frames below." />
+                <span class="stamp-synthetic">Synthetic scene</span>
+              </div>
+              <div class="cavity-plate">
+                <div class="tin-nameplate">
+                  <h3 class="nameplate"><span class="nameplate-letter">C</span><span class="nameplate-name">Leader</span></h3>
+                  <p class="coord">[1:1:5]</p>
+                </div>
+                <div class="top-socket" data-top="c" aria-hidden="true"></div>
+              </div>
+              <div class="cavity-body">
+                <p class="cavity-line">A 16 mm film leader. Scrub the strip and the night scene runs through it.</p>
+                <p class="provenance"><a class="credit" href="https://poly.pizza/m/8GJbfM8R1A">"Cat" by J-Toastie, CC-BY 3.0</a></p>
+                <a class="open-world" href="/4d-os/c/">Open world<span class="vh"> C · Leader</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right" /></svg></a>
+              </div>
+            </li>
+            <li class="cavity cavity-world" data-world="d">
+              <div class="well" aria-hidden="true"></div>
+              <div class="cavity-window">
+                <img src="/landings/_shared/stills/d.webp" width="1200" height="900" loading="lazy" decoding="async" alt="World D, The golden stoop: a peregrine falcon computed from equations flies along a golden spiral through a city of points; its earlier moments trail behind it in phosphor green." />
+                <span class="stamp-synthetic">Synthetic scene</span>
+              </div>
+              <div class="cavity-plate">
+                <div class="tin-nameplate">
+                  <h3 class="nameplate"><span class="nameplate-letter">D</span><span class="nameplate-name">The golden stoop</span></h3>
+                  <p class="coord">[1:1:2]</p>
+                </div>
+                <div class="top-socket" data-top="d" aria-hidden="true"></div>
+              </div>
+              <div class="cavity-body">
+                <p class="cavity-line">A peregrine falcon computed from equations, stooping along a golden spiral.</p>
+                <a class="open-world" href="/4d-os/d/">Open world<span class="vh"> D · The golden stoop</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right" /></svg></a>
+              </div>
+            </li>
+            <li class="cavity cavity-launcher">
+              <div class="well" aria-hidden="true"></div>
+              <div class="cavity-window"><div class="launcher-row" data-launcher-tops aria-hidden="true"></div></div>
+              <div class="cavity-plate">
+                <div class="tin-nameplate">
+                  <h3 class="nameplate nameplate-launcher"><span class="nameplate-name">4D.OS</span></h3>
+                  <p class="coord">[1:1:1–5]</p>
+                </div>
+              </div>
+              <div class="cavity-body">
+                <p class="cavity-line">Five worlds, one launcher. Every moment of a scene, all at once.</p>
+                <a class="open-world" href="/4d-os/">Open the launcher <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right" /></svg></a>
+              </div>
+            </li>
+            <li class="cavity cavity-world" data-world="e">
+              <div class="well" aria-hidden="true"></div>
+              <div class="cavity-window">
+                <img src="/landings/_shared/stills/e.webp" width="1200" height="900" loading="lazy" decoding="async" alt="World E, Whale fall: a humpback whale computed from equations spirals into a black hole whose lensed disk is traced live." />
+                <span class="stamp-synthetic">Synthetic scene</span>
+              </div>
+              <div class="cavity-plate">
+                <div class="tin-nameplate">
+                  <h3 class="nameplate"><span class="nameplate-letter">E</span><span class="nameplate-name">Whale fall</span></h3>
+                  <p class="coord">[1:1:1]</p>
+                </div>
+                <div class="top-socket" data-top="e" aria-hidden="true"></div>
+              </div>
+              <div class="cavity-body">
+                <p class="cavity-line">A whale spirals into a black hole. Two clocks disagree about how long it takes.</p>
+                <a class="open-world" href="/4d-os/e/">Open world<span class="vh"> E · Whale fall</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right" /></svg></a>
+              </div>
+            </li>
+            <li class="cavity cavity-lab" data-lab-slot="1">
+              <div class="well" aria-hidden="true"></div>
+              <div class="cavity-plate">
+                <div class="tin-nameplate blank-plate" aria-hidden="true"><span class="lab-coord">[1:1:7]</span></div>
+                <div class="top-socket bare-socket" aria-hidden="true"><svg class="bare-top" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6v10M14 30c0-7 8-12 18-12s18 5 18 12-8 12-18 12-18-5-18-12ZM15 33l17 25 17-25" /></svg></div>
+              </div>
+              <p class="lab-label" aria-hidden="true">Cast next</p>
+              <p class="vh">Lab socket [1:1:7]. Empty socket · in the lab. The next experiment isn't cast yet. Cast next: algorithmic art.</p>
+            </li>
+            <li class="cavity cavity-lab" data-lab-slot="2">
+              <div class="well" aria-hidden="true"></div>
+              <div class="cavity-plate">
+                <div class="tin-nameplate blank-plate" aria-hidden="true"><span class="lab-coord">[1:1:8]</span></div>
+                <div class="top-socket bare-socket" aria-hidden="true"><svg class="bare-top" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6v10M14 30c0-7 8-12 18-12s18 5 18 12-8 12-18 12-18-5-18-12ZM15 33l17 25 17-25" /></svg></div>
+              </div>
+              <p class="lab-label" aria-hidden="true">Cast next</p>
+              <p class="vh">Lab socket [1:1:8]. Empty socket · in the lab. The next experiment isn't cast yet. Cast next: a physics sketch.</p>
+            </li>
+            <li class="cavity cavity-lab" data-lab-slot="3">
+              <div class="well" aria-hidden="true"></div>
+              <div class="cavity-plate">
+                <div class="tin-nameplate blank-plate" aria-hidden="true"><span class="lab-coord">[1:1:9]</span></div>
+                <div class="top-socket bare-socket" aria-hidden="true"><svg class="bare-top" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6v10M14 30c0-7 8-12 18-12s18 5 18 12-8 12-18 12-18-5-18-12ZM15 33l17 25 17-25" /></svg></div>
+              </div>
+              <p class="lab-label" aria-hidden="true">Cast next</p>
+              <p class="vh">Lab socket [1:1:9]. Empty socket · in the lab. The next experiment isn't cast yet. Cast next: a retro-futuristic app.</p>
+            </li>
+          </ul>
+          <p class="tray-credit">Every still is captured from the live render of a synthetic scene: A, B and C are computed in your browser, D and E from equations.</p>
+        </div>
+      </section>
+
+      <!-- 3 · The side of the box: the control station -->
+      <section class="face deck" id="deck" aria-labelledby="deck-title">
+        <div class="face-inner">
+          <div class="deck-head">
+            <h2 class="face-title" id="deck-title">Run the empire</h2>
+            <button class="lever" type="button" data-reset>
+              <svg class="icon" aria-hidden="true"><use href="#i-lever" /></svg>Reset universe
+            </button>
+          </div>
+          <p class="lede">Every number here is made up by this page. The springs, orbits and dither are real.</p>
+
+          <div class="deck-grid">
+            <section class="tin-plate construction" aria-labelledby="construction-title">
+              <h3 class="plate-title" id="construction-title">Construction</h3>
+              <ul class="build-list" id="build-list" role="list">
+                <li class="build-row" data-building="mine">
+                  <span class="build-name">Tin mine</span>
+                  <span class="build-level">Lv <span class="num">1</span></span>
+                  <span class="build-effect">+1.2 tin/s</span>
+                  <button class="tin-button build-queue" type="button" data-queue="mine">Queue Lv 2 · <span class="num">30</span> tin · <span class="num">6</span> s</button>
+                  <span class="build-why"></span>
+                </li>
+                <li class="build-row" data-building="gantry">
+                  <span class="build-name">Launch gantry</span>
+                  <span class="build-level">Lv <span class="num">1</span></span>
+                  <span class="build-effect">1 rocket in flight</span>
+                  <button class="tin-button build-queue" type="button" data-queue="gantry">Queue Lv 2 · <span class="num">40</span> tin · <span class="num">8</span> s</button>
+                  <span class="build-why"></span>
+                </li>
+                <li class="build-row" data-building="observatory">
+                  <span class="build-name">Observatory</span>
+                  <span class="build-level">Not built</span>
+                  <span class="build-effect">Unlocks press research</span>
+                  <button class="tin-button build-queue" type="button" data-queue="observatory">Queue Lv 1 · <span class="num">50</span> tin · <span class="num">10</span> s</button>
+                  <span class="build-why"></span>
+                </li>
+              </ul>
+              <div class="queue-slots" aria-label="Build queue, 3 slots">
+                <p class="queue-slot is-running">Tin mine <svg class="icon arrow" aria-hidden="true"><use href="#i-arrow-right" /></svg><span class="vh">to</span> Lv 2</p>
+                <p class="queue-slot is-empty">Empty slot</p>
+                <p class="queue-slot is-empty">Empty slot</p>
+              </div>
+              <div class="construction-tools">
+                <div class="flat-key">
+                  <div class="flat-key-dial" data-key aria-label="Flat key, shares the spring with the key on the lid. Drag round clockwise, or hold Space, to wind. Enter lets go.">
+                    <canvas class="flat-rosette" width="64" height="64" aria-hidden="true"></canvas>
+                    <svg class="key-flat" viewBox="-60 -60 120 120" aria-hidden="true"><path class="key-flat-path" /><circle class="key-flat-hub" r="8" /></svg>
+                  </div>
+                  <p class="flat-key-label"><span class="flat-key-title">Flat key</span> <span class="flat-key-turns" id="flat-key-turns"><span class="num">0</span> of <span class="num">12</span> turns</span></p>
+                </div>
+                <div class="spike" id="spike">
+                  <span class="spike-pin" aria-hidden="true"></span>
+                  <ol class="spike-tickets" id="spike-tickets" aria-label="Finished builds, newest first"></ol>
+                  <p class="spike-note" id="spike-note">Finished builds land here.</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="tin-plate press" aria-labelledby="press-title">
+              <h3 class="plate-title" id="press-title">Litho Press</h3>
+              <div class="press-die" aria-hidden="true"></div>
+              <fieldset class="press-row is-locked" data-row="inks">
+                <legend>Inks</legend>
+                <div class="slide-switch" role="radiogroup" aria-label="Inks">
+                  <label><input type="radio" name="inks" value="1bit" disabled /><span>One-ink press</span></label>
+                  <label><input type="radio" name="inks" value="16" checked disabled /><span>16-ink litho</span></label>
+                  <label><input type="radio" name="inks" value="millions" disabled /><span>Full process</span></label>
+                </div>
+                <div class="press-state">
+                  <button class="tin-button press-research" type="button" data-research="inks" disabled>Research · <span class="num">20</span> spark · <span class="num">10</span> s</button>
+                  <svg class="press-dial" viewBox="0 0 24 24" aria-hidden="true" hidden><circle cx="12" cy="12" r="9" /><path class="press-dial-arc" /><path class="press-dial-needle" /></svg>
+                  <span class="press-why" aria-live="polite">Needs Observatory Lv 1</span>
+                </div>
+              </fieldset>
+              <fieldset class="press-row is-locked" data-row="memory">
+                <legend>Exposure memory</legend>
+                <div class="slide-switch" role="radiogroup" aria-label="Exposure memory, in moments">
+                  <label><input type="radio" name="memory" value="12" disabled /><span>12</span></label>
+                  <label><input type="radio" name="memory" value="48" checked disabled /><span>48</span></label>
+                  <label><input type="radio" name="memory" value="200" disabled /><span>200</span></label>
+                </div>
+                <div class="press-state">
+                  <button class="tin-button press-research" type="button" data-research="memory" disabled>Research · <span class="num">40</span> spark · <span class="num">15</span> s</button>
+                  <svg class="press-dial" viewBox="0 0 24 24" aria-hidden="true" hidden><circle cx="12" cy="12" r="9" /><path class="press-dial-arc" /><path class="press-dial-needle" /></svg>
+                  <span class="press-why" aria-live="polite">Needs Observatory Lv 2</span>
+                </div>
+              </fieldset>
+              <fieldset class="press-row is-locked" data-row="symmetry">
+                <legend>Symmetry</legend>
+                <div class="slide-switch" role="radiogroup" aria-label="Symmetry">
+                  <label><input type="radio" name="symmetry" value="3" disabled /><span>3-fold</span></label>
+                  <label><input type="radio" name="symmetry" value="5" checked disabled /><span>5-fold</span></label>
+                  <label><input type="radio" name="symmetry" value="8" disabled /><span>8-fold</span></label>
+                </div>
+                <div class="press-state">
+                  <button class="tin-button press-research" type="button" data-research="symmetry" disabled>Research · <span class="num">60</span> spark · <span class="num">20</span> s</button>
+                  <svg class="press-dial" viewBox="0 0 24 24" aria-hidden="true" hidden><circle cx="12" cy="12" r="9" /><path class="press-dial-arc" /><path class="press-dial-needle" /></svg>
+                  <span class="press-why" aria-live="polite">Needs Observatory Lv 3</span>
+                </div>
+              </fieldset>
+              <p class="press-skip">Rows open with the Observatory, or all at once: <button class="chrome-button" type="button" data-skip-grind>Skip the grind: unlock everything</button></p>
+            </section>
+
+            <section class="tin-plate hangar" aria-labelledby="hangar-title">
+              <h3 class="plate-title" id="hangar-title">Hangar</h3>
+              <div class="hangar-slots" id="hangar-slots" aria-label="Gantry slots"></div>
+              <ul class="hangar-flights" id="hangar-flights" role="list">
+                <li class="hangar-empty">No rockets in flight.</li>
+              </ul>
+              <ul class="hangar-charted" id="hangar-charted" role="list" aria-label="Charted planets">
+                <li class="hangar-empty">Nothing charted yet. Fly a rocket past a planet.</li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 · The instruction sheet -->
+      <section class="face leaflet" id="leaflet" aria-labelledby="leaflet-title">
+        <div class="face-inner">
+          <article class="sheet">
+            <h2 class="face-title" id="leaflet-title">How to play</h2>
+            <ol class="steps">
+              <li>
+                <svg class="step-art" viewBox="0 0 96 64" aria-hidden="true"><path d="M48 34v22M42 56h12M48 34c-15 0-22-7-22-15s8-12 22-2c14-10 22-6 22 2s-7 15-22 15Z" /><path class="dash" d="M78 14a26 26 0 0 1 4 30" /><path d="M77 40l5 5 3-7" /></svg>
+                <p>Wind the key. Let go and the queue builds.</p>
+              </li>
+              <li>
+                <svg class="step-art" viewBox="0 0 96 64" aria-hidden="true"><path d="M48 18c5 4 7 10 6 18l4 5-6 .4-1.4 4H45.4l-1.4-4-6-.4 4-5c-1-8 1-14 6-18Z" /><path class="dash" d="M48 58v-8M30 58l8-8M66 58l-8-8" /><circle cx="48" cy="8" r="3" /></svg>
+                <p>Pull back a rocket and let go.</p>
+              </li>
+              <li>
+                <svg class="step-art" viewBox="0 0 96 64" aria-hidden="true"><path d="M48 8v8M30 30c0-6 8-11 18-11s18 5 18 11-8 11-18 11-18-5-18-11ZM31 33l17 23 17-23" /><path class="dash" d="M12 30c4-10 10-14 16-15M84 30c-4 10-10 14-16 15" /></svg>
+                <p>Flick a planet to spin it.</p>
+              </li>
+              <li>
+                <svg class="step-art" viewBox="0 0 96 64" aria-hidden="true"><rect x="20" y="10" width="56" height="14" rx="3" /><path d="M24 24v24M72 24v24M16 48h64M34 38h28" /><path class="dash" d="M28 56h40" /></svg>
+                <p>Research the press to re-print the sky.</p>
+              </li>
+              <li>
+                <svg class="step-art" viewBox="0 0 96 64" aria-hidden="true"><rect x="18" y="12" width="44" height="34" rx="2" /><path d="M52 40 78 14M64 14h14v14" /><path class="dash" d="M18 54h44" /></svg>
+                <p>Open a world. They are real demos.</p>
+              </li>
+            </ol>
+
+            <h2 class="sheet-title">About this demo</h2>
+            <p>Wind-Up Empire is a landing of the crewtives playground, not in its collection yet. It is a toy, not a game service: the empire, its tin and its springs exist only in this tab. The orbits are real physics (one black hole, velocity Verlet at 240 steps a second), the planets are the five real 4D.OS worlds, and the whole lid is printed live through a 16-ink ordered dither, the same screen the worlds use.</p>
+
+            <div class="warning-plate">
+              <p><strong>Contains a fake economy.</strong> The numbers are invented by this page and vanish when you reload. This page stores nothing and sends nothing. The one exception: your sound setting stays in this browser.</p>
+            </div>
+
+            <div class="sheet-buttons">
+              <button class="chrome-button" type="button" data-skip-grind>Skip the grind: unlock everything</button>
+              <button class="tin-button" type="button" data-reset>
+                <svg class="icon" aria-hidden="true"><use href="#i-lever" /></svg>Reset universe
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- 5 · The printer's proof (the back of the lid) -->
+      <section class="face proof" id="proof" aria-labelledby="proof-title">
+        <div class="face-inner">
+          <h2 class="face-title" id="proof-title">Every moment of your visit, at once.</h2>
+          <figure class="proof-sheet">
+            <div class="proof-print">
+              <canvas class="proof-canvas" id="proof-canvas" width="1200" height="900" role="img" aria-label="Proof print of your visit: every rocket exposure, the planets' rings and the key's rosette, printed in 16 inks."></canvas>
+              <span class="reg reg-tl" aria-hidden="true"></span><span class="reg reg-tr" aria-hidden="true"></span>
+              <span class="reg reg-bl" aria-hidden="true"></span><span class="reg reg-br" aria-hidden="true"></span>
+            </div>
+            <figcaption class="color-bar" aria-label="The 16 inks of this page">
+              <span style="--c: #15131c"></span><span style="--c: #0a0f4a"></span><span style="--c: #1b2cc4"></span><span style="--c: #4f7dff"></span><span style="--c: #a9c8ff"></span><span style="--c: #cc2216"></span><span style="--c: #8e1a12"></span><span style="--c: #ff7a1a"></span><span style="--c: #ffc81a"></span><span style="--c: #fff27a"></span><span style="--c: #17b7a0"></span><span style="--c: #0b5f58"></span><span style="--c: #ff6fae"></span><span style="--c: #c7ccd4"></span><span style="--c: #6f7686"></span><span style="--c: #fbfaf6"></span>
+            </figcaption>
+          </figure>
+          <div class="proof-actions">
+            <button class="chrome-button" type="button" data-proof-save>Save the print (PNG)</button>
+            <button class="tin-button" type="button" data-proof-reprint>Reprint</button>
+            <p class="proof-note">Made in your browser. Nothing is uploaded.</p>
+            <p class="vh" id="proof-status" aria-live="polite"></p>
+          </div>
+        </div>
+
+        <footer class="colophon">
+          <p class="colophon-lead">Printed live in 16 inks by your browser · crewtives playground · demo build 0.1</p>
+          <p class="colophon-links"><a href="https://crewtives.com">crewtives.com</a> · <a href="/4d-os/">4D.OS launcher</a></p>
+          <p>Type: Tilt Warp, Rampart One, Libre Franklin and Sono, SIL Open Font License.</p>
+          <p>Code in your browser: three.js (MIT), GSAP (Standard License), Lenis (MIT).</p>
+          <p><a href="https://poly.pizza/m/8GJbfM8R1A">"Cat" by J-Toastie, CC-BY 3.0</a> (worlds A–C), <a href="https://creativecommons.org/licenses/by/3.0/">license</a>.</p>
+          <p class="outside">Not in the collection yet · <a href="/"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-arrow-left" /></svg>Playground</a></p>
+        </footer>
+      </section>
+    </main>
+
+    <script type="module" src="../../../../src/playground/wind-up-empire/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,166 @@
+/* Game Center Yonjigen tokens: a Tokyo game center building, one lit enamel per floor.
+   The fonts are OFL, self-hosted (licenses next to each file). */
+
+@font-face {
+  font-family: 'Bungee Shade';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('./fonts/bungee-shade-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Bungee';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/bungee-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'DotGothic16';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/dotgothic16-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Japanese subset of the fixed glossary (ゲームセンター 四次元 調整中 無料 営業中 景品 and the words on the signs). */
+@font-face {
+  font-family: 'DotGothic16';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/dotgothic16-jp-glossary-400-normal.woff2') format('woff2');
+  unicode-range: U+3000-30FF, U+4E00-9FFF, U+FF00-FFEF;
+}
+
+@font-face {
+  font-family: 'M PLUS Rounded 1c';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/m-plus-rounded-1c-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'M PLUS Rounded 1c';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('./fonts/m-plus-rounded-1c-latin-800-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  /* Building constants */
+  --ink: #140a24;
+  --acrylic: #f2f4ff;
+
+  /* One enamel per floor, with its secondary ink tinted in the same hue (never gray) */
+  --enamel: #ff4b26;
+  --enamel-2: #2e0803;
+  --sodium: #ffcc17;
+  --sodium-2: #4a3500;
+  --candy: #ff4fa0;
+  --candy-2: #33061c;
+  --mint: #1fd68a;
+  --mint-2: #083d26;
+  --carpet: #3a1c8c;
+  --carpet-2: #d9ccff;
+  --night: #1b1140;
+  --night-2: #b9b3e0;
+
+  /* Plastic of the control decks: never the field of a floor */
+  --cobalt: #2238e0;
+  --cobalt-deep: #1728a8;
+  --cobalt-2: #d4daff;
+
+  /* Machine parts */
+  --crt: #0b0718;
+  --amber: #ff8a1f;
+  --wine: #9e1233;
+  --tube: #33e1ff;
+  --uv: #b04bff;
+  --chrome-hi: #dde3ec;
+  --chrome: #9aa4b2;
+  --chrome-lo: #4b5362;
+  --paper: #fbf6e6;
+  --paper-ink: #2a1c10;
+
+  /* Colors of the lips of each 2F cabinet (those of its world) */
+  --world-a: #5a1a1c;
+  --world-b: #5fe3c8;
+  --world-c: #ff8636;
+  --world-d: #3ad67c;
+  --world-e: #2fd0e0;
+  --world-e-2: #f0a030;
+
+  /* Palette of every screen (RetroDisplay, 16 OKLab colors + Bayer 8×8) */
+  --pal-16-0: #0b0718;
+  --pal-16-1: #1b1140;
+  --pal-16-2: #3a1c8c;
+  --pal-16-3: #2238e0;
+  --pal-16-4: #33e1ff;
+  --pal-16-5: #1fd68a;
+  --pal-16-6: #0e6b4e;
+  --pal-16-7: #ffcc17;
+  --pal-16-8: #ff8a1f;
+  --pal-16-9: #ff4b26;
+  --pal-16-10: #9e1233;
+  --pal-16-11: #ff4fa0;
+  --pal-16-12: #b04bff;
+  --pal-16-13: #7a7fb0;
+  --pal-16-14: #d9deff;
+  --pal-16-15: #ffffff;
+  /* 1-bit: sodium monochrome monitor */
+  --pal-1bit-0: #0b0718;
+  --pal-1bit-1: #ffcc17;
+
+  /* Typography */
+  --f-marquee: 'Bungee Shade', 'Bungee', system-ui, sans-serif;
+  --f-sign: 'Bungee', system-ui, sans-serif;
+  --f-screen: 'DotGothic16', ui-monospace, monospace;
+  --f-body: 'M PLUS Rounded 1c', system-ui, sans-serif;
+
+  /* Scale: 24 px rhythm; display capped at 96 px (6rem) */
+  --t-marquee: clamp(30px, 6.6vw, 96px);
+  --t-h2: clamp(40px, 5vw, 72px);
+  --t-numeral: clamp(56px, 9vw, 96px);
+  --t-lead: clamp(19px, 1.6vw, 24px);
+  --t-body: 18px;
+  --t-card: 16px;
+  --t-silk: 12px;
+
+  /* Building grid */
+  --dir-w: 76px;
+  --gutter: 24px;
+  --col: 78px;
+  --slab: 18px;
+
+  /* Master clock: 120 BPM */
+  --beat: 500ms;
+
+  /* Motion */
+  --ease-press: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --engine-z: 5;
+  --over-engine: calc(var(--engine-z) + 1);
+}
+
+@media (max-width: 1279px) {
+  :root {
+    --dir-w: 56px;
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --dir-w: 0px;
+    --gutter: 16px;
+  }
+}

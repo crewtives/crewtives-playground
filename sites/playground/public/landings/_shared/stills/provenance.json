@@ -1,0 +1,56 @@
+{
+  "about": "Stills of the five 4D.OS worlds used by the playground landings. Each is a lossless WebP (cwebp -lossless -z 9) of a PNG capture of the live render, never retouched or re-dithered. All scenes are synthetic.",
+  "stills": {
+    "a.webp": {
+      "world": "A · Vitrine",
+      "route": "/4d-os/a/",
+      "source": "src/pipeline/captures/a-vitrine.png",
+      "capture": "Live render of /a/ (pack cat-stairs), frame 300 playing; Chromium headless (Playwright) with SwiftShader, 1440×900 viewport cropped to 4:3 (1200×900, x=240); 2026-09-25",
+      "method": "Screenshot of the live render of /a/ (pack cat-stairs) playing at frame 300, Chromium headless (Playwright) with SwiftShader at 1440×900, cropped to 4:3 (1200×900 from x=240); converted to WebP with cwebp -lossless -z 9, not resized, retouched or re-dithered",
+      "captured": "2026-09-25",
+      "synthetic": true,
+      "credit": "\"Cat\" by J-Toastie, CC-BY 3.0"
+    },
+    "b.webp": {
+      "world": "B · Plate",
+      "route": "/4d-os/b/",
+      "source": "src/pipeline/captures/b-plate.png",
+      "capture": "Live render of /b/ (pack cat-stairs), hero at 35 %, frame 265 playing; Chromium headless (Playwright) with SwiftShader, 1440×900 viewport cropped to 4:3 (1200×900, x=0); 2026-09-25",
+      "method": "Screenshot of the live render of /b/ (pack cat-stairs) with the hero at 35 %, playing at frame 265, Chromium headless (Playwright) with SwiftShader at 1440×900, cropped to 4:3 (1200×900 from x=0); converted to WebP with cwebp -lossless -z 9, not resized, retouched or re-dithered",
+      "captured": "2026-09-25",
+      "synthetic": true,
+      "credit": "\"Cat\" by J-Toastie, CC-BY 3.0"
+    },
+    "c.webp": {
+      "world": "C · Leader",
+      "route": "/4d-os/c/",
+      "source": "src/pipeline/captures/c-leader.png",
+      "capture": "Live render of /c/ (pack cat-stairs), frame 334 playing; Chromium headless (Playwright) with SwiftShader, 1440×900 viewport cropped to 4:3 (1200×900, x=0); 2026-09-25",
+      "method": "Screenshot of the live render of /c/ (pack cat-stairs) playing at frame 334, Chromium headless (Playwright) with SwiftShader at 1440×900, cropped to 4:3 (1200×900 from x=0); converted to WebP with cwebp -lossless -z 9, not resized, retouched or re-dithered",
+      "captured": "2026-09-25",
+      "synthetic": true,
+      "credit": "\"Cat\" by J-Toastie, CC-BY 3.0"
+    },
+    "d.webp": {
+      "world": "D · The golden stoop",
+      "route": "/4d-os/d/",
+      "source": "sites/4d-os/public/launcher/d-golden-stoop.png",
+      "capture": "Live render of /d/ (pack falcon-phi), hero at 25 %, frame ~147 playing; Chromium headless (Playwright) with SwiftShader, 1440×900 viewport cropped to 4:3 (1200×900, x=0); 2026-09-24",
+      "method": "Screenshot of the live render of /d/ (pack falcon-phi) with the hero at 25 %, playing near frame 147, Chromium headless (Playwright) with SwiftShader at 1440×900, cropped to 4:3 (1200×900 from x=0); converted to WebP with cwebp -lossless -z 9, not resized, retouched or re-dithered",
+      "captured": "2026-09-24",
+      "synthetic": true,
+      "credit": null
+    },
+    "e.webp": {
+      "world": "E · Whale fall",
+      "route": "/4d-os/e/",
+      "source": "sites/4d-os/public/launcher/e-whale-fall.png",
+      "capture": "Live render of /e/ (pack whale-fall), review capture docs/images/world-e-whale-fall.png (Chromium with Metal, 1440×900) cropped to 4:3",
+      "method": "Crop of the review screenshot docs/images/world-e-whale-fall.png (live render of /e/, pack whale-fall, hero at 55 %; Chromium with Metal at 1440×900), 4:3 (1200×900 from x=0, checked pixel for pixel); converted to WebP with cwebp -lossless -z 9, not resized, retouched or re-dithered",
+      "captured": "2026-09-24",
+      "capturedNote": "Day the review screenshot was saved during the work; the exact capture time was not recorded.",
+      "synthetic": true,
+      "credit": null
+    }
+  }
+}

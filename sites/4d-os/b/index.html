@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en" data-world="b">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plate 4D-002 — 4D.OS</title>
+    <link rel="icon" href="data:," />
+    <meta name="description" content="Every moment of a moving subject exposed onto one plate: a live 4D reconstruction on a chronophotographic desktop." />
+  </head>
+  <body>
+    <a class="skip" href="#plates">Skip to the plates</a>
+    <a class="playground-back" href="/#sheet-001"><svg class="playground-back__arrow" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M11 6H2M6 2 2 6l4 4" /></svg>Playground · Sheet 001</a>
+
+    <main>
+      <!-- First screen: the hero with its gesture. The tall track runs through the zoom and the ending while the
+           stage stays pinned; on desktop the windows float on top, on mobile they stack below the hero. -->
+      <section class="desk" aria-label="4D.OS desktop">
+        <div class="desk__track" data-hero>
+          <div class="desk__stage">
+            <div class="desk__plate" data-view="scene" role="img" aria-describedby="scene-desc">
+              <div class="desk__graticule" aria-hidden="true"></div>
+            </div>
+            <p id="scene-desc" class="sr-only">
+              A live chronophotograph, seen from behind the subject: a black cat climbs a flight of stone steps in a
+              night alley, and its past moments stay drawn as pale cats along the steps, with the present moment
+              highlighted. The climb loops on its own. Scrolling down draws the camera back until the whole plate is in
+              view, then carries the climb to its last frame before the page moves on; scrolling up reverses it. A pinch,
+              or the plus and minus keys, bring the camera closer or farther. The scene is synthetic.
+            </p>
+            <header class="caption">
+              <h1 class="caption__title">
+                <span class="caption__plate">Plate 4D-002</span>
+                <span class="caption__subject">Cat, ascending stairs.</span>
+              </h1>
+              <p class="caption__note">
+                A <strong>synthetic</strong> subject:
+                <span data-stat="frames">···</span> frames, every one kept on one plate.
+              </p>
+              <div class="loupe" role="group" aria-label="Plate controls">
+                <div class="loupe__keys">
+                  <button class="loupe__key" type="button" data-play aria-label="Hold">
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 2 H5 V10 H3 Z M7 2 H9 V10 H7 Z" /></svg>
+                  </button>
+                  <button class="loupe__key" type="button" data-zoom="out" aria-label="Draw the camera back">
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 5 H10 V7 H2 Z" /></svg>
+                  </button>
+                  <button class="loupe__key" type="button" data-zoom="in" aria-label="Bring the camera closer">
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M5 2 H7 V5 H10 V7 H7 V10 H5 V7 H2 V5 H5 Z" /></svg>
+                  </button>
+                </div>
+                <p class="loupe__hint" data-hero-hint aria-hidden="true">Scroll to open the plate</p>
+              </div>
+            </header>
+
+            <section class="boot win" data-boot aria-live="polite" aria-labelledby="w-boot">
+              <h2 class="win__title" id="w-boot"><span>4D.OS 1.0</span></h2>
+              <div class="win__body">
+                <p data-boot-message>Developing plate…</p>
+                <div class="boot__bar"><div class="boot__fill" data-boot-fill></div></div>
+                <p class="boot__pct"><span data-boot-pct>0</span>%</p>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div class="desk__windows">
+          <div class="desk__layer">
+            <div class="desk__rail">
+              <section class="win" data-window="source" aria-labelledby="w-source">
+                <h2 class="win__title" id="w-source"><span>Camera 1</span></h2>
+                <div class="win__body source">
+                  <div class="source__frame" data-source-frame></div>
+                  <p class="source__meta">
+                    <span>Frame</span> <span data-now="frame">···</span>
+                  </p>
+                </div>
+              </section>
+
+              <section class="win" data-window="exposures" aria-labelledby="w-exposures">
+                <h2 class="win__title" id="w-exposures"><span>Exposures</span></h2>
+                <div class="win__body">
+                  <fieldset class="dial">
+                    <legend>Exposures per second</legend>
+                    <div class="dial__stops" data-exposures></div>
+                  </fieldset>
+                </div>
+              </section>
+
+              <section class="win" data-window="layers" aria-labelledby="w-layers">
+                <h2 class="win__title" id="w-layers"><span>Layers</span></h2>
+                <div class="win__body">
+                  <fieldset class="seg">
+                    <legend>Time</legend>
+                    <label><input type="radio" name="mode" value="all" checked /> All at once</label>
+                    <label><input type="radio" name="mode" value="memory" /> Memory</label>
+                  </fieldset>
+                  <fieldset class="checks">
+                    <legend>Show</legend>
+                    <label><input type="checkbox" data-layer="trail" checked /> Trail</label>
+                    <label><input type="checkbox" data-layer="background" checked /> Background</label>
+                    <label><input type="checkbox" data-layer="frustum" /> Camera</label>
+                    <label><input type="checkbox" data-layer="trajectory" /> Path</label>
+                  </fieldset>
+                </div>
+              </section>
+
+              <section class="win" data-window="display" aria-labelledby="w-display">
+                <h2 class="win__title" id="w-display"><span>Monitor</span></h2>
+                <div class="win__body">
+                  <fieldset class="seg">
+                    <legend>Colors</legend>
+                    <label><input type="radio" name="depth" value="1bit" /> 1-bit</label>
+                    <label><input type="radio" name="depth" value="16" checked /> 16</label>
+                    <label><input type="radio" name="depth" value="millions" /> Millions</label>
+                  </fieldset>
+                </div>
+              </section>
+
+              <section class="win win--clock" data-window="clock" aria-labelledby="w-clock">
+                <h2 class="win__title" id="w-clock"><span>Clock</span></h2>
+                <div class="win__body">
+                  <p class="clock__tc"><span data-now="timecode">00:00:00</span> <small>source</small></p>
+                  <p class="clock__wall" data-wall-clock></p>
+                </div>
+              </section>
+            </div>
+
+            <section class="sheet win" data-window="sequence" aria-labelledby="w-sequence">
+              <h2 class="win__title" id="w-sequence">
+                <span>Sequence</span> <span class="win__aside"><span data-sheet-count>12</span> of <span data-stat="frames">···</span> exposures</span>
+              </h2>
+              <div class="win__body">
+                <ol class="sheet__frames" data-sheet></ol>
+                <p class="sheet__legend">Animal locomotion. Plate 4D-002.</p>
+                <div class="timeline" data-timeline>
+                  <div class="timeline__head">
+                    <button class="timeline__play" type="button" data-play aria-label="Play">
+                      <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 2 L10 6 L3 10 Z" /></svg>
+                    </button>
+                    <output class="timeline__tc" data-now="timecode">00:00:00</output>
+                    <output class="timeline__state" data-now="state">HOLD 0.00×</output>
+                  </div>
+                  <div class="timeline__track" data-track role="slider" tabindex="0" aria-label="Time" aria-valuemin="0" aria-valuenow="0">
+                    <div class="timeline__ruler" data-ruler aria-hidden="true"></div>
+                    <div class="timeline__playhead" aria-hidden="true"></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="dialog win" data-window="wet" data-trail aria-labelledby="w-wet">
+              <h2 class="win__title" id="w-wet"><span>Plate 4D-002</span></h2>
+              <div class="win__body">
+                <p>Drag this card across the plate: every position it passes stays exposed.</p>
+                <button type="button" class="btn" data-dismiss>OK</button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- Story page: sheets -->
+      <div id="plates" class="plates">
+        <section class="lede">
+          <h2 class="lede__title">Every moment,<br />one plate.</h2>
+          <p class="lede__text">
+            In 1912 Marcel Duchamp painted a figure descending a staircase with every step at once, after the
+            chronophotographs of Marey. This desktop runs it the other way, live: a black cat climbs ten steps,
+            and nothing moves away. Every instant of the climb stays where and when it happened.
+          </p>
+        </section>
+
+        <section class="plate plate--life" aria-labelledby="p1">
+          <h2 id="p1" class="plate__title"><span class="plate__num">Plate I.</span> Two dimensions, plus time.</h2>
+          <div class="plate__figure" data-view="life" role="img" aria-describedby="life-desc"></div>
+          <p id="life-desc" class="plate__caption">
+            A glider from Conway’s Game of Life. Each generation is a flat grid; stack the generations and the
+            glider stops moving and becomes a staircase in space.
+          </p>
+        </section>
+
+        <section class="plate plate--pipeline" aria-labelledby="p2">
+          <h2 id="p2" class="plate__title"><span class="plate__num">Plate II.</span> From a film to a plate.</h2>
+          <ol class="steps">
+            <li class="step">
+              <div class="step__figure" data-pipeline="video"></div>
+              <h3 class="step__title">A video</h3>
+              <p>Ordinary 2D frames from a single moving camera.</p>
+            </li>
+            <li class="step">
+              <div class="step__figure" data-pipeline="frame"></div>
+              <h3 class="step__title">3D, one frame at a time</h3>
+              <p>Every frame becomes its own cloud of points, with the camera that saw it.</p>
+            </li>
+            <li class="step">
+              <div class="step__figure" data-pipeline="plate"></div>
+              <h3 class="step__title">Left where and when it happened</h3>
+              <p>Nothing is merged or averaged. Each frame stays at its place and its instant.</p>
+            </li>
+          </ol>
+          <p class="notice">
+            The subject on these plates is <strong>synthetic</strong>: a low-poly cat by J-Toastie (CC-BY 3.0),
+            animated by us and sampled into points frame by frame, standing in for a real reconstruction.
+          </p>
+        </section>
+
+        <section class="plate plate--side" aria-labelledby="p3">
+          <h2 id="p3" class="plate__title"><span class="plate__num">Plate III.</span> From the side.</h2>
+          <div class="plate__figure plate__figure--wide" data-view="side" role="img" aria-label="The same climb seen side-on: a staircase of pale cats walking up step by step, one every second, with the present moving up through them."></div>
+          <p class="plate__caption">The same climb, seen side-on like a Marey plate. One exposure every second, climbing step by step.</p>
+        </section>
+
+        <section class="plate plate--data" aria-labelledby="p4">
+          <h2 id="p4" class="plate__title"><span class="plate__num">Plate IV.</span> Measurements.</h2>
+          <dl class="register">
+            <div><dt>Exposures</dt><dd data-stat="frames">···</dd></div>
+            <div><dt>Duration</dt><dd data-stat="duration">···</dd></div>
+            <div><dt>Frame rate</dt><dd data-stat="fps">···</dd></div>
+            <div><dt>Moving points</dt><dd data-stat="dynamic">···</dd></div>
+            <div><dt>Still points</dt><dd data-stat="static">···</dd></div>
+            <div><dt>Weight on disk</dt><dd data-stat="bytes">···</dd></div>
+          </dl>
+          <p class="plate__caption">Read from the plate currently loaded, not typed by hand.</p>
+        </section>
+
+        <section class="plate plate--scenes" aria-labelledby="p5">
+          <h2 id="p5" class="plate__title"><span class="plate__num">Plate V.</span> Subjects.</h2>
+          <ul class="scenes">
+            <li>
+              <button type="button" class="scene is-active" aria-pressed="true">
+                <span class="scene__name">Cat, ascending stairs</span>
+                <span class="scene__meta">Synthetic · on the plate now</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="scene" aria-disabled="true">
+                <span class="scene__name">A real capture</span>
+                <span class="scene__meta">Not available yet</span>
+              </button>
+            </li>
+          </ul>
+        </section>
+
+        <section class="plate plate--faq" aria-labelledby="p6">
+          <h2 id="p6" class="plate__title"><span class="plate__num">Plate VI.</span> Questions.</h2>
+          <details class="faq">
+            <summary>Is this a video?</summary>
+            <p>No. It is a scene of points drawn live in your browser. Every frame of the original motion is kept, so the whole journey can be seen at once and walked through in any direction.</p>
+          </details>
+          <details class="faq">
+            <summary>Why does it look like an old screen?</summary>
+            <p>The picture is rendered at a fraction of your screen’s resolution and reduced to a small palette with ordered dithering, live, every frame. Switch the monitor to Millions to see the scene underneath.</p>
+          </details>
+          <details class="faq">
+            <summary>Is the cat real?</summary>
+            <p>Not yet. This plate uses a synthetic subject so the desktop can be built and measured before real captures exist.</p>
+          </details>
+          <details class="faq">
+            <summary>What do the keys do?</summary>
+            <p>Space holds or resumes. J rewinds, K holds, L plays forward; press J or L again to go faster. The arrow keys step one frame, and + and − bring the camera closer or draw it back while the climb loops. Page Down opens the plate and carries on down the page.</p>
+          </details>
+        </section>
+      </div>
+    </main>
+
+    <footer class="colophon">
+      <div class="colophon__mark" data-view="tesseract" role="img" aria-label="The 4D.OS mark: a tesseract drawn in dashed lines, turning toward the pointer."></div>
+      <p class="colophon__word" aria-hidden="true">4D.OS</p>
+      <p class="colophon__line">4D.OS · Plate edition · A local experiment, 2026 · Cat model by J-Toastie, CC-BY 3.0</p>
+    </footer>
+
+    <script type="module" src="../../../src/4d-os/worlds/b/main.ts"></script>
+  </body>
+</html>

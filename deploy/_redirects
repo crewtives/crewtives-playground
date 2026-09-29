@@ -1,0 +1,7 @@
+# The root serves the playground museum (dist/index.html), with no redirect.
+# The old comparison page no longer exists: it leads to the museum.
+/landings/  /  301
+/landings  /  301
+# Bloomscope moved to /bloomscope/. The browser keeps the fragment (#g=…) when following the 301.
+/landings/bloomscope/  /bloomscope/  301
+/landings/bloomscope  /bloomscope/  301

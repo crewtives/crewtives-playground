@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en" data-world="e">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Whale fall — 4D.OS</title>
+    <link rel="icon" href="data:," />
+    <meta
+      name="description"
+      content="A humpback whale spirals into a black hole, every moment of the fall kept at once, while two clocks drift apart: a live 4D scene with the gravitational lens traced in your browser."
+    />
+  </head>
+  <body>
+    <a class="skip" href="#log">Skip to the recording</a>
+    <a class="playground-back" href="/#sheet-003"><span aria-hidden="true">←</span> Playground · Sheet 003</a>
+
+    <main>
+      <!-- First screen: the hero with its gesture. The tall track runs through the zoom and the final segment while
+           the stage stays pinned; on desktop the console floats on top, on mobile it goes below the hero. -->
+      <section class="obs" aria-label="Whale fall, live">
+        <div class="obs__track" data-hero>
+          <div class="obs__stage">
+            <div class="obs__view" data-view="scene" role="img" aria-describedby="scene-desc"></div>
+            <p id="scene-desc" class="sr-only">
+              A live 4D scene, seen from a camera that follows the subject: a humpback whale spirals down toward a
+              black hole, over a glowing accretion disk whose image bends around the black shadow. Past moments of the
+              whale stay drawn as pale copies along its spiral, about one for every body length she swims, and the present
+              is outlined on top of them. The fall loops
+              on its own. Scrolling down draws the camera back until the whole spiral is in view, then carries the
+              fall to its last frame before the page moves on; scrolling up reverses it. A pinch, or the plus and
+              minus keys, bring the camera closer or farther. The scene is synthetic.
+            </p>
+
+            <header class="slate">
+              <h1 class="slate__title">Whale fall.</h1>
+              <p class="slate__line">
+                A humpback computed from equations spirals into a black hole. Every moment of the fall stays on
+                screen. <strong class="tag">synthetic</strong>
+              </p>
+            </header>
+
+            <!-- On narrow screens the console goes below the hero, so the loop controls stay here. -->
+            <div class="stage-keys" role="group" aria-label="Loop and zoom">
+              <div class="keys">
+                <button class="key" type="button" data-play aria-label="Hold">
+                  <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 2 H5 V10 H3 Z M7 2 H9 V10 H7 Z" /></svg>
+                </button>
+                <button class="key" type="button" data-zoom="out" aria-label="Draw the camera back">
+                  <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 5 H10 V7 H2 Z" /></svg>
+                </button>
+                <button class="key" type="button" data-zoom="in" aria-label="Bring the camera closer">
+                  <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M5 2 H7 V5 H10 V7 H7 V10 H5 V7 H2 V5 H5 Z" /></svg>
+                </button>
+              </div>
+              <p class="hint" data-hero-hint aria-hidden="true">Scroll to draw back</p>
+            </div>
+
+            <div class="recorder" aria-label="Two clocks">
+              <div class="clock clock--yours">
+                <p class="clock__ch"><span>CH 1</span> Your time <var>t</var></p>
+                <p class="clock__face"><output data-read="t">00.00</output><span class="clock__unit">s</span></p>
+              </div>
+              <div class="clock clock--its" data-its-clock>
+                <p class="clock__ch"><span>CH 2</span> Its time <var>τ</var></p>
+                <p class="clock__face"><output data-read="tau">00.00</output><span class="clock__unit">s</span></p>
+              </div>
+              <dl class="readouts">
+                <div><dt>Lag</dt><dd><output data-read="lag">0.00</output><span>s</span></dd></div>
+                <div><dt>r/r<sub>s</sub></dt><dd><output data-read="r">7.000</output></dd></div>
+                <div><dt>dτ/dt</dt><dd><output data-read="dilation">0.926</output></dd></div>
+                <div><dt>z</dt><dd><output data-read="redshift">0.080</output></dd></div>
+              </dl>
+            </div>
+
+            <section class="boot" data-boot aria-live="polite" aria-labelledby="boot-title">
+              <h2 class="boot__title" id="boot-title">Acquiring</h2>
+              <p class="boot__message" data-boot-message>Tracing the fall…</p>
+              <div class="boot__bar"><div class="boot__fill" data-boot-fill></div></div>
+              <p class="boot__pct"><span data-boot-pct>0</span>%</p>
+            </section>
+          </div>
+        </div>
+
+        <div class="obs__deck">
+          <div class="deck">
+            <div class="column">
+            <div class="monitor" role="group" aria-label="Monitor">
+              <div class="keys" role="group" aria-label="Loop and zoom">
+                <button class="key" type="button" data-play aria-label="Hold">
+                  <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 2 H5 V10 H3 Z M7 2 H9 V10 H7 Z" /></svg>
+                </button>
+                <button class="key" type="button" data-zoom="out" aria-label="Draw the camera back">
+                  <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 5 H10 V7 H2 Z" /></svg>
+                </button>
+                <button class="key" type="button" data-zoom="in" aria-label="Bring the camera closer">
+                  <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M5 2 H7 V5 H10 V7 H7 V10 H5 V7 H2 V5 H5 Z" /></svg>
+                </button>
+              </div>
+              <fieldset class="seg">
+                <legend>Time</legend>
+                <label><input type="radio" name="mode" value="all" checked /><span>All at once</span></label>
+                <label><input type="radio" name="mode" value="memory" /><span>Memory</span></label>
+              </fieldset>
+              <fieldset class="seg">
+                <legend>Colors</legend>
+                <label><input type="radio" name="depth" value="1bit" /><span>1-bit</span></label>
+                <label><input type="radio" name="depth" value="16" checked /><span>16</span></label>
+                <label><input type="radio" name="depth" value="millions" /><span>Millions</span></label>
+              </fieldset>
+              <fieldset class="seg">
+                <legend>Layers</legend>
+                <label><input type="checkbox" data-layer="trail" checked /><span>Every moment</span></label>
+                <label><input type="checkbox" data-layer="background" /><span>Baked disk</span></label>
+              </fieldset>
+              <p class="hint" data-hero-hint aria-hidden="true">Scroll to draw back</p>
+            </div>
+
+            <figure class="trace">
+              <figcaption class="trace__ch"><span>CH 3</span> Tail beat</figcaption>
+              <div class="trace__plot">
+                <div class="screen trace__screen">
+                  <canvas data-trace role="img" aria-label="Spectrogram of the whale's tail beat as heard from far away, time running down: a bright band that slides from about half a beat per second toward a fifth as the fall goes on, with fainter harmonics entering from the right."></canvas>
+                </div>
+                <p class="axis trace__axis" data-axis="trace" aria-hidden="true"></p>
+              </div>
+              <p class="trace__note">Heard from far away. Time runs down.</p>
+            </figure>
+            </div>
+
+            <div class="transport" data-timeline>
+              <button class="transport__play key" type="button" data-play aria-label="Play">
+                <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 2 L10 6 L3 10 Z" /></svg>
+              </button>
+              <output class="transport__tc" data-now="timecode">00:00:00</output>
+              <div class="transport__track" data-track role="slider" tabindex="0" aria-label="Time" aria-valuemin="0" aria-valuenow="0">
+                <div class="transport__ruler" data-ruler aria-hidden="true"></div>
+                <div class="transport__head" aria-hidden="true"></div>
+              </div>
+              <output class="transport__state" data-now="state">HOLD 0.00×</output>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Story page: the fall, deeper and deeper. -->
+      <div id="log" class="log">
+        <section class="lede" aria-labelledby="lede-title">
+          <h2 class="lede__title" id="lede-title">Two clocks,<br />one fall.</h2>
+          <p class="lede__text">
+            A humpback whale, computed from equations, falls toward a black hole. Far away, you keep one clock. She
+            keeps another. Close to the horizon hers runs slow, so every second of yours carries less and less of
+            hers, and every moment of the fall stays drawn where it happened.
+          </p>
+        </section>
+
+        <section class="band band--clocks" aria-labelledby="s1">
+          <header class="band__head">
+            <h2 class="band__title" id="s1">Gravity bends time.</h2>
+            <p class="band__depth"><span class="band__ch"><b>CH 1–2</b> Clocks</span><span class="band__r"><span class="sym">r/r<sub>s</sub></span> <output data-calc="depth-1">7.00</output></span></p>
+          </header>
+          <div class="band__body">
+            <figure class="pens">
+              <div class="pens__plot">
+                <p class="pens__rows" aria-hidden="true">
+                  <span class="pens__row pens__row--yours">CH 1 <var>t</var></span>
+                  <span class="pens__row pens__row--its">CH 2 <var>τ</var></span>
+                </p>
+                <div class="screen pens__screen"><canvas data-pens role="img" aria-label="A two-pen chart over the fifteen seconds of the clip. The upper pen, channel 1, ticks once per second of your time, evenly. The lower pen, channel 2, ticks once per second of the whale's time, and its ticks spread farther apart as it nears the horizon."></canvas></div>
+              </div>
+              <p class="axis" data-axis="pens" aria-hidden="true"></p>
+              <figcaption class="pens__legend">One tick per second of each clock. Each line joins the same count.</figcaption>
+            </figure>
+            <div class="band__text">
+              <p>
+                The whale’s clock ticks at <span class="math">dτ/dt = √(1 − r<sub>s</sub>/r)</span> of yours. At
+                <output data-calc="r-first">7.00</output> Schwarzschild radii it keeps
+                <output data-calc="pace-first">92.6</output>% of your pace. By the last frame it keeps
+                <output data-calc="pace-last">35.2</output>%.
+              </p>
+              <p>
+                Over the <output data-calc="t-last">15.0</output> seconds you watch, she lives
+                <output data-calc="tau-last">10.1</output>. Nothing on her side feels slow: her tail beats once every
+                <output data-calc="beat-period">2.0</output> seconds of her own time, all the way down.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="band band--plate" aria-labelledby="s2">
+          <header class="band__head">
+            <h2 class="band__title" id="s2">Every orbit, one plate.</h2>
+            <p class="band__depth"><span class="band__ch"><b>Plate</b> From above</span><span class="band__r"><span class="sym">r/r<sub>s</sub></span> <output data-calc="depth-2">2.72</output></span></p>
+          </header>
+          <div class="band__figure band__figure--wide" data-view="plate" role="img" aria-describedby="plate-desc"></div>
+          <div class="band__caption">
+            <p id="plate-desc">
+              The whole fall seen from above: <output data-calc="turns">1.40</output> turns, one copy of the whale
+              every <output data-calc="stride-s">0.40</output> seconds, spiralling into the black shadow at the centre
+              of the disk. Near the horizon the copies crowd together.
+            </p>
+            <dl class="grid-read">
+              <div><dt>First 3 <span class="sym">s</span></dt><dd><output data-calc="step-first">8.4</output><span class="sym">cm/frame</span></dd></div>
+              <div><dt>Last 3 <span class="sym">s</span></dt><dd><output data-calc="step-last">1.7</output><span class="sym">cm/frame</span></dd></div>
+            </dl>
+          </div>
+        </section>
+
+        <section class="band band--shift" aria-labelledby="s3">
+          <header class="band__head">
+            <h2 class="band__title" id="s3">Redshift.</h2>
+            <p class="band__depth"><span class="band__ch"><b>CH 4</b> Light</span><span class="band__r"><span class="sym">r/r<sub>s</sub></span> <output data-calc="depth-3">1.50</output></span></p>
+          </header>
+          <div class="band__body band__body--shift">
+            <figure class="spectrum">
+              <figcaption class="spectrum__ch"><span>CH 4</span> Wavelength reaching you. Time runs down.</figcaption>
+              <div class="screen spectrum__screen"><canvas data-spectrum role="img" aria-label="A spectral waterfall: every frame of the fall is one row, time running down. The light the whale reflects starts as a band over the visible wavelengths and slides to longer wavelengths as the fall goes on, until it has left the visible range entirely."></canvas></div>
+              <p class="axis" data-axis="spectrum" aria-hidden="true"></p>
+            </figure>
+            <div class="band__text">
+              <p>
+                Light climbing out of the well arrives stretched by <span class="math">1 + z = 1/√(1 − r<sub>s</sub>/r)</span>.
+                The band on the left is what the whale reflects between 380 and 780 nm, one row per frame. By the
+                last frame it reaches you <output data-calc="stretch-last">2.8</output> times longer, from
+                <output data-calc="band-low">1075</output> to <output data-calc="band-high">2208</output> nm: none of
+                it is visible any more.
+              </p>
+              <p class="band__aside">The reds on screen stand in for light your eye could no longer see.</p>
+            </div>
+          </div>
+          <ol class="stills">
+            <li class="still">
+              <div class="still__view" data-still="0" role="img" aria-label="The whale early in the fall, pale against the disk."></div>
+              <p class="still__read"><span>f <output data-still-frame="0">000</output></span><span>z <output data-still-z="0">0.08</output></span></p>
+            </li>
+            <li class="still">
+              <div class="still__view" data-still="1" role="img" aria-label="The whale halfway down, its light turning warm."></div>
+              <p class="still__read"><span>f <output data-still-frame="1">225</output></span><span>z <output data-still-z="1">0.40</output></span></p>
+            </li>
+            <li class="still">
+              <div class="still__view" data-still="2" role="img" aria-label="The whale on the last frame, dim and red, rolled belly-out above the shadow."></div>
+              <p class="still__read"><span>f <output data-still-frame="2">449</output></span><span>z <output data-still-z="2">1.83</output></span></p>
+            </li>
+          </ol>
+        </section>
+
+        <section class="band band--horizon" aria-labelledby="s4">
+          <header class="band__head">
+            <h2 class="band__title" id="s4">The last frame never arrives.</h2>
+            <p class="band__depth"><span class="band__ch"><b>CH 5</b> Depth</span><span class="band__r"><span class="sym">r/r<sub>s</sub></span> <output data-calc="depth-4">1.14</output></span></p>
+          </header>
+          <div class="band__figure band__figure--wide" data-view="horizon" role="img" aria-label="The whale on her last frame, seen side-on and outlined, hangs over the black shadow inside the thin ring of light, belly and long flippers turned toward you; copies of her last seconds recede along the spiral behind her."></div>
+          <div class="band__body band__body--horizon">
+            <figure class="approach">
+              <div class="screen approach__screen"><canvas data-approach role="img" aria-label="Distance to the horizon against your time, over twice the length of the clip: the curve falls quickly and then flattens, approaching one Schwarzschild radius without reaching it. The clip ends at fifteen seconds."></canvas></div>
+              <p class="axis" data-axis="approach" aria-hidden="true"></p>
+              <figcaption class="approach__legend"><span><b>CH 5</b> <span class="sym">r/r<sub>s</sub></span> from 7 to 1</span><span class="approach__clip">clip ends</span><span class="approach__never">frames that never come</span></figcaption>
+            </figure>
+            <div class="band__text">
+              <p>
+                The path is chosen: <span class="math">r = r<sub>s</sub>(1 + <output data-calc="fall-a">6</output>e<sup>−t/<output data-calc="fall-t">4</output></sup>)</span> comes closer to
+                the horizon with every frame and never reaches it in your time. The clocks are computed. Her last
+                frame carries <output data-calc="frame-tau-last">0.012</output> s of her time; the next would carry
+                less, and the one after that less again.
+              </p>
+              <p>
+                In her own time the same fall adds up to <output data-calc="tau-infinity">13.0</output> s. You could
+                wait forever. She would not.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="band band--pack" aria-labelledby="s5">
+          <header class="band__head">
+            <h2 class="band__title" id="s5">From the pack.</h2>
+            <p class="band__depth"><span class="band__ch"><b>CH 1–5</b> Pack</span><span class="band__r"><span class="sym">r/r<sub>s</sub></span> <output data-calc="depth-5">1.14</output></span></p>
+          </header>
+          <div class="band__body">
+            <dl class="register">
+              <div><dt>Frames</dt><dd><output data-pack="frames">···</output><span class="sym" data-pack-unit="frames"></span></dd></div>
+              <div><dt>Duration</dt><dd><output data-pack="duration">···</output><span class="sym" data-pack-unit="duration"></span></dd></div>
+              <div><dt>Frame rate</dt><dd><output data-pack="fps">···</output><span class="sym" data-pack-unit="fps"></span></dd></div>
+              <div><dt>Moving points</dt><dd><output data-pack="dynamic">···</output><span class="sym" data-pack-unit="dynamic"></span></dd></div>
+              <div><dt>Still points</dt><dd><output data-pack="static">···</output><span class="sym" data-pack-unit="static"></span></dd></div>
+              <div><dt>Weight on disk</dt><dd><output data-pack="bytes">···</output><span class="sym" data-pack-unit="bytes"></span></dd></div>
+            </dl>
+            <div class="band__text">
+              <p>
+                Read from the pack currently loaded, not typed by hand. The scene is <strong class="tag">synthetic</strong>:
+                the whale, the disk and the stars are computed from equations, with no third-party model, and baked into
+                points frame by frame.
+              </p>
+              <p>The lens behind them is traced live in your browser, one ray per display pixel.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="colophon">
+      <div class="colophon__mark" data-view="tesseract" role="img" aria-label="The 4D.OS mark: a tesseract drawn in dashed lines, turning toward the pointer."></div>
+      <p class="colophon__line">4D.OS · Whale fall · A local experiment, 2026 · Scene computed from equations, no third-party model</p>
+    </footer>
+
+    <script type="module" src="../../../src/4d-os/worlds/e/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,90 @@
+/* World C — "Leader": a hand-processed 16 mm film strip. */
+
+@font-face {
+  font-family: 'Big Shoulders Stencil';
+  src: url('./fonts/big-shoulders-stencil-latin-wght.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Doto';
+  src: url('./fonts/doto-latin-wght.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Archivo';
+  src: url('./fonts/archivo-latin-wdth.woff2') format('woff2');
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Permanent Marker';
+  src: url('./fonts/permanent-marker-latin-400.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root,
+[data-world='c'] {
+  /* Night color film with uneven chemistry (cross-processed): teal shadows, sodium highlights. */
+  --pal-1bit-0: #0e0f10;
+  --pal-1bit-1: #dcdfdf;
+
+  --pal-16-0: #0e0f10; /* black leader */
+  --pal-16-1: #2a2e31; /* shadow gray */
+  --pal-16-2: #6e7377; /* base gray */
+  --pal-16-3: #a3a9ad; /* emulsion gray */
+  --pal-16-4: #dcdfdf; /* light · HOLD */
+  --pal-16-5: #152a2c; /* night fog toned to teal */
+  --pal-16-6: #2c5a5c; /* cross-processed moonlight */
+  --pal-16-7: #474a2c; /* distant brick, toned to olive */
+  --pal-16-8: #d86cc0; /* magenta neon, cross-processed: does not fall into REWIND's orange */
+  --pal-16-9: #33181c; /* brick in shadow, magenta-brown */
+  --pal-16-10: #7c4a3e; /* brick next to the streetlamp */
+  --pal-16-11: #b98a55; /* wet reflection, vivid sepia */
+  --pal-16-12: #c8b089; /* chemical stain */
+  --pal-16-13: #ff8636; /* light leak · REWIND */
+  --pal-16-14: #ffd39a; /* hot leak · sodium streetlamp */
+  --pal-16-15: #3fd4e0; /* cross-processed cyan · FORWARD */
+
+  --accent-forward: #3fd4e0;
+  --accent-rewind: #ff8636;
+  --accent-hold: #dcdfdf;
+
+  /* Viewer: scene roles (all members of --pal-16-*) */
+  --scene-bg: #0e0f10; /* black leader: what surrounds the projection */
+  --trail: #ffd39a; /* trail: overexposed film frames (the floor does not use this tone) */
+  --future: #6e7377; /* future in base gray */
+  --frustum: #dcdfdf;
+  --trajectory: #c8b089; /* chemical stain */
+
+  --ink: #0e0f10;
+  --paper: #dcdfdf;
+  --emulsion: #a3a9ad; /* committed field */
+  --leader: #0e0f10; /* leader bands: title bars */
+  --leak: #ff8636;
+  --leak-hot: #ffd39a;
+  --sepia: #c8b089;
+  --grease: #ff8636; /* grease-pencil numbers */
+  --muted: #6e7377;
+
+  --font-display: 'Big Shoulders Stencil', 'Archivo', sans-serif;
+  --font-text: 'Archivo', 'Helvetica Neue', Arial, sans-serif; /* running text: an industrial grotesque */
+  --font-pixel: 'Doto', ui-monospace, monospace; /* edge codes in dot matrix */
+  --font-hand: 'Permanent Marker', cursive;
+  --pixel-size: 14px; /* Doto is legible from 14px up */
+  --pixel-size-2x: 28px;
+  --display-tracking: 0.02em;
+  --display-leading: 0.88;
+
+  --render-scale: 3;
+  --hair: 1px;
+  --win-title-h: 20px;
+  --gap: 12px;
+  --sprocket: 10px; /* 16 mm perforation, on the pixel grid */
+}

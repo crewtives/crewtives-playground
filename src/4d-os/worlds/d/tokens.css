@@ -1,0 +1,90 @@
+/* Landing D — "Golden stoop": a vector terminal with a storage tube, connected to the city. */
+
+/* Latin + Greek + math symbol subsets served by Google Fonts (the `text` parameter), variable fonts.
+   Licenses in ./fonts/OFL-*.txt. */
+@font-face {
+  font-family: 'Tektur';
+  src: url('./fonts/tektur-latin-greek-wdth-wght.woff2') format('woff2');
+  font-weight: 400 900;
+  font-stretch: 75% 100%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Jura';
+  src: url('./fonts/jura-latin-greek-wght.woff2') format('woff2');
+  font-weight: 300 700;
+  font-display: swap;
+}
+
+:root,
+[data-world='d'] {
+  /* Display palette: black glass, the city's violet night, four phosphor intensities, the falcon's
+     slate and cream, the two neons (which are the two directions of time) and the gold, which belongs
+     to φ alone. The 1-bit mode is the tube: black and writing phosphor. */
+  --pal-1bit-0: #07060b;
+  --pal-1bit-1: #baffd2;
+
+  --pal-16-0: #07060b; /* black glass */
+  --pal-16-1: #100c1c; /* night */
+  --pal-16-2: #1d1433; /* night violet */
+  --pal-16-3: #34204d; /* violet haze */
+  --pal-16-4: #0a2a20; /* dim phosphor */
+  --pal-16-5: #14633f; /* low phosphor: grid, future */
+  --pal-16-6: #3ad67c; /* stored phosphor: stroke, trail */
+  --pal-16-7: #baffd2; /* writing phosphor · HOLD */
+  --pal-16-8: #566374; /* slate */
+  --pal-16-9: #c3cad3; /* silver */
+  --pal-16-10: #f3efe4; /* cream */
+  --pal-16-11: #3fe0ff; /* cyan · FORWARD */
+  --pal-16-12: #0f6a82; /* deep cyan */
+  --pal-16-13: #ff3fb0; /* magenta · REWIND */
+  --pal-16-14: #7a1d5c; /* deep magenta */
+  --pal-16-15: #ffc45a; /* gold: φ */
+
+  --accent-forward: #3fe0ff;
+  --accent-rewind: #ff3fb0;
+  --accent-hold: #baffd2;
+
+  /* Viewer: scene roles, all members of --pal-16-* */
+  --scene-bg: #07060b;
+  --trail: #3ad67c; /* the past stays stored in the phosphor */
+  --future: #14633f; /* what the beam has not written yet */
+  --frustum: #f3efe4;
+  --trajectory: #0f6a82;
+
+  /* Brightness cap for the bodies of the city's signs (neons.ts reads only its value; the hue stays
+     the deep cyan or deep magenta): that way the city reads as stored geometry. The stored phosphor (#3ad67c) is kept for the trail alone. */
+  --neon-body: #0a2a20;
+
+  /* Display: a city at night; a little more light and chroma before quantizing. */
+  --display-chroma: 1.2;
+  --display-exposure: 1.25;
+
+  /* Chrome: the tube. Stroke only, never fill. */
+  --glass: #07060b;
+  --beam-dim: #14633f;
+  --beam: #3ad67c;
+  --beam-hot: #baffd2;
+  --phi: #ffc45a;
+  --paper: #baffd2; /* color of the footer's tesseract */
+  --prose: color-mix(in oklab, #baffd2 80%, #07060b);
+  --quiet: color-mix(in oklab, #3ad67c 72%, #07060b);
+
+  --font-display: 'Tektur', 'Arial Narrow', sans-serif;
+  --font-text: 'Jura', 'Avenir Next', sans-serif;
+
+  /* Golden scale: 16·φⁿ */
+  --phi-1: 1.618;
+  --step--1: 0.764rem; /* ≈ 12.2 px (16/φ^0.56, labels) */
+  --step-0: 1rem;
+  --step-1: 1.618rem;
+  --step-2: 2.618rem;
+  --step-3: 4.236rem;
+  --step-4: 6rem; /* display ceiling */
+
+  --render-scale: 3;
+  --hair: 1px;
+  --gap: 12px;
+  --gutter: 32px;
+}

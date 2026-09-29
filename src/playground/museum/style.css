@@ -1,0 +1,1285 @@
+@import './tokens.css';
+
+/* ── Base ─────────────────────────────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  background: var(--sheet);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  /* Below the bar (60 px tall on desktop) one module stays free: at 1440, 3M. */
+  scroll-padding-top: calc(60px + var(--M));
+  accent-color: var(--ink);
+  caret-color: var(--ink);
+  scrollbar-color: var(--graphite) var(--sheet);
+}
+body {
+  margin: 0;
+  /* No background of its own: the sheet is the html's, and the wash (z-index −1) shows on top of it. */
+  background: transparent;
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 380;
+  overflow-x: clip;
+}
+::selection {
+  background: var(--ink);
+  color: var(--sheet);
+}
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+a:hover {
+  text-decoration-thickness: 2px;
+}
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+button {
+  font: inherit;
+  color: inherit;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+[hidden] {
+  display: none !important;
+}
+.arrow,
+.glyph,
+.chevron {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: square;
+}
+.glyph {
+  width: 0.75em;
+  margin-inline: 0.05em;
+}
+.arrow--up {
+  transform: rotate(180deg);
+}
+/* Drawn ○ □ △ form marks: the épure's 1 px ink stroke. */
+.form-mark {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+}
+
+/* ── Light: morning wash at the top and afternoon wash at the bottom, moved only by scrolling (D8) ─── */
+.light {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.light__east,
+.light__west {
+  position: absolute;
+  inset: 0;
+}
+.light__east {
+  background:
+    radial-gradient(90% 55% at 30% -8%, var(--east-1) 0%, transparent 72%),
+    radial-gradient(70% 45% at 85% -12%, var(--east-2) 0%, transparent 70%);
+  opacity: var(--east-a, 0.85);
+}
+.light__west {
+  background:
+    radial-gradient(90% 35% at 70% 108%, var(--west-1) 0%, transparent 72%),
+    radial-gradient(70% 45% at 12% 112%, var(--west-2) 0%, transparent 70%);
+  opacity: var(--west-a, 0.5);
+}
+
+/* ── Grid: zone ticks every M on the fillets and in the margins; full grid with G (D3, D9) ──────── */
+/* Side margins of the page: fixed ticks every M, above the light and below the content. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(180deg, var(--rule-strong) 0 1px, transparent 1px var(--M)) left top / 6px 100% no-repeat,
+    repeating-linear-gradient(180deg, var(--rule-strong) 0 1px, transparent 1px var(--M)) right top / 6px 100% no-repeat;
+}
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px var(--M)), repeating-linear-gradient(180deg, var(--rule) 0 1px, transparent 1px var(--M));
+}
+.show-grid .sheet__frame::after {
+  content: attr(data-ratio);
+  position: absolute;
+  inset: calc(-1 * var(--M) + 1px) auto auto calc(var(--M) - 1px + 26 * var(--M));
+  width: calc(2 * var(--M));
+  height: calc(100% + 2 * var(--M) - 2px);
+  border-inline: 1px solid var(--ink);
+  background: var(--rule);
+  font: 500 12px/1 var(--font-mono);
+  color: var(--ink);
+  display: grid;
+  place-items: start center;
+  padding-top: 4px;
+  /* Below the bar (20) and without pointer events: passing under the bar, it neither covers nor steals the scrubber. */
+  z-index: 19;
+  pointer-events: none;
+}
+/* The column ratio, fixed on the top fillet, centered on the gutter (D9). With the full grid the top
+   band labels it: this one is hidden so as not to repeat it. */
+.sheet__ratio {
+  position: absolute;
+  top: 0;
+  left: calc(var(--M) - 1px + 27 * var(--M));
+  transform: translate(-50%, calc(-50% - 0.5px));
+  padding: 1px 6px;
+  font: 12px/1 var(--font-mono);
+  color: var(--graphite);
+  background: var(--sheet);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.show-grid .sheet__ratio {
+  display: none;
+}
+
+/* ── Bar: title, page clock and navigation ─────────────────────────────────────────────────────── */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--M);
+  min-height: calc(2 * var(--M));
+  padding: 6px var(--M);
+  background: var(--sheet);
+  border-bottom: 1px solid var(--ink);
+}
+.bar::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 -7px 0;
+  height: 6px;
+  background: repeating-linear-gradient(90deg, var(--rule-strong) 0 1px, transparent 1px var(--M));
+  background-position: var(--M) 0;
+  pointer-events: none;
+}
+.bar__title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 620;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+.clock {
+  display: grid;
+  justify-self: center;
+  justify-items: center;
+  gap: 2px;
+}
+.clock__controls {
+  display: flex;
+  align-items: center;
+  gap: calc(0.5 * var(--M));
+}
+.clock__states {
+  display: flex;
+  border: 1px solid var(--ink);
+}
+.clock__state {
+  font: 500 0.75rem/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  padding: 7px 10px 6px;
+  background: none;
+  border: 0;
+  border-inline-start: 1px solid var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.clock__state:first-child {
+  border-inline-start: 0;
+}
+.clock__state::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  background: var(--sheet);
+}
+.clock__state[aria-pressed='true'] {
+  background: var(--ink);
+  color: var(--sheet);
+}
+.clock__state:not([aria-pressed='true']):hover {
+  background: var(--rule);
+}
+.clock__state--forward[aria-pressed='true']::before {
+  background: var(--now-forward);
+  border-color: var(--sheet);
+}
+.clock__state--rewind[aria-pressed='true']::before {
+  background: var(--now-rewind);
+  border-color: var(--sheet);
+}
+.clock__state--hold[aria-pressed='true']::before {
+  background: var(--sheet);
+  border-color: var(--sheet);
+}
+.clock__scrub {
+  position: relative;
+  width: calc(9 * var(--M));
+  height: 28px;
+  cursor: ew-resize;
+  touch-action: none;
+}
+.clock__rail {
+  position: absolute;
+  inset: 8px 0;
+  border-bottom: 1px solid var(--ink);
+  background: repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px calc((100% - 1px) / 44));
+  background-size: 100% 6px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+}
+.clock__head {
+  position: absolute;
+  z-index: 1;
+  top: 2px;
+  bottom: 2px;
+  left: calc(var(--pos, 0) * (100% - 3px));
+  width: 3px;
+  background: var(--ink);
+}
+/* Scrubber target: a hollow mark under the pointer while the solid knob chases it. */
+.clock__target {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: calc(var(--target, 0) * (100% - 3px));
+  width: 3px;
+  pointer-events: none;
+}
+.clock__target::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -4px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+}
+.clock__head::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -4px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--now-forward);
+}
+[data-clock='rewind'] .clock__head::after {
+  background: var(--now-rewind);
+}
+[data-clock='hold'] .clock__head::after {
+  background: var(--sheet);
+}
+/* While it chases the requested position, the knob is solid and the requested position's mark is hollow. */
+.clock__scrub[data-chasing] .clock__head::after {
+  background: var(--ink);
+}
+.clock__line {
+  margin: 0;
+  font: 0.75rem/1.3 var(--font-mono);
+  color: var(--graphite);
+  text-align: center;
+  text-wrap: balance;
+}
+/* Navigation in the grotesque: the mono is kept for data, readouts, the title block, the clock and the tools. */
+.bar__nav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: calc(0.5 * var(--M));
+  font: 500 0.8125rem/1 var(--font-text);
+}
+.bar__nav > * {
+  white-space: nowrap;
+}
+.bar__link,
+.bar__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 2px;
+  min-height: 32px;
+}
+.bar__button,
+.colophon__shortcuts {
+  background: none;
+  border: 1px solid var(--ink);
+  padding: 7px 10px 6px;
+  cursor: pointer;
+}
+.bar__button[aria-pressed='true'],
+.colophon__shortcuts[aria-pressed='true'] {
+  background: var(--ink);
+  color: var(--sheet);
+}
+.bar__button:not([aria-pressed='true']):hover,
+.colophon__shortcuts:not([aria-pressed='true']):hover {
+  background: var(--rule);
+}
+.colophon__shortcuts {
+  font: 500 0.8125rem/1 var(--font-text);
+  min-height: 32px;
+}
+/* "Index of sheets" as a single item: the underline does not break between "Index" and "of". */
+.bar__label {
+  white-space: nowrap;
+}
+@media (max-width: 1359px) {
+  .bar__long {
+    display: none;
+  }
+}
+
+/* ── Museum and sheets ─────────────────────────────────────────────────────────────────────────── */
+.museum {
+  padding: var(--M) var(--M) 0;
+  max-width: calc(48 * var(--M));
+  margin-inline: auto;
+}
+.sheet {
+  margin-block: calc(1 * var(--M)) calc(3 * var(--M));
+}
+/* Jump by number: focus stays on the sheet and the ring is drawn on its frame. */
+.sheet:focus {
+  outline: none;
+}
+.sheet[data-jumped]:focus-visible .sheet__frame {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+/* Desktop: VISTA on the left across the first two rows; on the right, the épure with the title block
+   below it; the wall text at the bottom, under the VISTA. The fillet counts inside the module: the
+   columns fall on the grid lines. */
+.sheet__frame {
+  position: relative;
+  display: grid;
+  grid-template-columns: calc(26 * var(--M)) calc(16 * var(--M));
+  grid-template-areas:
+    'views epure'
+    'views title-block'
+    'text .';
+  grid-template-rows: auto 1fr auto;
+  column-gap: calc(2 * var(--M));
+  row-gap: calc(0.5 * var(--M));
+  align-items: start;
+  padding: calc(var(--M) - 1px);
+  border: 1px solid var(--ink);
+}
+/* Zone ticks every M, outside the fillet: at the top and on the left. */
+.sheet__frame::before {
+  content: '';
+  position: absolute;
+  inset: -7px -1px -1px -7px;
+  background:
+    repeating-linear-gradient(90deg, var(--rule-strong) 0 1px, transparent 1px var(--M)) 6px 0 / calc(100% - 6px) 6px no-repeat,
+    repeating-linear-gradient(180deg, var(--rule-strong) 0 1px, transparent 1px var(--M)) 0 6px / 6px calc(100% - 6px) no-repeat;
+  pointer-events: none;
+}
+.sheet__views {
+  grid-area: views;
+  align-self: stretch;
+  display: grid;
+  gap: calc(0.5 * var(--M));
+  grid-auto-rows: 1fr;
+}
+.sheet__views--three {
+  grid-auto-rows: auto;
+}
+.vista {
+  margin: 0;
+  background: var(--mat);
+  border: 1px solid var(--ink);
+  padding: var(--M);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-height: 100%;
+}
+.vista__slot {
+  container: vista / inline-size;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+}
+.vista__poster,
+.vista canvas {
+  display: block;
+  max-width: 100%;
+}
+.vista__frame {
+  position: relative;
+}
+.vista__pending,
+.epure__pending {
+  font: 0.8125rem/1.4 var(--font-mono);
+  color: var(--graphite);
+  padding: var(--M);
+  background: var(--sheet);
+  border: 1px dashed var(--rule-strong);
+}
+.vista__label {
+  margin-top: calc(0.5 * var(--M));
+  font: 500 0.8125rem/1 var(--font-mono);
+  justify-self: start;
+  background: var(--sheet);
+  padding: 6px 8px 5px;
+  border: 1px solid var(--ink);
+}
+.vista__label a {
+  text-decoration: none;
+}
+.credit {
+  margin: 0;
+  font: 0.75rem/1.4 var(--font-mono);
+  color: var(--graphite);
+}
+.sheet__epure {
+  grid-area: epure;
+  margin: 0;
+  position: relative;
+}
+.epure {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+/* The legend ends on the right with the trail label (x = 456 of 480). */
+.epure__legend {
+  margin-top: 2px;
+  padding-inline-end: 5%;
+  font: 0.75rem/1.25 var(--font-mono);
+  color: var(--graphite);
+  text-align: right;
+}
+.epure > :not(.ep-hinge) {
+  pointer-events: none;
+}
+/* Labels in SVG units, which scale with their column: --ep-label changes per width range so they
+   read at 12 px or more (at 1440 the épure is 480 wide and the unit is 1 px). */
+html {
+  --ep-label: 13px;
+}
+.ep-label {
+  font: var(--ep-label) var(--font-mono);
+  fill: var(--graphite);
+  letter-spacing: 0.04em;
+}
+@media (min-width: 1100px) {
+  /* The épures of 000 sit in 20M columns: the unit is larger. */
+  .epure--method .ep-label {
+    font-size: calc(0.8 * var(--ep-label));
+  }
+}
+@media (max-width: 1439px) {
+  html {
+    --ep-label: 16px;
+  }
+}
+.ep-ground {
+  stroke: var(--ink);
+  stroke-width: 1.25;
+}
+.ep-ground-ticks {
+  stroke: var(--ink);
+  stroke-width: 1;
+  fill: none;
+}
+.ep-full {
+  fill: none;
+  stroke: var(--graphite);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  vector-effect: non-scaling-stroke;
+}
+.ep-span {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.ep-full--dots {
+  stroke: none;
+  fill: var(--graphite);
+  opacity: 0.55;
+}
+.ep-span--dots {
+  stroke: none;
+  fill: var(--ink);
+}
+.ep-ref {
+  stroke: var(--ink);
+  stroke-width: 1;
+  stroke-dasharray: 1 3;
+  vector-effect: non-scaling-stroke;
+}
+.ep-now {
+  fill: var(--now-forward);
+  stroke: var(--ink);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+[data-clock='rewind'] .ep-now {
+  fill: var(--now-rewind);
+}
+.ep-edges,
+.ep-outline,
+.ep-section {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.ep-section {
+  stroke-opacity: calc(1 - var(--i) * 0.18);
+}
+.ep-joint {
+  stroke: var(--graphite);
+  stroke-dasharray: 4 3;
+  vector-effect: non-scaling-stroke;
+}
+.ep-vertices {
+  fill: var(--ink);
+}
+.sheet__text {
+  grid-area: text;
+  margin-top: calc(0.5 * var(--M));
+  /* About 70 characters per line with Geologica at 17 px. */
+  max-width: 34em;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+.sheet__text p {
+  margin: 0;
+}
+/* Tools: first child of the frame (they come first in focus order); on desktop, on the top fillet,
+   on the right. */
+.sheet__tools {
+  position: absolute;
+  top: calc(0.5 * var(--M) - 1px);
+  right: calc(var(--M) - 1px);
+  display: flex;
+  gap: 6px;
+  transform: translateY(-100%);
+}
+.tool {
+  font: 500 0.75rem/1 var(--font-mono);
+  letter-spacing: 0.06em;
+  padding: 7px 10px 6px;
+  background: var(--sheet);
+  border: 1px solid var(--ink);
+  cursor: pointer;
+}
+.tool[aria-pressed='true'] {
+  background: var(--ink);
+  color: var(--sheet);
+}
+/* Opaque: the button covers the fillet that runs behind it. */
+.tool:not([aria-pressed='true']):hover {
+  background: linear-gradient(var(--rule), var(--rule)), var(--sheet);
+}
+
+/* ── Title block: the sheet's label ───────────────────────────────────────────────────────────── */
+.title-block {
+  grid-area: title-block;
+  align-self: start;
+  border: 1px solid var(--ink);
+  font: 0.8125rem/1.35 var(--font-mono);
+  background: var(--sheet);
+}
+.title-block__head {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: stretch;
+  border-bottom: 1px solid var(--ink);
+  font-weight: inherit;
+}
+.title-block__no {
+  font: 500 1.75rem/1 var(--font-mono);
+  padding: 10px 12px 8px;
+  border-right: 1px solid var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.title-block__title {
+  font: 620 1.375rem/1.1 var(--font-text);
+  letter-spacing: -0.015em;
+  padding: 10px 12px;
+  align-self: center;
+}
+.title-block__field {
+  margin: 0;
+  padding: 7px 12px 6px;
+  border-bottom: 1px solid var(--ink);
+}
+.title-block__mark {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.title-block__stale {
+  background: var(--west-2);
+}
+.title-block__more {
+  border-bottom: 1px solid var(--ink);
+}
+/* "Sheet data": a drawn marker (a chevron like the house arrows) that turns when opened. */
+.title-block__more > summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px 6px;
+  cursor: pointer;
+  list-style: none;
+}
+.title-block__more > summary::-webkit-details-marker {
+  display: none;
+}
+.title-block__more > summary:hover {
+  background: var(--rule);
+}
+.title-block__more .chevron {
+  flex: none;
+  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.title-block__more[open] .chevron {
+  transform: rotate(90deg);
+}
+.title-block__more dl {
+  margin: 0;
+  border-top: 1px solid var(--rule);
+}
+.title-block__more dl > div {
+  display: grid;
+  grid-template-columns: 11ch 1fr;
+  border-bottom: 1px solid var(--rule);
+}
+.title-block__more dl > div:last-child {
+  border-bottom: 0;
+}
+.title-block__more dt {
+  padding: 6px 12px;
+  color: var(--graphite);
+  border-right: 1px solid var(--rule);
+}
+.title-block__more dd {
+  margin: 0;
+  padding: 6px 12px;
+  overflow-wrap: anywhere;
+}
+.title-block__enter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--ink);
+  color: var(--sheet);
+  font: 600 0.9375rem/1.2 var(--font-text);
+  text-decoration: none;
+}
+.title-block__enter:hover .arrow {
+  transform: translateX(3px);
+}
+.title-block__enter .arrow {
+  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* Focus ring inside each box of the title block, without covering the fillets; on the ink of "Enter",
+   in sheet color. The data links, inline with the text, keep the outer ring. */
+.title-block__head:focus-visible,
+.title-block__more > summary:focus-visible,
+.title-block__enter:focus-visible {
+  outline-offset: -4px;
+}
+.title-block__enter:focus-visible {
+  outline-color: var(--sheet);
+}
+
+/* ── Featured sheet: the frame falls at y = 3M, on the module ──────────────────────────────────── */
+.sheet--featured {
+  margin-top: 0;
+}
+
+/* ── Sheet index ───────────────────────────────────────────────────────────────────────────────── */
+.index {
+  margin-block: calc(2 * var(--M)) calc(3 * var(--M));
+}
+.index__heading {
+  margin: 0 0 calc(0.5 * var(--M));
+  font-size: 1.75rem;
+  font-weight: 620;
+  letter-spacing: -0.02em;
+}
+.index__heading:focus {
+  outline: none;
+}
+.index__hint {
+  margin: 0 0 var(--M);
+  font: 0.8125rem/1.4 var(--font-text);
+  color: var(--graphite);
+}
+.index__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--ink);
+}
+/* The 4D.OS row aligns its text with the row titles (9.5M column). */
+.index__gate a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0 10px calc(9.5 * var(--M));
+  font: 500 0.875rem/1.3 var(--font-text);
+  border-bottom: 1px solid var(--rule);
+  text-decoration: none;
+}
+.index__gate a:hover {
+  text-decoration: underline;
+}
+.index__row {
+  position: relative;
+  border-bottom: 1px solid var(--rule);
+}
+.index__link,
+.index__row--workshop {
+  display: grid;
+  grid-template-columns: calc(2.5 * var(--M)) calc(1.5 * var(--M)) calc(4 * var(--M)) 1fr calc(9 * var(--M)) calc(4 * var(--M));
+  align-items: center;
+  column-gap: calc(0.5 * var(--M));
+  min-height: calc(3 * var(--M));
+  padding-block: 8px;
+  text-decoration: none;
+}
+.index__link:hover .index__title {
+  text-decoration: underline;
+}
+.index__no {
+  font: 500 1.125rem/1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.index__form {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.index__thumb {
+  display: block;
+  width: calc(4 * var(--M));
+  height: calc(2.5 * var(--M));
+  background: var(--mat, transparent);
+  border: 1px solid var(--ink);
+  overflow: hidden;
+}
+.index__thumb img,
+.index__thumb canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+.index__thumb--empty {
+  border-style: dashed;
+  border-color: var(--rule-strong);
+  background: none;
+}
+/* Row 000: the plan of the column, in ink on sheet. */
+.index__thumb:has(.index__method) {
+  border: 1px solid var(--ink);
+  background: var(--sheet);
+}
+.index__method {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.index__method * {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.index__name {
+  min-width: 0;
+}
+.index__title {
+  font-weight: 620;
+  font-size: 1.0625rem;
+}
+.index__line {
+  color: var(--graphite);
+}
+.index__mark {
+  margin-inline-start: 0.5em;
+  font: 12px/1 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--graphite);
+  white-space: nowrap;
+}
+.index__dims,
+.index__date {
+  font: 0.8125rem/1.3 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.index__dims {
+  text-wrap: balance;
+}
+.index__date {
+  text-align: right;
+}
+/* The cat credit starts at the thumbnail column (5M). */
+.index__credit {
+  position: absolute;
+  left: calc(5 * var(--M));
+  bottom: 2px;
+  font: 0.75rem/1 var(--font-mono);
+  color: var(--graphite);
+}
+.index__row:has(.index__credit) .index__link {
+  padding-bottom: 20px;
+}
+/* Date rule (Eames): the row where the date changes carries an ink fillet on top. */
+.index__row--new-date {
+  border-top: 2px solid var(--ink);
+  margin-top: -1px;
+}
+.index__row--workshop {
+  color: var(--graphite);
+}
+
+/* ── Sheet 000 ────────────────────────────────────────────────────────────────────────────────── */
+/* 000 has its own ratio (1 : 1): with the full grid, the band falls on its gutter. */
+.show-grid .sheet--method .sheet__frame::after {
+  left: calc(var(--M) - 1px + 20 * var(--M));
+}
+.sheet--method .sheet__frame {
+  grid-template-columns: repeat(2, calc(20 * var(--M)));
+  grid-template-areas:
+    'column tesseract'
+    'text title-block';
+  grid-template-rows: auto auto;
+  column-gap: calc(2 * var(--M));
+  row-gap: var(--M);
+}
+.sheet--method .sheet__text {
+  margin-top: 0;
+}
+.sheet__epure--column {
+  grid-area: column;
+}
+.sheet__epure--tesseract {
+  grid-area: tesseract;
+}
+
+/* ── Colophon ─────────────────────────────────────────────────────────────────────────────────── */
+.colophon {
+  max-width: calc(48 * var(--M));
+  margin: calc(2 * var(--M)) auto 0;
+  padding: calc(2 * var(--M)) var(--M) calc(4 * var(--M));
+  border-top: 1px solid var(--ink);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: calc(2 * var(--M));
+  font-size: 0.9375rem;
+}
+.colophon__heading {
+  grid-column: 1 / -1;
+  margin: 0 0 var(--M);
+  font-size: 1.75rem;
+  font-weight: 620;
+  letter-spacing: -0.02em;
+}
+.colophon h3 {
+  margin: calc(1 * var(--M)) 0 6px;
+  font: 500 0.8125rem/1.2 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.colophon p {
+  margin: 0 0 0.75em;
+}
+.colophon__col > :first-child {
+  margin-top: 0;
+}
+.colophon__col p {
+  max-width: 33em;
+}
+.colophon__stamp {
+  font: 500 0.875rem/1.3 var(--font-text);
+}
+.colophon__back .arrow {
+  margin-inline-start: 0.25em;
+}
+.colophon__refs {
+  margin: 0;
+  padding-left: 1.1em;
+}
+.colophon__refs li {
+  margin-bottom: 0.6em;
+}
+.colophon__use {
+  color: var(--graphite);
+}
+.colophon__glossary {
+  margin: 0;
+}
+.colophon__glossary dt {
+  font-style: italic;
+  font-weight: 620;
+}
+.colophon__glossary dd {
+  margin: 0 0 0.6em;
+}
+
+/* ── Intermediate widths and phone ─────────────────────────────────────────────────────────────── */
+/* Three width ranges: desktop (≥1100, the rules above), 760–1099 and ≤759. */
+@media (max-width: 1099px) {
+  .sheet__ratio,
+  .show-grid .sheet__frame::after {
+    display: none;
+  }
+}
+
+/* 760–1099: the VISTA takes the full width at the top; below, épure and title block side by side; the
+   clock drops to a second row of the bar. */
+@media (min-width: 760px) and (max-width: 1099px) {
+  html {
+    /* The bar carries the clock in a second row (97 px). */
+    --bar-h: 100px;
+    scroll-padding-top: calc(var(--bar-h) + var(--M));
+    --ep-label: 18px;
+  }
+  .bar {
+    grid-template-columns: 1fr auto;
+    row-gap: 6px;
+  }
+  .clock {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .sheet__frame {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      'views views'
+      'epure title-block'
+      'text text';
+    grid-template-rows: none;
+    row-gap: var(--M);
+  }
+  .sheet--method .sheet__frame {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      'column tesseract'
+      'text title-block';
+  }
+  .sheet__text {
+    margin-top: 0;
+  }
+  /* The featured VISTA fits entirely on the screen: the height limits its slot (minus the two-row bar
+     and the 4M of margin, frame and passe-partout at top and bottom) and the integer scale picks the
+     k that fits. */
+  .sheet--featured .vista__slot {
+    width: min(100%, calc(100svh - var(--bar-h) - 4 * var(--M)));
+    /* Square slot, as on the phone: with its passe-partout, the VISTA is still the largest region of
+       the sheet even if the integer scale drops to k = 1. */
+    aspect-ratio: 1;
+    justify-self: center;
+  }
+}
+
+/* ≤759: one column; the bar in two rows at the top and the clock fixed at the bottom. */
+@media (max-width: 759px) {
+  /* The target of a jump lands below the bar, and focus is never covered by the clock. */
+  html {
+    scroll-padding-top: 96px;
+    scroll-padding-bottom: 96px;
+    /* The épure is 17M (272 px) wide: 21.5 units read at 12 px. */
+    --ep-label: 21.5px;
+  }
+  /* Without letter-spacing, "plan" and the trail label fit on the same line. */
+  .ep-label {
+    letter-spacing: 0;
+  }
+  .bar {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 8px var(--M) 6px;
+  }
+  .bar__title {
+    font-size: 1.0625rem;
+  }
+  /* No breaks inside each link: at 320 px all four fit with 4 px between them. */
+  .bar__nav {
+    justify-content: space-between;
+    gap: 4px;
+  }
+  .clock {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 20;
+    justify-self: stretch;
+    padding: 6px var(--M) calc(6px + env(safe-area-inset-bottom));
+    background: var(--sheet);
+    border-top: 1px solid var(--ink);
+  }
+  .clock__controls {
+    width: 100%;
+    order: 2;
+  }
+  .clock__scrub {
+    flex: 1;
+    width: auto;
+  }
+  .clock__state {
+    padding: 9px 7px 8px;
+  }
+  .museum {
+    padding-inline: var(--M);
+  }
+  /* The tools get their own row, after the VISTAs: neither the épure nor the fold covers
+     them. */
+  .sheet__frame {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'views' 'tools' 'epure' 'title-block' 'text';
+    grid-template-rows: none;
+    padding: calc(0.25 * var(--M));
+    row-gap: calc(0.75 * var(--M));
+  }
+  .sheet--method .sheet__frame {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'tools' 'column' 'tesseract' 'title-block' 'text';
+  }
+  /* The frame is thin (.25M) so the VISTA can grow; the wall text does not touch the fillet: it sits
+     1M away from it, on the sides and at the bottom. */
+  .sheet__text {
+    margin-top: 0;
+    padding: 0 calc(0.75 * var(--M)) calc(0.75 * var(--M));
+  }
+  .sheet__tools {
+    position: static;
+    transform: none;
+    grid-area: tools;
+    justify-self: end;
+  }
+  .vista {
+    padding: calc(0.5 * var(--M));
+  }
+  /* Square slot on sheets with a single VISTA: with its passe-partout, the VISTA is the largest region
+     of the sheet at any dpr (the passe-partout absorbs the leftover space). */
+  .sheet__views:not(.sheet__views--three) .vista__slot {
+    aspect-ratio: 1;
+  }
+  /* The épure shrinks, never the VISTA. */
+  .sheet__epure {
+    width: 100%;
+    max-width: min(17 * var(--M), 78%);
+    justify-self: center;
+  }
+  .index__link,
+  .index__row--workshop {
+    grid-template-columns: calc(2.5 * var(--M)) calc(1.5 * var(--M)) calc(5 * var(--M)) 1fr;
+    grid-template-areas: 'no form thumb name' 'no form thumb dims';
+  }
+  .index__dims {
+    grid-column: 4;
+  }
+  .index__date {
+    grid-column: 4;
+    text-align: left;
+  }
+  /* Each row's line goes under the title, at a smaller size. */
+  .index__line {
+    display: block;
+    font-size: 0.875rem;
+    line-height: 1.35;
+  }
+  .index__credit {
+    position: static;
+    display: block;
+    padding: 0 0 8px calc(5 * var(--M));
+  }
+  .index__row:has(.index__credit) .index__link {
+    padding-bottom: 4px;
+  }
+  .index__gate a {
+    padding-left: 0;
+  }
+  /* The body already reserves the height of the fixed clock. */
+  .colophon {
+    grid-template-columns: minmax(0, 1fr);
+    padding-bottom: calc(2 * var(--M));
+  }
+  body {
+    padding-bottom: 96px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title-block__enter .arrow,
+  .title-block__more .chevron {
+    transition: none;
+  }
+}
+
+/* ── Fold ─────────────────────────────────────────────────────────────────────────────────────── */
+.nogl {
+  max-width: calc(48 * var(--M));
+  margin: var(--M) auto 0;
+  padding: 0 var(--M);
+  font: 0.8125rem/1.4 var(--font-mono);
+  color: var(--graphite);
+}
+.sheet__epure.is-folding .epure {
+  visibility: hidden;
+}
+/* The dihedron takes the épure's box (480×600) with its ink fillet. */
+.fold-view {
+  position: absolute;
+  inset: 0 0 auto 0;
+  aspect-ratio: 480 / 600;
+  outline: 1px solid var(--ink);
+}
+.fold-axo {
+  position: absolute;
+  inset: 0 0 auto 0;
+}
+/* Without WebGL2: the explanation goes next to the axonometry, where the visitor is looking. */
+.fold-axo__note {
+  margin: 8px 0 0;
+  font: 12px/1.4 var(--font-mono);
+  color: var(--graphite);
+}
+.axonometry {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.axo-plane {
+  stroke: var(--ink);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.axo-plane--v {
+  fill: var(--east-2);
+}
+.axo-plane--h {
+  fill: var(--sheet);
+}
+.axo-ground {
+  stroke: var(--ink);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+.axo-rays,
+.axo-ref {
+  fill: none;
+  stroke: var(--graphite);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  vector-effect: non-scaling-stroke;
+}
+.axo-ref {
+  stroke: var(--ink);
+}
+.axo-proj {
+  fill: none;
+  stroke: var(--graphite);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+g.axo-proj {
+  stroke: none;
+  fill: var(--graphite);
+}
+.axo-trail {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+.axo-trail--dots {
+  stroke: none;
+  fill: var(--ink);
+}
+.house-pixels {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border: 1px solid var(--ink);
+  font: 0.75rem/1.3 var(--font-mono);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  background: var(--sheet);
+  position: relative;
+  z-index: 6;
+}
+.house-pixels legend {
+  float: left;
+  padding: 0;
+  margin-right: 4px;
+  font-weight: 500;
+}
+.house-pixels label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+.house-pixels p {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--graphite);
+}
+.ep-hinge {
+  fill: transparent;
+  cursor: ns-resize;
+}

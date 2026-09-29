@@ -1,0 +1,4 @@
+{
+  "prompt": "Pre-existing raster, not generated: the still of 4D.OS world A · Vitrine (/4d-os/a/). Origin: src/pipeline/captures/a-vitrine.png. Method: Screenshot of the live render of /a/ (pack cat-stairs) playing at frame 300, Chromium headless (Playwright) with SwiftShader at 1440×900, cropped to 4:3 (1200×900 from x=240); converted to WebP with cwebp -lossless -z 9, not resized, retouched or re-dithered. Captured: 2026-09-25. Synthetic scene. Credit: \"Cat\" by J-Toastie, CC-BY 3.0. Full record: provenance.json.",
+  "createdAt": "2026-09-25T01:01:37.486Z"
+}

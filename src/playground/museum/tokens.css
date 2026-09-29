@@ -1,0 +1,90 @@
+/* The museum's house tokens (D8, D9): a drawing room in daylight. Sheet, ink and graphite carry all
+   the text; the two lights are wash only; the NOW is cyan going forward and amber when rewinding,
+   always with an ink ring. The module M orders the visible grid. */
+
+@font-face {
+  font-family: 'Geologica';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('./fonts/geologica-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Geologica';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('./fonts/geologica-greek-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Fira Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('./fonts/fira-mono-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Fira Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url('./fonts/fira-mono-latin-500-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Fira Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 500;
+  src: url('./fonts/fira-mono-greek-400-normal.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+
+:root {
+  /* Grid module: 30 px at 1440 (48 modules), never less than 16 (the phone margin). */
+  --M: clamp(16px, calc(100vw / 48), 30px);
+
+  /* Sheet and ink: all text is ink or graphite on sheet. */
+  --sheet: #f5f4ef;
+  --ink: #16181d;
+  --graphite: #3b404c;
+  --rule: #16181d2e;
+  --rule-strong: #16181d73;
+
+  /* Light: morning wash (east, lavender) and afternoon wash (west, apricot). Only as light. */
+  --east-1: #bebee8;
+  --east-2: #dcddf6;
+  --west-1: #f0a585;
+  --west-2: #f8dccd;
+
+  /* NOW: FORWARD cyan, REWIND amber, always with a 2 px ink ring. */
+  --now-forward: #1bbfd3;
+  --now-rewind: #efa23b;
+
+  --font-text: 'Geologica', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Fira Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* Palette of the fold's display (16 colors; in 1-bit, ink and sheet). The colors sit far apart
+     so that the sheet and the flat planes are not dithered; the wash's light is dithered in the
+     planes' gradient. */
+  --pal-1bit-0: #16181d;
+  --pal-1bit-1: #f5f4ef;
+  --pal-16-0: #16181d;
+  --pal-16-1: #f5f4ef;
+  --pal-16-2: #3b404c;
+  --pal-16-3: #6b7080;
+  --pal-16-4: #a3a6b0;
+  --pal-16-5: #bebee8;
+  --pal-16-6: #8a8fc9;
+  --pal-16-7: #f0a585;
+  --pal-16-8: #c7775a;
+  --pal-16-9: #1bbfd3;
+  --pal-16-10: #0e7f8d;
+  --pal-16-11: #efa23b;
+  --pal-16-12: #9c6417;
+  --pal-16-13: #5d6397;
+  --pal-16-14: #262a36;
+}

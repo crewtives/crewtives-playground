@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en" data-world="c">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <title>Leader — 4D.OS</title>
+    <meta name="description" content="A 4D reconstruction threaded like a strip of 16mm film: grab the strip, pull time through the gate." />
+  </head>
+  <body>
+    <a class="skip" href="#reels">Skip to the reels</a>
+    <a class="playground-back" href="/#sheet-001"><svg class="playground-back__arrow" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M11 6H2M6 2 2 6l4 4" /></svg>Playground · Sheet 001</a>
+
+    <main>
+      <!-- First screen: the projector -->
+      <section class="desk" aria-label="4D.OS desktop">
+        <header class="slate">
+          <h1 class="slate__title">Black cat, alley</h1>
+          <p class="slate__meta">
+            <span class="slate__tag">Synthetic</span>
+            <span><span data-stat="frames">···</span> frames</span>
+            <span data-stat="duration">···</span>
+          </p>
+        </header>
+
+        <div class="gate">
+          <div class="gate__perfs gate__perfs--left" aria-hidden="true"></div>
+          <div class="gate__aperture">
+            <div class="gate__view" data-view="scene" role="img" aria-describedby="scene-desc"></div>
+            <div class="gate__marks" data-gate-marks aria-hidden="true"></div>
+            <div class="gate__leak" aria-hidden="true"></div>
+          </div>
+          <div class="gate__perfs gate__perfs--right" aria-hidden="true"></div>
+          <p class="gate__edge" aria-hidden="true">4DOS 0923 E7 · 16MM · SAFETY BASE · <span data-stat="frames">···</span> FR</p>
+          <p id="scene-desc" class="sr-only">
+            A projected 3D scene: every frame of a black cat crossing a night alley is kept at once as a trail of
+            points, with the present frame highlighted. The scene is synthetic.
+          </p>
+        </div>
+
+        <div class="desk__cards">
+          <section class="win" data-window="clock" aria-labelledby="w-clock">
+            <h2 class="win__title" id="w-clock"><span>Clock</span><span class="win__code">0923 E7</span></h2>
+            <div class="win__body">
+              <p class="clock__tc" data-now="timecode">00:00:00</p>
+              <p class="clock__wall" data-wall-clock></p>
+            </div>
+          </section>
+
+          <section class="win" data-window="source" aria-labelledby="w-source">
+            <h2 class="win__title" id="w-source"><span>Camera</span><span class="win__code">0923 E8</span></h2>
+            <div class="win__body">
+              <div class="source__frame" data-source-frame></div>
+              <p class="source__meta">Frame <span data-now="frame">···</span></p>
+            </div>
+          </section>
+
+          <section class="win" data-window="layers" aria-labelledby="w-layers">
+            <h2 class="win__title" id="w-layers"><span>Layers</span><span class="win__code">0923 E9</span></h2>
+            <div class="win__body">
+              <fieldset class="seg">
+                <legend>Time</legend>
+                <label><input type="radio" name="mode" value="memory" checked /> Memory</label>
+                <label><input type="radio" name="mode" value="all" /> All at once</label>
+              </fieldset>
+              <fieldset class="checks">
+                <legend>Show</legend>
+                <label><input type="checkbox" data-layer="trail" checked /> Trail</label>
+                <label><input type="checkbox" data-layer="background" checked /> Background</label>
+                <label><input type="checkbox" data-layer="frustum" checked /> Camera</label>
+                <label><input type="checkbox" data-layer="trajectory" checked /> Path</label>
+              </fieldset>
+            </div>
+          </section>
+
+          <section class="win" data-window="display" aria-labelledby="w-display">
+            <h2 class="win__title" id="w-display"><span>Stock</span><span class="win__code">0923 F1</span></h2>
+            <div class="win__body">
+              <fieldset class="seg">
+                <legend>Colors</legend>
+                <label><input type="radio" name="depth" value="1bit" /> 1-bit</label>
+                <label><input type="radio" name="depth" value="16" checked /> 16</label>
+                <label><input type="radio" name="depth" value="millions" /> Millions</label>
+              </fieldset>
+            </div>
+          </section>
+        </div>
+
+        <!-- The strip: a physical timeline -->
+        <section class="strip" aria-label="Film strip">
+          <div class="strip__head">
+            <button class="strip__play" type="button" data-play aria-label="Play">
+              <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 2 L10 6 L3 10 Z" /></svg>
+            </button>
+            <output class="strip__tc" data-now="timecode">00:00:00</output>
+            <output class="strip__state" data-now="state">HOLD 0.00×</output>
+          </div>
+          <div class="strip__window" data-strip>
+            <div class="strip__film" data-strip-film></div>
+            <div class="strip__gate" aria-hidden="true"></div>
+          </div>
+          <div class="timeline__track" data-track role="slider" tabindex="0" aria-label="Time" aria-valuemin="0" aria-valuenow="0">
+            <div class="timeline__ruler" data-ruler aria-hidden="true"></div>
+            <div class="timeline__playhead" aria-hidden="true"></div>
+          </div>
+        </section>
+
+        <section class="dialog win" data-window="splice" data-trail aria-labelledby="w-splice">
+          <h2 class="win__title" id="w-splice"><span>Splice</span><span class="win__code">0923 SP</span></h2>
+          <div class="win__body">
+            <p>Pull the strip below through the gate. Pull it back and the edge floods with light.</p>
+            <p class="dialog__aside">This card leaves a trail if you drag it.</p>
+            <button type="button" class="btn" data-dismiss>OK</button>
+          </div>
+        </section>
+
+        <section class="boot win" data-boot aria-live="polite" aria-labelledby="w-boot">
+          <h2 class="win__title" id="w-boot"><span>4D.OS 1.0</span><span class="win__code">0923 00</span></h2>
+          <div class="win__body">
+            <p data-boot-message>Threading film…</p>
+            <div class="boot__bar"><div class="boot__fill" data-boot-fill></div></div>
+            <p class="boot__pct"><span data-boot-pct>0</span>%</p>
+          </div>
+        </section>
+      </section>
+
+      <!-- Story page: reels -->
+      <div id="reels" class="reels">
+        <section class="lede">
+          <h2 class="lede__title">Fourteen seconds. Every frame, at once.</h2>
+          <p class="lede__text">
+            A strip of film already holds every moment of a shot, side by side. This desktop threads a
+            reconstruction in space and time the same way: the strip is the clock, the gate is now, and
+            nothing that happened is thrown away.
+          </p>
+        </section>
+
+        <section class="reel reel--life" aria-labelledby="r1">
+          <h2 id="r1" class="reel__title"><span class="reel__num">Reel 1</span> Two dimensions, plus time</h2>
+          <div class="reel__figure" data-view="life" role="img" aria-describedby="life-desc"></div>
+          <p id="life-desc" class="reel__note">
+            A glider from Conway’s Game of Life. One generation is a flat grid; stack the generations like
+            frames on a strip and the glider becomes a staircase you can walk around.
+          </p>
+        </section>
+
+        <section class="reel reel--pipeline" aria-labelledby="r2">
+          <h2 id="r2" class="reel__title"><span class="reel__num">Reel 2</span> From film to space</h2>
+          <ol class="steps">
+            <li class="step">
+              <div class="step__figure" data-pipeline="video"></div>
+              <h3 class="step__title">Shoot</h3>
+              <p>An ordinary video from one moving camera.</p>
+            </li>
+            <li class="step">
+              <div class="step__figure" data-pipeline="frame"></div>
+              <h3 class="step__title">Develop</h3>
+              <p>Each frame is developed into its own cloud of 3D points, with the camera that saw it.</p>
+            </li>
+            <li class="step">
+              <div class="step__figure" data-pipeline="plate"></div>
+              <h3 class="step__title">Project</h3>
+              <p>Every developed frame is left where and when it happened. Nothing is merged.</p>
+            </li>
+          </ol>
+          <p class="notice">
+            <span class="notice__mark">Lab note</span>
+            The subject on this strip is <strong>synthetic</strong>: a low-poly cat by J-Toastie (CC-BY 3.0),
+            animated by us and sampled into points frame by frame, standing in for a real reconstruction.
+          </p>
+        </section>
+
+        <section class="reel reel--scroll" data-scroll-time aria-labelledby="r3">
+          <div class="reel--scroll__stage">
+            <h2 id="r3" class="reel__title"><span class="reel__num">Reel 3</span> Scroll is time</h2>
+            <div class="reel__figure reel__figure--wide" data-view="scroll" role="img" aria-label="The projected scene, driven by scrolling: down plays forward, up rewinds."></div>
+            <p class="reel__note">Scroll down to run the strip forward. Scroll up and it rewinds through the gate.</p>
+          </div>
+        </section>
+
+        <section class="reel reel--data" aria-labelledby="r4">
+          <h2 id="r4" class="reel__title"><span class="reel__num">Reel 4</span> Lab report</h2>
+          <dl class="register">
+            <div><dt>Frames</dt><dd data-stat="frames">···</dd></div>
+            <div><dt>Running time</dt><dd data-stat="duration">···</dd></div>
+            <div><dt>Frame rate</dt><dd data-stat="fps">···</dd></div>
+            <div><dt>Moving points</dt><dd data-stat="dynamic">···</dd></div>
+            <div><dt>Still points</dt><dd data-stat="static">···</dd></div>
+            <div><dt>Can weight</dt><dd data-stat="bytes">···</dd></div>
+          </dl>
+          <p class="reel__note">Measured from the strip currently threaded, not written by hand.</p>
+        </section>
+
+        <section class="reel reel--scenes" aria-labelledby="r5">
+          <h2 id="r5" class="reel__title"><span class="reel__num">Reel 5</span> On the shelf</h2>
+          <ul class="cans">
+            <li>
+              <button type="button" class="can is-active" aria-pressed="true">
+                <span class="can__tape">
+                  <span class="can__label">Black cat, alley</span>
+                  <span class="can__meta">Synthetic · threaded</span>
+                </span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="can" aria-disabled="true">
+                <span class="can__tape">
+                  <span class="can__label">A real capture</span>
+                  <span class="can__meta">Not available yet</span>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </section>
+
+        <section class="reel reel--faq" aria-labelledby="r6">
+          <h2 id="r6" class="reel__title"><span class="reel__num">Reel 6</span> Questions</h2>
+          <details class="faq">
+            <summary>Is this a video?</summary>
+            <p>No. It is a scene of points drawn live in your browser. Every frame of the original motion is kept, so the whole shot can be seen at once and pulled through in either direction.</p>
+          </details>
+          <details class="faq">
+            <summary>Why does it look like film stock?</summary>
+            <p>The picture is rendered at a fraction of your screen’s resolution and reduced to a sixteen-color stock with ordered dithering, live, every frame. Switch the stock to Millions to see the scene underneath.</p>
+          </details>
+          <details class="faq">
+            <summary>Is the cat real?</summary>
+            <p>Not yet. This strip uses a synthetic subject so the desktop can be built and measured before real captures exist.</p>
+          </details>
+          <details class="faq">
+            <summary>What do the keys do?</summary>
+            <p>Space holds or resumes. J rewinds, K holds, L plays forward; press J or L again to go faster. The arrow keys step one frame.</p>
+          </details>
+        </section>
+      </div>
+    </main>
+
+    <footer class="tail">
+      <div class="tail__mark" data-view="tesseract" role="img" aria-label="The 4D.OS mark: a tesseract drawn in dashed lines, turning toward the pointer."></div>
+      <p class="tail__end">End</p>
+      <p class="tail__edge">4DOS 0923 E7 · Leader edition · A local experiment, 2026 · Cat model by J-Toastie, CC-BY 3.0</p>
+    </footer>
+
+    <script type="module" src="../../../src/4d-os/worlds/c/main.ts"></script>
+  </body>
+</html>
