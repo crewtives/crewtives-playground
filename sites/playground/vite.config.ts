@@ -2,23 +2,26 @@ import { existsSync, readdirSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
 import { museumPlugin } from '../../src/playground/museum/build/plugin';
+import { siteMetadata } from '../../src/site/build/plugin.ts';
 import { repoSrcInDev } from '../../tools/vite/repo-src-in-dev.ts';
 
 const repo = resolve(import.meta.dirname, '../..');
 const playground = import.meta.dirname;
 
 // Playground pages: the museum (/), Bloomscope (/bloomscope/) and, outside the collection, Game
-// Center Yonjigen and Wind-Up Empire at /landings/<slug>/. All of them are required: if the
-// index.html of a compiled page is missing, the build fails and names it. The old comparison
-// page is no longer compiled: /landings/ redirects to / (deploy/_redirects).
+// Center Yonjigen and Wind-Up Empire at /landings/<slug>/, plus the site's 404 page (404.html,
+// which the Worker serves for every unknown path). All of them are required: if the HTML of a
+// compiled page is missing, the build fails and names it. The old comparison page is no longer
+// compiled: /landings/ redirects to / (deploy/_redirects).
 const pages: Record<string, string> = {
   museum: resolve(playground, 'index.html'),
   bloomscope: resolve(playground, 'bloomscope', 'index.html'),
   ...Object.fromEntries(['game-center', 'wind-up-empire'].map((slug) => [slug, resolve(playground, 'landings', slug, 'index.html')] as const)),
+  'not-found': resolve(playground, '404.html'),
 };
 
-// PLAYGROUND_ONLY=<page> compiles only that page (museum, bloomscope, game-center or wind-up-empire),
-// to measure its budget without depending on the state of the others.
+// PLAYGROUND_ONLY=<page> compiles only that page (museum, bloomscope, game-center, wind-up-empire or
+// not-found), to measure its budget without depending on the state of the others.
 const only = process.env.PLAYGROUND_ONLY;
 if (only && !(only in pages)) {
   throw new Error(`PLAYGROUND_ONLY=${only} is not a playground page (${Object.keys(pages).join(', ')}).`);
@@ -107,7 +110,9 @@ export default defineConfig({
   root: playground,
   base: '/',
   publicDir: resolve(playground, 'public'),
-  plugins: [museumPlugin(repo), noPacksAtRoot(), no4dosWrites(), repoSrcInDev(repo)],
+  // siteMetadata runs after the museum plugin and adds every page's metadata, plus sitemap.xml and
+  // robots.txt at the root (src/site/).
+  plugins: [museumPlugin(repo), siteMetadata({ siteFiles: true }), noPacksAtRoot(), no4dosWrites(), repoSrcInDev(repo)],
   server: {
     fs: { allow: [repo] },
     ...(process.env.VITE_NO_HMR ? { hmr: false, watch: null } : {}),

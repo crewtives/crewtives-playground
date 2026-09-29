@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
+import { siteMetadata } from '../../src/site/build/plugin.ts';
 import { packSaver } from '../../tools/vite/pack-saver.ts';
 import { repoSrcInDev } from '../../tools/vite/repo-src-in-dev.ts';
 
@@ -22,7 +23,8 @@ export default defineConfig(({ command }) => ({
   root: site,
   // The build is published at playground.crewtives.com/4d-os/; in development it is still served from the root.
   base: command === 'build' ? '/4d-os/' : '/',
-  plugins: [packSaver({ packsDir: resolve(site, 'public/packs') }), repoSrcInDev(repo)],
+  // siteMetadata: canonical, Open Graph, X card, icons and JSON-LD of every built page (src/site/).
+  plugins: [packSaver({ packsDir: resolve(site, 'public/packs') }), repoSrcInDev(repo), siteMetadata({ siteFiles: false })],
   server: {
     // The pages load their code from the repository's src/, outside the site root.
     fs: { allow: [repo] },

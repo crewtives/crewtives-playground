@@ -1,0 +1,5 @@
+# The Worker is also reachable on its default Cloudflare hosts, including the preview hosts of each
+# uploaded version. Those copies are not canonical: they are kept out of search results. The custom
+# domain matches no rule (spec site-metadata, "Noindex on the non-canonical host").
+https://:version.:subdomain.workers.dev/*
+  X-Robots-Tag: noindex
