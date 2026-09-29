@@ -106,7 +106,7 @@ pass the recorder `--base` with the URL that Wrangler prints.
 | Path | What it holds |
 |---|---|
 | [`sites/4d-os/`](sites/4d-os/) | Vite root of 4D.OS. `index.html` is the launcher and `a/` … `e/` are the five worlds. `bake.html` and `debug.html` are development-only pages that the build leaves out. `public/packs/` holds the three published 4D packs and `public/launcher/` the launcher's stills. `vite.config.ts` builds the site into `dist/4d-os/`. |
-| [`sites/playground/`](sites/playground/) | Vite root of the playground. `index.html` is the museum's template, `bloomscope/` and `landings/<slug>/` are the other pages. `public/loops/` holds the museum's recorded loops and `public/landings/_shared/stills/` the stills of the five worlds. `vite.config.ts` builds the site into `dist/`. |
+| [`sites/playground/`](sites/playground/) | Vite root of the playground. `index.html` is the museum's template, `bloomscope/` and `landings/<slug>/` are the other pages, and `404.html` is the page the site answers unknown addresses with. `public/loops/` holds the museum's recorded loops, `public/landings/_shared/stills/` the stills of the five worlds, `public/og/` the share images, and the folder's root the site's icons and `_headers`. `vite.config.ts` builds the site into `dist/`. |
 | [`src/engine/`](src/engine/) | The engine that both sites share. It imports nothing from the rest of `src/`, only npm packages. |
 | `src/engine/pack/` | The 4D pack: its format, loader and writer. |
 | `src/engine/engine/` | `Engine`: one canvas, one WebGL renderer and an on-demand render loop. |
@@ -125,12 +125,14 @@ pass the recorder `--base` with the URL that Wrangler prints.
 | `src/playground/museum/` | The museum. Browser code (`main.ts`, `clock.ts`, `player.ts`, the fold), `build/` (the Node side: Vite plugin, manifest, static render, épures, sources hash), `loops/` (loop format and provenance) and `collection.ts`, the curation: the only hand-written data about the works. |
 | `src/playground/bloomscope/`, `game-center/`, `wind-up-empire/` | The three landings. |
 | `src/playground/shared/` | What the playground pages share: the registry of the five worlds, sound, live reduced motion, the WebGL2 probe, the registry that lets one control switch all of a page's displays, and PNG text chunks. |
-| [`tools/`](tools/) | Development tools: `capture-loops.ts` records the museum's loops, and `vite/` holds the dev-server plugins (`pack-saver.ts`, `repo-src-in-dev.ts`). |
+| `src/playground/not-found/` | The stylesheet of the 404 page, built on the museum's tokens. |
+| [`src/site/`](src/site/) | What both sites share at build time, which no page imports: the page registry `pages.ts` (canonical URLs, share titles, descriptions, share images), the head injection, `sitemap.xml` and `robots.txt`, the Vite plugin that adds every page's metadata (`build/`), and the share images' composition (`og/`) with their new source captures (`og/captures/`). [docs/site-metadata.md](docs/site-metadata.md) explains it. |
+| [`tools/`](tools/) | Development tools: `capture-loops.ts` records the museum's loops, `capture-og.ts` makes the share images and the icon rasters, `audit-site.ts` audits the built site's metadata, and `vite/` holds the dev-server plugins (`pack-saver.ts`, `repo-src-in-dev.ts`). |
 | [`deploy/`](deploy/) | The Cloudflare configuration (`wrangler.jsonc`) and the two files copied into `dist/`: `_redirects` and `.assetsignore`. |
 | [`docs/`](docs/) | Guides to the code, `design/` (the design system and the product brief) and `images/`. |
 | [`openspec/`](openspec/) | The specification: `config.yaml`, the living specs in `specs/` and the completed changes in `changes/archive/`. |
 | [`.claude/`](.claude/) | The OpenSpec commands and skills for Claude Code. |
-| [`.impeccable/`](.impeccable/) | Design briefs, one per page except the 4D.OS launcher (`surfaces/`), and `design.json`, generated from the design system. |
+| [`.impeccable/`](.impeccable/) | Design briefs, one per page except the 4D.OS launcher and the 404 page, which follows the museum's (`surfaces/`), and `design.json`, generated from the design system. |
 
 At the root: `package.json`, `tsconfig.json`, `vitest.config.ts`, [`LICENSE`](LICENSE) and
 [`LICENSES.md`](LICENSES.md).
@@ -295,7 +297,8 @@ the paths inside archived changes describe the repository as it was when each ch
 **Design.** [`docs/design/PRODUCT.md`](docs/design/PRODUCT.md) is the product brief: who the pages are
 for, their principles and their commitments. [`docs/design/DESIGN.md`](docs/design/DESIGN.md) is the
 design system: tokens as YAML front matter, then prose for each world, the launcher, the landings and
-the museum. Each page except the 4D.OS launcher also has a direction brief in [`.impeccable/surfaces/`](.impeccable/surfaces/),
+the museum. Each page except the 4D.OS launcher and the 404 page (which follows the museum's) also has
+a direction brief in [`.impeccable/surfaces/`](.impeccable/surfaces/),
 the working folder of the design skill used during the work, and screens were reviewed from captures
 like the ones in [`docs/images/`](docs/images/).
 
@@ -316,6 +319,15 @@ redirects, and `.assetsignore` keeps the unpublished packs out of the upload. 4D
 `/4d-os/` base path, so deploy the whole `dist/` folder, not one site alone. In a fork, also change
 `REPO_URL` in [`src/playground/museum/build/render.ts`](src/playground/museum/build/render.ts), which
 the title blocks use to link each loop's commit.
+
+Two more things name this site, and a fork changes them too:
+
+- **`SITE_ORIGIN`** in [`src/site/pages.ts`](src/site/pages.ts): set it to your site's address.
+  Every canonical URL, `og:url` and `og:image`, the sitemap and `robots.txt` follow it.
+- **[`sites/playground/public/_headers`](sites/playground/public/_headers)**: delete it when your copy
+  is served only from its `workers.dev` subdomain. Its one rule sends `X-Robots-Tag: noindex` on every
+  `workers.dev` host, to keep this site's preview hosts out of search results, so left in place it
+  would put `noindex` on every page of your copy.
 
 ## Known limitations
 
@@ -370,8 +382,10 @@ license and the location of its license text.
 ["Cat" by J-Toastie](https://poly.pizza/m/8GJbfM8R1A), licensed under
 [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/). Its animation is procedural and its fur is
 darkened. The credit also covers everything derived from it: the `cat-stairs` pack, the museum's loops
-of worlds A, B and C, the stills and the images in `docs/images/` that show the cat. Every page that
-shows the cat carries the credit.
+of worlds A, B and C, the stills, the images in `docs/images/` and the share images in
+`sites/playground/public/og/` that show the cat. Every page that shows the cat carries the credit, and
+so does every share image that shows it, inside the image, because those images are seen away from
+the site.
 
 **Other assets.** The "Deer" model by Quaternius (CC0 1.0) is the input of the `deer-meadow` recipe,
 whose pack is not published. The typefaces are self-hosted, each under the SIL Open Font License 1.1 or the
@@ -382,7 +396,8 @@ Apache License 2.0, with its license text next to the font file. The OpenSpec-ge
 are MIT-licensed. [GSAP](https://gsap.com/) (with ScrollTrigger) is used under GSAP's
 [Standard "no charge" License](https://gsap.com/standard-license): free to use, but not an
 OSI-approved open-source license, so read its terms before reusing it. The build and tests use Vite,
-Vitest, TypeScript and Wrangler; the loop recorder fetches Playwright and tsx with `npx`.
+Vitest, TypeScript and Wrangler; the loop recorder and the share-image tool fetch Playwright and tsx
+with `npx`.
 
 **Inspiration.** Two works shaped this project. The visual language of the desktop worlds (window
 chrome, pixel type, dithered imagery) takes its cue from the [typesafe.ai](https://typesafe.ai/)

@@ -14,20 +14,22 @@ browser or read from files produced at build time or checked into the repository
 This page covers the layout, the import rules between layers, how each page is built and served,
 and a suggested order for reading the code. The other guides go deeper:
 [`engine.md`](engine.md) covers the 4D pack, the viewer and the retro display,
-[`museum.md`](museum.md) covers the museum and its loops, and [`glossary.md`](glossary.md) defines the
-project's vocabulary. [`openspec-workflow.md`](openspec-workflow.md) explains how the project was
-specified.
+[`museum.md`](museum.md) covers the museum and its loops,
+[`site-metadata.md`](site-metadata.md) covers what every page tells search engines and link previews,
+and [`glossary.md`](glossary.md) defines the project's vocabulary.
+[`openspec-workflow.md`](openspec-workflow.md) explains how the project was specified.
 
 ## Layout
 
 ```
 sites/4d-os/        Vite site 1: HTML entry pages, public/ (4D packs, launcher images), vite.config.ts
-sites/playground/   Vite site 2: HTML entry pages, public/ (museum loops, stills), vite.config.ts
+sites/playground/   Vite site 2: HTML entry pages, public/ (loops, stills, share images, icons), vite.config.ts
 src/engine/         the engine shared by both sites
 src/pipeline/       scene equations (scenes/), the development-only baker (bake/) and its inputs
 src/4d-os/          4D.OS code: launcher/, worlds/a … e/, debug/
-src/playground/     playground code: museum/, bloomscope/, game-center/, wind-up-empire/, shared/
-tools/              development tools: capture-loops.ts, vite/ (Vite plugins used by the site configs)
+src/playground/     playground code: museum/, bloomscope/, game-center/, wind-up-empire/, not-found/, shared/
+src/site/           what both sites share at build time: the page registry, the metadata plugin, og/
+tools/              development tools: capture-loops.ts, capture-og.ts, audit-site.ts, vite/ (Vite plugins)
 deploy/             wrangler.jsonc, _redirects, .assetsignore
 docs/               these guides; design/ holds DESIGN.md and PRODUCT.md
 openspec/           specifications and the archived changes that built the project
@@ -60,6 +62,21 @@ the `WORLDS` registry in `src/playground/shared/worlds.ts`, the tests and the re
 - `/landings/bloomscope` and `/landings/bloomscope/` go to `/bloomscope/`. The browser keeps the
   `#g=…` fragment, so old links to a Bloomscope garden still work.
 
+Besides the pages, the site serves a few files at fixed addresses
+([`site-metadata.md`](site-metadata.md) explains each one):
+
+| Public URL | What | Source |
+|---|---|---|
+| `/robots.txt`, `/sitemap.xml` | Crawler rules and the 10 canonical URLs | Emitted by the playground build from `src/site/pages.ts` |
+| `/og/<slug>.png` | One share image per page, with its sidecar and `provenance.json` | `sites/playground/public/og/` |
+| `/favicon.ico`, `/apple-touch-icon.png`, `/icon.svg` | The playground's icons | `sites/playground/public/` |
+| `/4d-os/icon.svg`, `/4d-os/apple-touch-icon.png` | The 4D.OS icons | `sites/4d-os/public/` |
+| `/404.html` | The 404 page, served with a 404 status for every unknown path | `sites/playground/404.html`, styled by `src/playground/not-found/not-found.css` |
+
+Any other path the site does not serve, at any depth and under `/4d-os/` too, gets the 404 page with
+a 404 status (see [Deployment](#deployment)). The page also answers at its own address, `/404`, with a
+200 and `noindex`, and `/404.html` redirects there.
+
 Two pages exist only in development and are never built: `sites/4d-os/bake.html` (the baker, see
 [Tools](#tools)) and `sites/4d-os/debug.html` (the bare engine with a minimal UI, for checks; it takes
 `?pack=<url>` and `?world=a…e` to load a world's palettes). Vite's development server serves them
@@ -77,32 +94,37 @@ open the same pages, because the development server answers a path without an ex
   `<script type="module">` path into `src/4d-os/`.
 - **Public files:** `sites/4d-os/public/packs/` holds the three 4D packs that pages fetch at run time
   (`cat-stairs`, `falcon-phi` and `whale-fall`, about 157 MiB in all), and `sites/4d-os/public/launcher/`
-  holds the launcher images. Both are copied as they are into `dist/4d-os/`.
+  holds the launcher images. Both are copied as they are into `dist/4d-os/`, with the 4D.OS icons
+  (`icon.svg`, `apple-touch-icon.png`).
 - **Config:** `sites/4d-os/vite.config.ts` sets the site folder as the Vite root and `base` to
   `/4d-os/` for the build (`/` in development). It writes to `dist/4d-os/`, which it empties first,
-  and adds the `pack-saver` plugin so the baker can write packs in development.
+  and adds the `pack-saver` plugin so the baker can write packs in development, and the site-metadata
+  plugin (see [The site metadata at build time](#the-site-metadata-at-build-time)).
 
 Pages build their pack URLs from `import.meta.env.BASE_URL`, so the same code fetches `/packs/…` in
 development and `/4d-os/packs/…` once published.
 
 ### `sites/playground/`
 
-- **Entries:** `sites/playground/index.html` (museum), `sites/playground/bloomscope/index.html` and
-  `sites/playground/landings/<slug>/index.html`. The museum's `index.html` is a template: at build
-  time the museum plugin replaces its `<!--museum:body-->` marker with the static HTML of every sheet.
+- **Entries:** `sites/playground/index.html` (museum), `sites/playground/bloomscope/index.html`,
+  `sites/playground/landings/<slug>/index.html` and the site's 404 page, `sites/playground/404.html`.
+  The museum's `index.html` is a template: at build time the museum plugin replaces its
+  `<!--museum:body-->` marker with the static HTML of every sheet.
 - **Public files:** `sites/playground/public/loops/` holds the museum loops (passes, poster and
   provenance, one folder per loop), and `sites/playground/public/landings/_shared/stills/` holds the
-  stills of the five worlds used by the landings. They are copied into `dist/`.
+  stills of the five worlds used by the landings. `sites/playground/public/og/` holds the share
+  images, and the folder's root holds the site's icons and `_headers`. They are copied into `dist/`.
 - **Config:** `sites/playground/vite.config.ts` sets the site folder as the Vite root and `base` to
   `/`. It writes to `dist/` *without* emptying it, since `dist/4d-os/` belongs to the other build. It
   sets `publicDir` explicitly, so the 4D packs can never be copied here, and puts every hashed asset
   (JavaScript, CSS, fonts) in `dist/_playground/`, apart from 4D.OS's own `dist/4d-os/assets/`. It
-  adds the museum plugin and two build guards (see [Build guards](#build-guards)).
+  adds the museum plugin, the site-metadata plugin and two build guards (see
+  [Build guards](#build-guards)).
 
 Two environment variables are useful when working on one page:
 
-- `PLAYGROUND_ONLY=<page>` builds only that page (`museum`, `bloomscope`, `game-center` or
-  `wind-up-empire`), to measure its size without the others.
+- `PLAYGROUND_ONLY=<page>` builds only that page (`museum`, `bloomscope`, `game-center`,
+  `wind-up-empire` or `not-found`), to measure its size without the others.
 - `PLAYGROUND_OUT=<folder>` writes the output to another folder, so a test build does not touch
   `dist/`.
 
@@ -115,7 +137,8 @@ Two environment variables are useful when working on one page:
 | `src/pipeline/bake/` | The development-only baker and its recipes | `src/engine/`, `src/pipeline/scenes/` |
 | `src/pipeline/models/`, `src/pipeline/captures/` | Bake inputs (3D models) and the source screenshots of the stills | Data only |
 | `src/4d-os/` | Launcher, worlds A–E, debug page | `src/engine/`, `src/pipeline/scenes/` |
-| `src/playground/` | Museum, Bloomscope, Game Center Yonjigen, Wind-Up Empire, shared modules | `src/engine/`, `src/pipeline/scenes/` |
+| `src/playground/` | Museum, Bloomscope, Game Center Yonjigen, Wind-Up Empire, the 404 page's stylesheet, shared modules | `src/engine/`, `src/pipeline/scenes/` |
+| `src/site/` | Build-time code for both sites: the page registry, the head injection, `sitemap.xml` and `robots.txt`, the site-metadata plugin, and the share-image composition (`src/site/og/`) with its source captures | Data and helpers of the other layers, read-only: the world registry and `crc32` in `src/playground/shared/`, the font reader `src/playground/museum/build/woff2.ts` |
 
 The rules:
 
@@ -126,6 +149,9 @@ The rules:
   `sites/4d-os/bake.html` loads the baker, so no published page ships baker code.
 - **4D.OS and the playground never import each other.** They share only `src/engine/` and
   `src/pipeline/scenes/`.
+- **Only the build reads `src/site/`.** The two site configs, `tools/` and its own tests import it; no
+  page's code, stylesheet or HTML does, and neither do the other layers. The 404 page's stylesheet
+  lives in `src/playground/not-found/` for that reason.
 
 No test enforces these rules. Each of these checks should print nothing:
 
@@ -135,6 +161,7 @@ grep -rnE "['\"](\.\./)+(4d-os|playground)/" src/pipeline
 grep -rnE "['\"](\.\./)+bake/" src/pipeline/scenes
 grep -rnE "['\"](\.\./)+playground/" src/4d-os
 grep -rnE "['\"](\.\./)+4d-os/" src/playground
+grep -rnE "src/site/|\.\./site/" src sites --include='*.ts' --include='*.html' --include='*.css' | grep -v "^src/site/" | grep -v "vite.config.ts"
 ```
 
 Inside the engine, the render loop (`src/engine/engine/`), the pack format (`src/engine/pack/`), time
@@ -170,8 +197,8 @@ saver) is loaded by the Vite config itself, where aliases would need extra tooli
 1. `tsc --noEmit` typechecks `src/`, `tools/`, both site configs and `vitest.config.ts`.
 2. `vite build -c sites/4d-os/vite.config.ts` empties `dist/4d-os/` and builds the launcher and the
    five worlds into it.
-3. `vite build -c sites/playground/vite.config.ts` builds the museum, Bloomscope and the two landings
-   around it, into `dist/`.
+3. `vite build -c sites/playground/vite.config.ts` builds the museum, Bloomscope, the two landings and
+   the 404 page around it, into `dist/`.
 
 The order is safe because the 4D.OS build empties only its own folder and the playground build
 empties nothing. Because nothing ever empties `dist/` as a whole, files left over from an older
@@ -182,12 +209,16 @@ The output:
 ```
 dist/
 ├── index.html               museum, with the static HTML of every sheet
+├── 404.html                 the 404 page
 ├── bloomscope/index.html
 ├── landings/
 │   ├── game-center/index.html
 │   ├── wind-up-empire/index.html
 │   └── _shared/stills/      from sites/playground/public/
 ├── loops/<id>/              from sites/playground/public/
+├── og/                      share images, sidecars, provenance.json: from sites/playground/public/
+├── favicon.ico, apple-touch-icon.png, icon.svg, _headers: from sites/playground/public/
+├── robots.txt, sitemap.xml  emitted by the site-metadata plugin
 ├── museum/fold-*.svg        axonometries emitted by the museum plugin
 ├── _playground/             playground JavaScript, CSS and fonts (hashed names)
 ├── 4d-os/
@@ -195,7 +226,8 @@ dist/
 │   ├── a/ … e/index.html    worlds
 │   ├── assets/              4D.OS JavaScript, CSS and fonts (hashed names)
 │   ├── packs/               from sites/4d-os/public/
-│   └── launcher/            from sites/4d-os/public/
+│   ├── launcher/            from sites/4d-os/public/
+│   └── icon.svg, apple-touch-icon.png: from sites/4d-os/public/
 ├── _redirects               copied from deploy/ by the deploy scripts
 └── .assetsignore            copied from deploy/ by the deploy scripts
 ```
@@ -223,6 +255,24 @@ module `virtual:museum` (typed in `src/playground/museum/virtual.d.ts`) and emit
 never runs `git`, so it gives the same page from a full clone, a shallow clone or an archive
 download. [`museum.md`](museum.md) explains the sheets, the loops and their provenance.
 
+### The site metadata at build time
+
+Every built page, in both builds, also passes through `siteMetadata`
+(`src/site/build/plugin.ts`), a Vite plugin whose `transformIndexHtml` runs at order `post`: after
+Vite has rewritten the page's own scripts and styles, and after the museum plugin has written the
+museum's body. For each page it:
+
+- maps the page to its public route from the build's `base` (`/a/index.html` under `/4d-os/` is
+  `/4d-os/a/`) and looks it up in the registry, `src/site/pages.ts`;
+- reads the page's share image, `sites/playground/public/og/<slug>.png`, and takes the first 8 hex
+  digits of its SHA-256 as the image's `?v=` version;
+- calls `injectHead` (`src/site/head.ts`), which writes the canonical link, the Open Graph and X
+  tags, the icons and the JSON-LD in one block right after the viewport meta, and replaces the
+  `data:,` icon placeholders of the source HTML with the site's icon.
+
+The playground build also emits `robots.txt` and `sitemap.xml` from the same registry.
+[`site-metadata.md`](site-metadata.md) explains the block, its position and every tag.
+
 ### Build guards
 
 A build that silently drops a page or copies files to the wrong place is worse than a build that
@@ -236,6 +286,12 @@ fails, so both configs check their work:
   modification time, change time and inode of every file there when the build starts and compares
   them when it ends. A new, deleted or rewritten file fails the build and is named. Both guards
   check the resolved output folder, so they also hold with `--outDir`.
+- **Every built page is in the registry.** A page that the site-metadata plugin cannot find in
+  `src/site/pages.ts` fails the build and is named. So does a page whose own
+  `<meta name="description">` differs from the registry's copy, or whose source already declares a
+  tag the plugin adds. A missing share image only warns, with a line prefixed with `[site]` that
+  names the file, so that a build made before the images exist still works; the page is built with no
+  `?v=` version, and `tools/audit-site.ts` does not accept it.
 - **Invalid museum data fails the build.** An invalid provenance, loops of one sheet that disagree on
   their source frames, a Bloomscope loop recorded at a different angle from the fixed garden, a
   missing token or a missing source path all throw, with a message that names the sheet or loop.
@@ -250,15 +306,26 @@ directory is `../dist`, relative to the config file) served on a custom domain. 
 when it uploads. Those paths are two packs that no page uses; the baker can recreate them locally,
 and git ignores them.
 
+Two more settings shape what the Worker answers:
+
+- **`not_found_handling: "404-page"`** in `wrangler.jsonc`. A path the site does not serve gets the
+  nearest `404.html` with a 404 status. The 4D.OS build has no `404.html`, so `/4d-os/nope` falls
+  through to the root one. `_redirects` are applied first, so the 301s keep taking precedence.
+- **`_headers`** (`sites/playground/public/_headers`, copied into `dist/` by every build). Its one
+  rule sends `X-Robots-Tag: noindex` on the Worker's own Cloudflare hosts, which `workers_dev: true`
+  keeps reachable for the preview uploads. The rule names those hosts only through placeholders, and
+  the custom domain matches none of it. Cloudflare applies `_redirects` before `_headers`, so
+  redirects do not carry the header.
+
 - `npm run deploy` runs `rm -rf dist`, builds, copies `deploy/_redirects` and `deploy/.assetsignore`
   into `dist/`, and deploys with `wrangler deploy -c deploy/wrangler.jsonc`.
 - `npm run deploy:preview` does the same but uploads a new version with a preview alias instead of
   deploying it.
 
-To deploy your own copy, change `name` and `routes` in `deploy/wrangler.jsonc`; the
-[README](../README.md) walks through it. Cloudflare limits each static asset to 25 MiB. The largest
-file today, `sites/4d-os/public/packs/whale-fall/dynamic.bin`, is about 23.6 MiB, so a larger pack
-would have to be split.
+To deploy your own copy, change `name` and `routes` in `deploy/wrangler.jsonc` and `SITE_ORIGIN` in
+`src/site/pages.ts`; the [README](../README.md) walks through it. Cloudflare limits each static asset
+to 25 MiB. The largest file today, `sites/4d-os/public/packs/whale-fall/dynamic.bin`, is about
+23.6 MiB, so a larger pack would have to be split.
 
 ## Development servers
 
@@ -319,6 +386,16 @@ or pass the recorder `--base` with the URL that Wrangler prints (see [museum.md]
   Playwright and tsx are pinned in the tool and run through `npx`, so they are not project
   dependencies. The usage and options are in the file's header comment, and
   [`museum.md`](museum.md) describes the recording.
+- **`tools/capture-og.ts`** makes the share images and the icon rasters: `capture` takes new source
+  captures of the built site under `wrangler dev`, `compose` sets each 1200×630 image from a real
+  frame and a band of text, and `icons` renders `favicon.ico` and the apple-touch-icons from the
+  hand-drawn `icon.svg` files. It writes a sidecar and a `provenance.json` entry for each image, and
+  runs through `npx` like the loop recorder. The commands are in its header comment and in
+  [`site-metadata.md`](site-metadata.md).
+- **`tools/audit-site.ts`** audits the built output: every page's tags and their values against the
+  registry, where they sit in the file, the share images and icons they point to, the JSON-LD,
+  `robots.txt`, `sitemap.xml`, the 404 page and `_headers`. Run it after a build with
+  `npx -y -p tsx@4.23.15 tsx tools/audit-site.ts [dist]`; it exits with 1 and lists every problem.
 - **`tools/vite/pack-saver.ts`** adds a development-only endpoint, `POST /__pack/save`, that the baker
   (`/bake.html`) uses to write a pack into `sites/4d-os/public/packs/<name>/`. It accepts only simple
   pack and file names inside that folder.
@@ -343,6 +420,7 @@ change numbers its own decisions, so a "D4" means the D4 of the change that shap
 | The playground build, the landings, `src/playground/shared/` | [`2026-09-25-add-playground-landings`](../openspec/changes/archive/2026-09-25-add-playground-landings/design.md) |
 | Hero gesture, pinch, chase camera, stable points, cat motion, `src/pipeline/scenes/`, worlds D and E | [`2026-09-28-add-cosmic-landings-and-organic-motion`](../openspec/changes/archive/2026-09-28-add-cosmic-landings-and-organic-motion/design.md) |
 | The museum, its loops, `tools/capture-loops.ts` | [`2026-09-28-add-playground-museum`](../openspec/changes/archive/2026-09-28-add-playground-museum/design.md) |
+| `src/site/`, the 404 page, `tools/capture-og.ts`, `tools/audit-site.ts` | `add-seo-and-sharing` |
 
 A module that several changes touched can cite decisions from more than one of them; the title of the
 decision usually settles which. The paths inside archived changes describe the repository as it was
