@@ -271,16 +271,19 @@ by change; some of the changes overlapped.
   requirements (SHALL, MUST) and scenarios (WHEN, THEN). The engine is covered by `4d-pack`,
   `synthetic-bake`, `procedural-subject`, `time-viewer` and `dither-display`; the 4D.OS pages by
   `desktop-shell`, `hero-gesture`, `story-page` and `cosmic-landings`; the playground by
-  `playground-hub`, `playground-museum`, `work-loops` and the three `landing-*` specs; the repository
-  itself by `public-repository`, which `prepare-public-release` added.
+  `playground-hub`, `playground-museum`, `work-loops` and the three `landing-*` specs; what every page
+  tells search engines and link previews by `site-metadata`, which `add-seo-and-sharing` added; the
+  repository itself by `public-repository`, which `prepare-public-release` added.
 - **Archived changes.** [`openspec/changes/archive/`](openspec/changes/archive/) keeps every completed
   change: `proposal.md` (why and what), `design.md` (numbered decisions; the main ones record the
   alternative that was rejected, and from `prepare-public-release` on every decision does), `tasks.md`,
   the spec deltas and the record of the checks and measurements that closed it: a `verification.md` in
-  the first four changes, and the tasks themselves in `prepare-public-release`. They are the best
-  record of why the code is the way it is. In order: the local 4D.OS demo (engine, pack, bake, worlds
-  A to C), the playground landings, the cosmic landings and organic motion (worlds D and E, the
-  gesture hero, the walking cat), the museum, and finally the preparation of this public release.
+  every change except `prepare-public-release`, whose checks are written into its tasks. They are the
+  best record of why the code is the way it is. In order: the local 4D.OS demo (engine, pack, bake,
+  worlds A to C), the playground landings, the cosmic landings and organic motion (worlds D and E, the
+  gesture hero, the walking cat), the museum, the preparation of this public release, and the site's
+  metadata and share images (canonical URLs, link-preview cards, `robots.txt`, `sitemap.xml` and the
+  404 page).
 - **The loop.** Each change goes propose → apply → verify → archive. Proposing writes the change's
   artifacts; applying works through `tasks.md`, each task with the command or check that proves it;
   verifying records the results (in `verification.md`, or in the tasks for `prepare-public-release`);

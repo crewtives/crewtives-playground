@@ -420,7 +420,7 @@ change numbers its own decisions, so a "D4" means the D4 of the change that shap
 | The playground build, the landings, `src/playground/shared/` | [`2026-09-25-add-playground-landings`](../openspec/changes/archive/2026-09-25-add-playground-landings/design.md) |
 | Hero gesture, pinch, chase camera, stable points, cat motion, `src/pipeline/scenes/`, worlds D and E | [`2026-09-28-add-cosmic-landings-and-organic-motion`](../openspec/changes/archive/2026-09-28-add-cosmic-landings-and-organic-motion/design.md) |
 | The museum, its loops, `tools/capture-loops.ts` | [`2026-09-28-add-playground-museum`](../openspec/changes/archive/2026-09-28-add-playground-museum/design.md) |
-| `src/site/`, the 404 page, `tools/capture-og.ts`, `tools/audit-site.ts` | `add-seo-and-sharing` |
+| `src/site/`, the 404 page, `tools/capture-og.ts`, `tools/audit-site.ts` | [`2026-09-29-add-seo-and-sharing`](../openspec/changes/archive/2026-09-29-add-seo-and-sharing/design.md) |
 
 A module that several changes touched can cite decisions from more than one of them; the title of the
 decision usually settles which. The paths inside archived changes describe the repository as it was

@@ -74,6 +74,8 @@ The first four changes introduced the 15 capabilities below. The last column nam
 
 `prepare-public-release` added a 16th capability, [`public-repository`](../openspec/specs/public-repository/spec.md). It covers what a reader of the public repository can rely on: English throughout, a README and these docs, the licenses, no personal or machine-local data, a build that works from a fresh clone, and the layout by site and by layer.
 
+`add-seo-and-sharing` added a 17th, [`site-metadata`](../openspec/specs/site-metadata/spec.md). It covers what every public page tells search engines and link previews, and the site files around it: one page registry, canonical URLs, Open Graph and X card tags, structured data, icons, share images made from real frames with their credits and provenance, `robots.txt`, `sitemap.xml`, the 404 page and noindex on the non-canonical host.
+
 ## The changes, in order
 
 | Change | Opened | Archived | New capabilities | Modified capabilities |
@@ -83,8 +85,9 @@ The first four changes introduced the 15 capabilities below. The last column nam
 | [`add-cosmic-landings-and-organic-motion`](../openspec/changes/archive/2026-09-28-add-cosmic-landings-and-organic-motion/) | 2026-09-24 | 2026-09-28 | `hero-gesture`, `procedural-subject`, `cosmic-landings` | `story-page`, `time-viewer`, `synthetic-bake`, `4d-pack`, `desktop-shell` |
 | [`add-playground-museum`](../openspec/changes/archive/2026-09-28-add-playground-museum/) | 2026-09-25 | 2026-09-28 | `playground-museum`, `work-loops` | `playground-hub`, `landing-bloomscope`, `landing-wind-up-empire` |
 | [`prepare-public-release`](../openspec/changes/archive/2026-09-29-prepare-public-release/) | 2026-09-29 | 2026-09-29 | `public-repository` | `work-loops`, `playground-museum`, `playground-hub` |
+| [`add-seo-and-sharing`](../openspec/changes/archive/2026-09-29-add-seo-and-sharing/) | 2026-09-29 | 2026-09-29 | `site-metadata` | `playground-hub`, `public-repository` |
 
-The "Opened" date comes from each change's `.openspec.yaml`, and the "Archived" date from its folder name. Changes overlapped: the cosmic-landings change was opened the day the first one was archived, and ran alongside the next two.
+The "Opened" date comes from each change's `.openspec.yaml`, and the "Archived" date from its folder name. Changes overlapped: the cosmic-landings change was opened the day the first one was archived, and ran alongside the next two. The last two were archived the same day, so their folders sort by name: `2026-09-29-add-seo-and-sharing` is listed before `2026-09-29-prepare-public-release`, although it came after it.
 
 ### 1. `add-4d-os-local-demo`
 
@@ -150,7 +153,7 @@ It modifies specs that `add-playground-landings` created, so that change had to 
 
 ### 5. `prepare-public-release`
 
-This change turns the private working repository into a public one that people can learn from. It was archived just before the public history was created (D10 and the Migration Plan), so it is the last folder in `openspec/changes/archive/`. The change:
+This change turns the private working repository into a public one that people can learn from. It was archived just before the public history was created (D10 and the Migration Plan), so it is the last change of the private history. The change:
 
 - translates everything into English with one shared glossary. For comment-only edits, the check is that the minified build output stays byte-identical (D7, D8).
 - restructures the tree into two symmetric site roots and code grouped by layer, with the same public URLs (D1).
@@ -159,6 +162,18 @@ This change turns the private working repository into a public one that people c
 - starts the public history from a root commit with the final tree, followed by a commit that records the loops against it (D10).
 
 Each stage is checked against fingerprints of every route that were captured before any code changed (D11). Because this change carried out the restructure, it names both layouts. The survey in its design and the tasks that ran before the move (groups 1 to 3) use the old paths, while D1 and the later tasks use the new ones.
+
+### 6. `add-seo-and-sharing`
+
+The site was public but barely existed for search engines and link previews: no canonical URLs, no Open Graph or X card tags, no structured data, no `robots.txt`, `sitemap.xml` or favicon, empty `data:,` icons on seven pages, and an empty 404 for any unknown address. A link pasted into a chat showed no image. This was the first change on the public repository, and it had one hard constraint: no file under any museum sheet's `sources` could change, so every recorded loop stays fresh. Everything is therefore added at build time:
+
+- one page registry, `src/site/pages.ts`, in a new build-time layer that no page imports (D1);
+- a Vite plugin in both site configs that injects the canonical link, the `og:*` and `twitter:*` tags, the icons and a minimal JSON-LD block right after the viewport meta, so that previews that read only the first 32 KiB find them, and that fails the build on an unregistered page or a description that drifted from the registry (D2, D3, D4);
+- share images made from real frames: an 840×630 region of a real capture, copied pixel for pixel, beside a band set in the work's own typefaces with the title, the "synthetic" mark and, wherever the cat appears, its CC-BY credit inside the image. Each has a provenance sidecar and a `LICENSES.md` row, and its URL carries a version taken from its own hash (D5);
+- `robots.txt`, `sitemap.xml`, a 404 page in the museum's visual language with the Worker's `404-page` handling, and a `_headers` rule that keeps the `workers.dev` hosts out of search results, named only by placeholders (D6);
+- unit tests that never read `dist/`, plus `tools/audit-site.ts` for the built output (D7).
+
+Its gates (D8) are the build's `[museum]` check for loop freshness, a check that the sheet sources are untouched, and fingerprints of every route before and after: visible text and pixels stay identical, and only the expected head elements are added. Its `verification.md` lists what can only be checked on a real host, the preview's `noindex` header and real unfurls in chat and social apps, as pending. It was planned for two groups working in parallel, one on the metadata and one on the images, with a single meeting point (D10).
 
 ## How to read a change
 
@@ -215,13 +230,13 @@ OpenSpec's `spec-driven` schema has no verification artifact. This repository ad
   A change with a large, separate verification can split it, as `add-playground-museum` did with `verification-loops.md`.
 - **The closing task validates the change.** From the second change on, it runs `openspec validate <change>` (with `--strict` in most) before the change is archived.
 
-The browser automation and measurement scripts behind these records were written for each check and kept outside the repository, so the figures in `verification.md` are the record. The exception is the loop recorder, [`tools/capture-loops.ts`](../tools/capture-loops.ts), which is part of the product.
+The browser automation and measurement scripts behind these records were written for each check and kept outside the repository, so the figures in `verification.md` are the record. The exceptions are part of the product: the loop recorder, [`tools/capture-loops.ts`](../tools/capture-loops.ts), and, from `add-seo-and-sharing`, the share-image tool [`tools/capture-og.ts`](../tools/capture-og.ts) and the audit of the built output, [`tools/audit-site.ts`](../tools/audit-site.ts).
 
 In `prepare-public-release`, most of the verification is the same check repeated after each stage: page fingerprints, `tsc`, the tests and the build (D11). The result and any accepted exception are written into the task that ran the check.
 
 ## Paths in archived changes
 
-**Paths and names inside archived changes describe the repository as it was when each change was made, before `prepare-public-release` restructured it.** They were left as written on purpose, because a decision or a measurement only makes sense against the tree it was made on. The archived texts were translated and sanitized, but their paths were not updated. To find a file today, use this table:
+**Paths and names inside archived changes describe the repository as it was when each change was made, before `prepare-public-release` restructured it.** The exception is `add-seo-and-sharing`, which came after the restructure and uses today's layout. The older paths were left as written on purpose, because a decision or a measurement only makes sense against the tree it was made on. The archived texts were translated and sanitized, but their paths were not updated. To find a file today, use this table:
 
 | Path in archived changes | Path today |
 |---|---|
