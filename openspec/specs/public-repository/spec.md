@@ -53,7 +53,7 @@ The owner's code SHALL be published under the MIT license, in a `LICENSE` file a
 
 #### Scenario: Reusing the code
 - **WHEN** a reader wants to reuse the engine in their own project
-- **THEN** `LICENSE` grants it under MIT and tells them which assets are excluded
+- **THEN** `LICENSE` grants it under MIT with the unmodified MIT text, so that GitHub detects the license, and the README's credits section tells them which assets are excluded
 
 #### Scenario: Every asset listed
 - **WHEN** each typeface, model and derived binary in the repository is compared with `LICENSES.md`
