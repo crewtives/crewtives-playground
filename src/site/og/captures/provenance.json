@@ -147,12 +147,12 @@
     },
     "4d-os.png": {
       "route": "/4d-os/",
-      "served": "the published site, https://playground.crewtives.com",
-      "commit": "d196bbf5606cb1d8cb8f47d6ae9c1f5e35a1fa6c",
+      "served": "a local build of the commit below, served by wrangler dev",
+      "commit": "a5f25aa587200b89180e1f166fd6c2ad922af276",
       "captured": "2026-09-29",
       "viewport": {
         "width": 901,
-        "height": 710
+        "height": 1040
       },
       "dpr": 1,
       "reducedMotion": false,
@@ -163,7 +163,7 @@
         "stepMs": 160
       },
       "boot": "waited for the 4D pack to load ([data-boot-pct] at 100) before running the clock",
-      "why": "901 is the narrowest width that keeps the three world windows in a row (the grid drops to one column at 900 and below), so the heading and all three windows fit in one 840×630 region; at 710 tall the windows end inside the viewport",
+      "why": "901 is the narrowest width that keeps the three world windows in a row (the grid drops to one column at 900 and below); at 1040 tall one 840×630 region holds the three windows and, below them, the whole heading of worlds D and E, \"Two more plates.\", inside the viewport",
       "browser": "chromium",
       "browserVersion": "153.0.8010.12",
       "browserArgs": [
@@ -176,9 +176,9 @@
       "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
       "file": {
         "width": 901,
-        "height": 710,
-        "bytes": 73255,
-        "sha256": "73432bce7fdd6678cc7db68661d4da1873e9890ae38bfe7d7e5e633dbfc1b7e3"
+        "height": 1040,
+        "bytes": 97152,
+        "sha256": "e32e97b410c86f749416d40a023c04f596de90fb706b7edafb1d27e50859eb46"
       }
     }
   }

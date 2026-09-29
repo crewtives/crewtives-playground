@@ -1,8 +1,10 @@
 // Page registry of playground.crewtives.com (spec site-metadata; add-seo-and-sharing D1): the only
 // hand-written metadata of the 10 public pages. The build plugin (`build/plugin.ts`) injects it into
 // every built head, the sitemap and robots.txt are generated from it, and the share-image tool reads
-// it for the band. Whether a frame is synthetic and whose credit it needs are never decided here:
-// they come from `WORLDS`, through the worlds each share image's frame shows (`frameShows`).
+// it for the band. Whose credit a frame needs is never decided here, and neither is whether a world
+// is synthetic: both come from `WORLDS`, through the worlds each share image's frame shows
+// (`frameShows`). The one other synthetic frame, a scene of a page's own that the page itself labels
+// "Synthetic scene", is declared with `syntheticFrame`, and a test holds the page to that label (D5).
 
 import { CAT_CREDIT, type Credit, WORLDS, type WorldId } from '../playground/shared/worlds.ts';
 
@@ -48,6 +50,11 @@ export interface PageMeta {
   jsonLd: 'WebSite' | 'CreativeWork';
   /** The 4D.OS worlds visible in the share image's frame (D5). */
   frameShows: readonly WorldId[];
+  /**
+   * The frame shows a synthetic scene of the page's own, not a 4D.OS world, which the page itself
+   * labels "Synthetic scene" (Game Center's Rain Run). The band then carries the mark too (D5).
+   */
+  syntheticFrame?: true;
 }
 
 /** The site's 404 page: noindex, no canonical link, no share image and no structured data. */
@@ -106,9 +113,10 @@ export const PAGES: readonly PageMeta[] = [
     title: 'Game Center Yonjigen: the playground as a Tokyo arcade building',
     description:
       'Game Center Yonjigen: the crewtives playground as a Tokyo arcade building. Fly Rain Run in a live dithered cabinet, then ride up to five 4D.OS worlds. A free demo that runs in your browser.',
-    alt: 'Game Center Yonjigen’s first screen, captured from its live render: the arcade cabinet under its PLAYGROUND marquee, its dithered screen showing Rain Run’s demo, the controls, and the floor directory at the side. Beside it, a band reads “crewtives playground” and “GAME CENTER YONJIGEN”.',
+    alt: 'Game Center Yonjigen’s first screen, captured from its live render: the arcade cabinet under its PLAYGROUND marquee, its dithered screen showing Rain Run’s demo, a synthetic scene the page labels as such, the controls, and the floor directory at the side. Beside it, a band reads “crewtives playground” and “GAME CENTER YONJIGEN”, with the mark “synthetic”.',
     jsonLd: 'CreativeWork',
     frameShows: [],
+    syntheticFrame: true,
   }),
   page({
     slug: 'wind-up-empire',
@@ -128,7 +136,7 @@ export const PAGES: readonly PageMeta[] = [
     title: '4D.OS: one engine, five worlds, every moment of a scene at once',
     description:
       '4D.OS: live 4D scenes with every moment drawn at once, in five worlds: a synthetic cat on a stairway in three, and two subjects built from equations.',
-    alt: `The 4D.OS launcher, captured from its live render: its heading “One scene. Three worlds.” above the windows of worlds A, Vitrine, B, Plate and C, Leader, each drawing the same synthetic black cat climbing a stairway, every moment at once. Beside it, a band reads “4D.OS”, “crewtives playground” and “One engine, five worlds”, with the mark “synthetic” and the credit ${CREDIT}.`,
+    alt: `The 4D.OS launcher, captured from its live render: the windows of worlds A, Vitrine, B, Plate and C, Leader, each drawing the same synthetic black cat climbing a stairway, every moment at once, and below them the heading “Two more plates.” of worlds D and E. Beside it, a band reads “4D.OS”, “crewtives playground” and “One engine, five worlds”, with the mark “synthetic” and the credit ${CREDIT}.`,
     jsonLd: 'CreativeWork',
     frameShows: ['a', 'b', 'c'],
   }),
@@ -161,7 +169,7 @@ export const PAGES: readonly PageMeta[] = [
     title: "Leader · 4D.OS: a cat's climb threaded through a film gate",
     description:
       'A 4D reconstruction threaded like a strip of 16mm film: grab the strip, pull time through the gate.',
-    alt: `World C, Leader, captured from its live render: the projector gate between film perforations, where the cat’s night climb runs over-exposed in orange with the present cat in cyan, the source camera drawn as a white frustum, and the edge of the film strip below. Beside it, a band reads “4D.OS”, “crewtives playground” and “LEADER”, with the mark “synthetic” and the credit ${CREDIT}.`,
+    alt: `World C, Leader, captured from its live render: the projector gate, where the cat’s night climb runs over-exposed in orange with the present cat in cyan and the source camera drawn as a white frustum, and below it the 16 mm strip, whose frames show the black cat on the stairs. Beside it, a band reads “4D.OS”, “crewtives playground” and “LEADER”, with the mark “synthetic” and the credit ${CREDIT}.`,
     jsonLd: 'CreativeWork',
     frameShows: ['c'],
   }),
@@ -172,7 +180,7 @@ export const PAGES: readonly PageMeta[] = [
     title: 'The golden stoop · 4D.OS: a falcon diving on a golden spiral',
     description:
       'A peregrine falcon computed from equations dives along a golden spiral through a city of points: every moment of the flight at once, live, with the mathematics read from the same code that made it.',
-    alt: 'World D, The golden stoop, captured from its live render: the falcon computed from equations, in cyan, ahead of its earlier moments in phosphor green along a dotted golden path, beside the plotter of the golden spiral, its equation r(θ) = r₀·φ^(−2θ/π) and the ratio 1.6180 = φ read live. Beside it, a band reads “4D.OS”, “crewtives playground” and “The golden stoop”, with the mark “synthetic”.',
+    alt: 'World D, The golden stoop, captured from its live render: its heading The golden stoop. and the page’s own SYNTHETIC tag above the falcon computed from equations, in cyan, flying among its earlier moments in green along a dotted golden path through a city of points. Beside it, a band reads “4D.OS”, “crewtives playground” and “The golden stoop”, with the mark “synthetic”.',
     jsonLd: 'CreativeWork',
     frameShows: ['d'],
   }),
@@ -197,9 +205,9 @@ export function pageForRoute(route: string): PageMeta | undefined {
 
 const shown = (page: PageMeta) => WORLDS.filter((w) => page.frameShows.includes(w.id));
 
-/** True when the share image's frame shows a synthetic scene (`WORLDS[].synthetic`). */
+/** True when the share image's frame shows a synthetic scene: a synthetic world (`WORLDS[].synthetic`) or the page's own labeled one. */
 export function isSynthetic(page: PageMeta): boolean {
-  return shown(page).some((w) => w.synthetic);
+  return page.syntheticFrame === true || shown(page).some((w) => w.synthetic);
 }
 
 /** The credit the share image must carry: the cat's when its frame shows world A, B or C. */

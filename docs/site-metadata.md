@@ -37,6 +37,7 @@ Each entry of `PAGES` holds:
 | `image` | Path, 1200 × 630, and the alt text (40 to 420 characters), which describes the frame and the band and names the cat's credit when the image carries it |
 | `jsonLd` | `WebSite` on `/`, `CreativeWork` elsewhere |
 | `frameShows` | The 4D.OS worlds the share image's frame shows |
+| `syntheticFrame` | Optional: the frame shows a synthetic scene of the page's own, not a world, which the page itself labels "Synthetic scene" (only Game Center's Rain Run) |
 
 **The description is written twice on purpose.** Most pages are sources of a museum sheet, whose
 HTML cannot change without marking the sheet's loops stale, so the page keeps its own tag. The
@@ -46,7 +47,9 @@ fails, naming the page, when the two differ after whitespace is collapsed.
 **"Synthetic" and the cat's credit are never decided by hand.** `isSynthetic(page)` and
 `creditFor(page)` read them from `WORLDS` in `src/playground/shared/worlds.ts`, through the worlds in
 `frameShows`. A frame that shows world A, B or C in any form (a live view, a still, a poster) shows
-the cat, so its image, its alt text and its structured data carry the credit.
+the cat, so its image, its alt text and its structured data carry the credit. The one synthetic frame
+that is not a world, Rain Run on Game Center's cabinet, is declared with `syntheticFrame`, and a test
+requires the page's own HTML to label it "Synthetic scene", so the mark still follows the page.
 
 ### Adding a page
 

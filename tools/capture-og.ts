@@ -128,11 +128,11 @@ const CAPTURES: Record<CaptureSlug, CaptureConfig> = {
   },
   '4d-os': {
     route: '/4d-os/',
-    viewport: { width: 901, height: 710 },
+    viewport: { width: 901, height: 1040 },
     reducedMotion: false,
     boot: true,
     clockMs: 2000,
-    why: '901 is the narrowest width that keeps the three world windows in a row (the grid drops to one column at 900 and below), so the heading and all three windows fit in one 840×630 region; at 710 tall the windows end inside the viewport',
+    why: '901 is the narrowest width that keeps the three world windows in a row (the grid drops to one column at 900 and below); at 1040 tall one 840×630 region holds the three windows and, below them, the whole heading of worlds D and E, "Two more plates.", inside the viewport',
   },
 };
 const CAPTURE_SLUGS = Object.keys(CAPTURES) as CaptureSlug[];

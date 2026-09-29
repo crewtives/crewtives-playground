@@ -74,11 +74,12 @@ export interface PageMeta {
   image: { path: `/og/${Slug}.png`; width: 1200; height: 630; alt: string };  // alt 40–420; the build appends ?v= (D2)
   jsonLd: 'WebSite' | 'CreativeWork';
   frameShows: readonly WorldId[];     // 4D.OS worlds visible in the share image's frame (D5)
+  syntheticFrame?: true;              // the frame shows a scene of the page's own that it labels "Synthetic scene" (D5)
 }
 export const PAGES: readonly PageMeta[];               // exactly the 10 routes, in this order
 export const NOT_FOUND: { file: '404.html'; title: string };  // noindex, no canonical, no share image
 export function pageForRoute(route: string): PageMeta | undefined;
-export function isSynthetic(page: PageMeta): boolean;  // from WORLDS[].synthetic
+export function isSynthetic(page: PageMeta): boolean;  // WORLDS[].synthetic of frameShows, or syntheticFrame
 export function creditFor(page: PageMeta): Credit | null;  // CAT_CREDIT when frameShows has a, b or c
 ```
 
@@ -195,13 +196,13 @@ The SVGs are drawn by hand as small files. The rasters are rendered from those S
 |---|---|---|---|
 | `4d-os-a` | `src/pipeline/captures/a-vitrine.png` (1200×900) | 840×630 around the cat on the stairs | `a` |
 | `4d-os-b` | `src/pipeline/captures/b-plate.png` | around the staircase of cats | `b` |
-| `4d-os-c` | `src/pipeline/captures/c-leader.png` | around the projector gate | `c` |
-| `4d-os-d` | `sites/4d-os/public/launcher/d-golden-stoop.png` | around the falcon and the spiral | `d` |
+| `4d-os-c` | `src/pipeline/captures/c-leader.png` | the projector gate and the 16 mm strip below it | `c` |
+| `4d-os-d` | `sites/4d-os/public/launcher/d-golden-stoop.png` | the heading, the SYNTHETIC tag and the falcons on the dotted path | `d` |
 | `4d-os-e` | `sites/4d-os/public/launcher/e-whale-fall.png` | around the whale and the disk | `e` |
-| `4d-os` | new capture of `/4d-os/` (booted, clock paused) | the world windows, as many of A, B, C as fit | `a`, `b`, `c` (provisional) |
+| `4d-os` | new capture of `/4d-os/` (booted, clock paused) | the world windows A, B, C and the heading of D and E below them | `a`, `b`, `c` |
 | `museum` | new capture of `/` with reduced motion | the first screen: the clock and sheet 004 | none |
 | `bloomscope` | new capture of `/bloomscope/` with reduced motion | the first screen's pre-exposed kaleidoscope | none |
-| `game-center` | new capture of `/landings/game-center/` with reduced motion | the first screen's cabinet | none |
+| `game-center` | new capture of `/landings/game-center/` with reduced motion | the first screen's cabinet | none (`syntheticFrame`: Rain Run) |
 | `wind-up-empire` | new capture of `/landings/wind-up-empire/` with reduced motion | the first screen's tin toys | none |
 
 Existing stills are used wherever they exist, because their provenance is already published. The new captures go to `src/site/og/captures/<slug>.png`, lossless and at the capture's full viewport, next to the composition data that reads them. That folder is under no sheet's `sources`. The capture uses:
@@ -214,6 +215,20 @@ Existing stills are used wherever they exist, because their provenance is alread
 The provenance records the viewport, dpr, reduced motion, clock, browser version and renderer.
 
 A frame that reaches world A, B or C in any form (the museum's index row 001, a landing's demo index, a launcher window) shows the cat, and its `frameShows` must list it.
+
+**A synthetic scene that is not a world still gets the mark.** Game Center's frame shows Rain Run, the scene its cabinet computes from equations, which the page labels "Synthetic scene" on the screen itself (`landing-game-center`). Rain Run is not one of the five worlds, so `WORLDS` cannot say it is synthetic, and `worlds.ts` is a sheet source that this change must not edit. The registry therefore declares it with `syntheticFrame: true`, which `isSynthetic` ORs with the worlds' flag. It is still not a free choice: a test allows the flag only on a page whose `frameShows` is empty and whose own HTML carries a "Synthetic scene" label, so the band follows what the page already says. Only Game Center has it. Wind-Up Empire's "Synthetic scene" stamps sit on the world stills in its tray, outside its frame, and its frame's tin tops are toys of the page, so it gets no mark.
+*Alternatives.*
+- Leaving Game Center's band without the mark, because the capture already shows the page's "SYNTHETIC SCENE" label, was rejected: that label is about 10 px tall in the frame and cannot be read at the sizes cards are shown, while D and E, also computed from equations, carry the mark.
+- Adding Rain Run to `WORLDS` was rejected: it is not a world, and `worlds.ts` is a sheet source.
+
+**Where the frame falls, and what each region leaves out.** The four regions revised after review are chosen so that no text of the work is cut at an edge of the frame; scene content may run past it, as in any framing.
+- `4d-os`: at 901 px, the narrowest width that keeps the three windows in a row (the grid drops to one column at 900), the windows span x 28–872, 845 px, so an 840 px frame always loses at least 5 px of the row. The region starts at the page's own margin, x 28, and gives up C's inset and right border; the band's hairline, in the same ink, closes C's window. At 901×1040, the region at y 368 holds the three windows, the launcher's line crediting the cat model, and the whole heading "Two more plates." of worlds D and E, 18 px above the frame's bottom edge, which falls just above the first line of the heading's lede. The launcher's own h1, "One scene. Three worlds.", is left out, so that the band's "One engine, five worlds" is the only headline and the frame backs it: three windows and two more plates.
+- `4d-os-c`: the region at x 295, y 220 holds the gate with its right perforations, the frustum, the present cat and the whole 16 mm strip with the cat in its frames. It ends 1 px before the gate's vertical edge label and before the side panel.
+- `4d-os-d`: the region at x 0, y 0 holds the page's heading, its SYNTHETIC tag and the falcon's row, as B and E show their headings. An earlier moment of the falcon runs past the right edge.
+- `wind-up-empire`: the region at y 77 starts below the header's rule, so none of its counters shows.
+*Alternatives.*
+- A launcher frame that shows all five worlds was rejected as impossible at one to one: at 901×1040 the A–C windows span y 396–753 and the D–E windows start at y 1097 and are 465 px tall, and the gap between the rows shrinks with the viewport height (12vh and 5vh) but never to 630 px for both. A frame with 16 px of margin on both sides of the three windows is impossible too (845 px of windows in 840 px). Keeping the h1 in the frame was rejected: at about 74 px it outweighed the band's 56 px title and read "Three worlds" against the band's "five worlds".
+- For `4d-os-d`, keeping the plotter (x 360, y 175) was rejected: at every region that shows the plotter, a cut text sits at an edge, either "NT" of "SCROLL TO SEE EVERY MOMENT" or the SYNTHETIC tag and "stroke", because the tag ends at y 168 and that line starts at y 775, 607 px apart, while the region needs 630.
 
 **Which worlds a frame shows is settled before any image is composed.** The capture step (task 4.3) fixes each region and records the worlds it shows in `src/site/og/cards.ts` (`shows`). Group A then sets the registry's `frameShows` and `alt` from it (task 2.5), and only then does group B compose (task 4.4). `cards.test.ts` requires `shows` to equal `frameShows`. Because `creditFor` and `isSynthetic` drive the band text, the sidecars and the `LICENSES.md` row class, composing before the registry is settled would leave them out of step.
 
@@ -472,4 +487,4 @@ The paths that are sheet sources may be read and imported (the worlds' font file
 ## Open Questions
 
 - Exact wording of the 10 share titles and alt texts within the bounds of D1. These are settled while writing the registry (tasks 1.1 and 2.5) and do not change the specs.
-- The exact frame region of each new capture. It is settled in task 4.3 and recorded in `cards.ts` and the provenance. If it changes which worlds a frame shows, task 2.5 updates the registry before any image is composed.
+- The exact frame region of each new capture. It is settled in task 4.3, revised in task 5.8, and recorded in `cards.ts` and the provenance. If it changes which worlds a frame shows, task 2.5 updates the registry before any image is composed.

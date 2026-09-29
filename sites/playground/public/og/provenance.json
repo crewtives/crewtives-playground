@@ -258,7 +258,7 @@
       },
       "frame": {
         "copied": "pixel for pixel: no scaling, re-dithering, overlaid pattern, filter or retouching",
-        "depicts": "Game Center Yonjigen’s first screen: the arcade cabinet under its PLAYGROUND marquee, its dithered screen showing Rain Run’s demo (a scene the page computes itself, not a 4D.OS world), the controls, and the floor directory at the side",
+        "depicts": "Game Center Yonjigen’s first screen: the arcade cabinet under its PLAYGROUND marquee, its dithered screen showing Rain Run’s demo (a synthetic scene the page computes itself and labels as such, not a 4D.OS world), the controls, and the floor directory at the side",
         "shows": []
       },
       "band": {
@@ -266,7 +266,7 @@
           "series": null,
           "site": "crewtives playground",
           "title": "GAME CENTER YONJIGEN",
-          "synthetic": null,
+          "synthetic": "synthetic",
           "credit": null
         },
         "titleSize": 52,
@@ -291,7 +291,7 @@
           "tagInk": "src/playground/game-center/tokens.css --sodium"
         }
       },
-      "synthetic": false,
+      "synthetic": true,
       "credit": null,
       "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
       "browser": "chromium",
@@ -300,8 +300,8 @@
       "image": {
         "width": 1200,
         "height": 630,
-        "bytes": 157007,
-        "sha256": "49d4d13d3fafa13123548284cd732f01e9863bffadf8941bdcecc4ddca11ade0"
+        "bytes": 158898,
+        "sha256": "79c007975fb90b55d9622a0667f658d6eba61df8443c26ffbd266b6541289cb4"
       }
     },
     "wind-up-empire.png": {
@@ -352,7 +352,7 @@
       },
       "region": {
         "x": 0,
-        "y": 71,
+        "y": 77,
         "width": 840,
         "height": 630
       },
@@ -400,27 +400,27 @@
       "image": {
         "width": 1200,
         "height": 630,
-        "bytes": 97242,
-        "sha256": "fe107bbdb1caac13ae198287284143eeafa940e55f0a79a7d6ac13159e489917"
+        "bytes": 96921,
+        "sha256": "a2a2cc869e4cc38489938efda8559a91b4e69fcb04e807976bbca04e7f08b9dc"
       }
     },
     "4d-os.png": {
       "route": "/4d-os/",
       "source": {
         "path": "src/site/og/captures/4d-os.png",
-        "sha256": "73432bce7fdd6678cc7db68661d4da1873e9890ae38bfe7d7e5e633dbfc1b7e3",
+        "sha256": "e32e97b410c86f749416d40a023c04f596de90fb706b7edafb1d27e50859eb46",
         "width": 901,
-        "height": 710,
+        "height": 1040,
         "capture": {
           "record": "src/site/og/captures/provenance.json",
           "entry": "4d-os.png",
           "route": "/4d-os/",
-          "served": "the published site, https://playground.crewtives.com",
-          "commit": "d196bbf5606cb1d8cb8f47d6ae9c1f5e35a1fa6c",
+          "served": "a local build of the commit below, served by wrangler dev",
+          "commit": "a5f25aa587200b89180e1f166fd6c2ad922af276",
           "captured": "2026-09-29",
           "viewport": {
             "width": 901,
-            "height": 710
+            "height": 1040
           },
           "dpr": 1,
           "reducedMotion": false,
@@ -431,7 +431,7 @@
             "stepMs": 160
           },
           "boot": "waited for the 4D pack to load ([data-boot-pct] at 100) before running the clock",
-          "why": "901 is the narrowest width that keeps the three world windows in a row (the grid drops to one column at 900 and below), so the heading and all three windows fit in one 840×630 region; at 710 tall the windows end inside the viewport",
+          "why": "901 is the narrowest width that keeps the three world windows in a row (the grid drops to one column at 900 and below); at 1040 tall one 840×630 region holds the three windows and, below them, the whole heading of worlds D and E, \"Two more plates.\", inside the viewport",
           "browser": "chromium",
           "browserVersion": "153.0.8010.12",
           "browserArgs": [
@@ -444,21 +444,21 @@
           "tool": "tools/capture-og.ts with playwright@1.63.0 and tsx@4.23.15 via npx",
           "file": {
             "width": 901,
-            "height": 710,
-            "bytes": 73255,
-            "sha256": "73432bce7fdd6678cc7db68661d4da1873e9890ae38bfe7d7e5e633dbfc1b7e3"
+            "height": 1040,
+            "bytes": 97152,
+            "sha256": "e32e97b410c86f749416d40a023c04f596de90fb706b7edafb1d27e50859eb46"
           }
         }
       },
       "region": {
-        "x": 30,
-        "y": 79,
+        "x": 28,
+        "y": 368,
         "width": 840,
         "height": 630
       },
       "frame": {
         "copied": "pixel for pixel: no scaling, re-dithering, overlaid pattern, filter or retouching",
-        "depicts": "the 4D.OS launcher: its heading \"One scene. Three worlds.\" above the windows of worlds A, Vitrine, B, Plate and C, Leader, each drawing the same synthetic black cat climbing a stairway, every moment at once",
+        "depicts": "the 4D.OS launcher: the windows of worlds A, Vitrine, B, Plate and C, Leader, each drawing the same synthetic black cat climbing a stairway, every moment at once, and below them the heading \"Two more plates.\" of worlds D and E",
         "shows": [
           "a",
           "b",
@@ -505,8 +505,8 @@
       "image": {
         "width": 1200,
         "height": 630,
-        "bytes": 93518,
-        "sha256": "338bda0fb5a318a767ee0e01ff49ebfa741e2c92ed029f3259aa17047ea3a4b5"
+        "bytes": 69944,
+        "sha256": "6ddde6117fba5e203cf20ac9a09a5dd9ddb532c9a387ef13dd2450d6f1bf9309"
       }
     },
     "4d-os-a.png": {
@@ -667,14 +667,14 @@
         }
       },
       "region": {
-        "x": 286,
-        "y": 120,
+        "x": 295,
+        "y": 220,
         "width": 840,
         "height": 630
       },
       "frame": {
         "copied": "pixel for pixel: no scaling, re-dithering, overlaid pattern, filter or retouching",
-        "depicts": "world C, Leader: the projector gate between film perforations, where the cat’s night climb runs over-exposed in orange with the present cat in cyan, the source camera drawn as a white frustum, and the edge of the film strip below",
+        "depicts": "world C, Leader: the projector gate, where the cat’s night climb runs over-exposed in orange with the present cat in cyan and the source camera drawn as a white frustum, and below it the 16 mm strip, whose frames show the black cat on the stairs",
         "shows": [
           "c"
         ]
@@ -720,8 +720,8 @@
       "image": {
         "width": 1200,
         "height": 630,
-        "bytes": 65177,
-        "sha256": "955ec3305f4b041954f65549439036000c6b30ce306bc422a02fa60908a73cfa"
+        "bytes": 126249,
+        "sha256": "0ebe40d78ddfa789ca1db9f7e94aa1b73635b121a2f0a576de339a26857bc1e3"
       }
     },
     "4d-os-d.png": {
@@ -739,14 +739,14 @@
         }
       },
       "region": {
-        "x": 360,
-        "y": 175,
+        "x": 0,
+        "y": 0,
         "width": 840,
         "height": 630
       },
       "frame": {
         "copied": "pixel for pixel: no scaling, re-dithering, overlaid pattern, filter or retouching",
-        "depicts": "world D, The golden stoop: the falcon computed from equations, in cyan, ahead of its earlier moments in phosphor green along a dotted golden path, beside the plotter of the golden spiral, its equation r(θ) = r₀·φ^(−2θ/π) and the ratio 1.6180 = φ read live",
+        "depicts": "world D, The golden stoop: its heading The golden stoop. and the page’s own SYNTHETIC tag above the falcon computed from equations, in cyan, flying among its earlier moments in green along a dotted golden path through a city of points",
         "shows": [
           "d"
         ]
@@ -792,8 +792,8 @@
       "image": {
         "width": 1200,
         "height": 630,
-        "bytes": 50900,
-        "sha256": "12e2f6a83040c8635d717114cc330fd7b50b831ea402090a183ae75656e13057"
+        "bytes": 40355,
+        "sha256": "000b80d14d0621f0b06082e7467217120bdc27991bb1fe6137cec9881d2a82ff"
       }
     },
     "4d-os-e.png": {

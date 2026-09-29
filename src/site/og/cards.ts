@@ -3,7 +3,8 @@
 // one, the 4D.OS worlds that region shows, and the band beside it: the page's own typefaces, colors
 // read from its own tokens, and the strings it carries. `tools/capture-og.ts` composes the images
 // from this; `cards.test.ts` checks it without a browser. Whether a band says "synthetic" and whose
-// credit it carries is never written here: it comes from the registry (`isSynthetic`, `creditFor`).
+// credit it carries is never written here: it comes from the registry (`isSynthetic`, `creditFor`),
+// which reads the worlds a card `shows` and, for a scene of a page's own, its `syntheticFrame`.
 
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -111,7 +112,7 @@ export const CARDS: readonly Card[] = [
     record: CAPTURES_RECORD,
     region: { x: 45, y: 0 },
     shows: [],
-    depicts: 'Game Center Yonjigen’s first screen: the arcade cabinet under its PLAYGROUND marquee, its dithered screen showing Rain Run’s demo (a scene the page computes itself, not a 4D.OS world), the controls, and the floor directory at the side',
+    depicts: 'Game Center Yonjigen’s first screen: the arcade cabinet under its PLAYGROUND marquee, its dithered screen showing Rain Run’s demo (a synthetic scene the page computes itself and labels as such, not a 4D.OS world), the controls, and the floor directory at the side',
     title: 'GAME CENTER YONJIGEN',
     display: { file: 'src/playground/game-center/fonts/bungee-latin-400-normal.woff2', weight: 400 },
     text: { file: 'src/playground/game-center/fonts/m-plus-rounded-1c-latin-800-normal.woff2', weight: 800 },
@@ -123,7 +124,7 @@ export const CARDS: readonly Card[] = [
     slug: 'wind-up-empire',
     source: `${CAPTURES_DIR}/wind-up-empire.png`,
     record: CAPTURES_RECORD,
-    region: { x: 0, y: 71 },
+    region: { x: 0, y: 77 },
     shows: [],
     depicts: 'Wind-Up Empire’s first screen: the WIND-UP EMPIRE title over an orrery of tin tops printed in each 4D.OS world’s inks and labeled with the worlds’ names, around the black-hole Whirl; the tops are toys of the page, not views of the worlds',
     title: 'WIND-UP EMPIRE',
@@ -137,9 +138,9 @@ export const CARDS: readonly Card[] = [
     slug: '4d-os',
     source: `${CAPTURES_DIR}/4d-os.png`,
     record: CAPTURES_RECORD,
-    region: { x: 30, y: 79 },
+    region: { x: 28, y: 368 },
     shows: ['a', 'b', 'c'],
-    depicts: 'the 4D.OS launcher: its heading "One scene. Three worlds." above the windows of worlds A, Vitrine, B, Plate and C, Leader, each drawing the same synthetic black cat climbing a stairway, every moment at once',
+    depicts: 'the 4D.OS launcher: the windows of worlds A, Vitrine, B, Plate and C, Leader, each drawing the same synthetic black cat climbing a stairway, every moment at once, and below them the heading "Two more plates." of worlds D and E',
     title: 'One engine, five worlds',
     display: { file: `${A.fonts}/host-grotesk-latin-wght.woff2`, weight: 700, tracking: -0.035 },
     text: { file: `${A.fonts}/departure-mono-regular.woff2`, weight: 400 },
@@ -179,9 +180,9 @@ export const CARDS: readonly Card[] = [
     slug: '4d-os-c',
     source: 'src/pipeline/captures/c-leader.png',
     record: STILLS_RECORD,
-    region: { x: 286, y: 120 },
+    region: { x: 295, y: 220 },
     shows: ['c'],
-    depicts: 'world C, Leader: the projector gate between film perforations, where the cat’s night climb runs over-exposed in orange with the present cat in cyan, the source camera drawn as a white frustum, and the edge of the film strip below',
+    depicts: 'world C, Leader: the projector gate, where the cat’s night climb runs over-exposed in orange with the present cat in cyan and the source camera drawn as a white frustum, and below it the 16 mm strip, whose frames show the black cat on the stairs',
     title: 'LEADER',
     display: { file: `${C.fonts}/big-shoulders-stencil-latin-wght.woff2`, weight: 800, tracking: 0.02 },
     text: { file: `${C.fonts}/archivo-latin-wdth.woff2`, weight: 500, variation: "'wdth' 92" },
@@ -193,9 +194,9 @@ export const CARDS: readonly Card[] = [
     slug: '4d-os-d',
     source: 'sites/4d-os/public/launcher/d-golden-stoop.png',
     record: STILLS_RECORD,
-    region: { x: 360, y: 175 },
+    region: { x: 0, y: 0 },
     shows: ['d'],
-    depicts: 'world D, The golden stoop: the falcon computed from equations, in cyan, ahead of its earlier moments in phosphor green along a dotted golden path, beside the plotter of the golden spiral, its equation r(θ) = r₀·φ^(−2θ/π) and the ratio 1.6180 = φ read live',
+    depicts: 'world D, The golden stoop: its heading The golden stoop. and the page’s own SYNTHETIC tag above the falcon computed from equations, in cyan, flying among its earlier moments in green along a dotted golden path through a city of points',
     title: 'The golden stoop',
     display: { file: `${D.fonts}/tektur-latin-greek-wdth-wght.woff2`, weight: 500, variation: "'wdth' 75", tracking: -0.012 },
     text: { file: `${D.fonts}/jura-latin-greek-wght.woff2`, weight: 600 },

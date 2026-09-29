@@ -5,7 +5,7 @@ import { describe, expect, test, vi } from 'vitest';
 import { routeOf } from './build/plugin.ts';
 import { CAT_CREDIT } from '../playground/shared/worlds.ts';
 import { collapse, metaDescription } from './head.ts';
-import { CAT_MODEL, creditFor, NOT_FOUND, PAGES, type PageMeta, pageForRoute, SITE_ORIGIN } from './pages.ts';
+import { CAT_MODEL, creditFor, isSynthetic, NOT_FOUND, PAGES, type PageMeta, pageForRoute, SITE_ORIGIN } from './pages.ts';
 
 const repo = resolve(import.meta.dirname, '../..');
 
@@ -71,6 +71,20 @@ describe('page registry (site-metadata, "One registry for every public page")', 
     for (const page of PAGES) {
       expect(page.image.alt.includes(CAT_CREDIT.text), page.slug).toBe(creditFor(page) !== null);
     }
+  });
+
+  test('a synthetic frame that is not a world is one the page itself labels "Synthetic scene"', () => {
+    const flagged = PAGES.filter((p) => p.syntheticFrame);
+    expect(flagged.map((p) => p.slug)).toEqual(['game-center']);
+    for (const page of flagged) {
+      // The flag is only for scenes of a page's own: a world is marked through `frameShows`.
+      expect(page.frameShows, page.slug).toEqual([]);
+      expect(readFileSync(sourceHtml(page), 'utf8'), page.slug).toMatch(/>\s*Synthetic scene\s*</);
+    }
+  });
+
+  test('each alt quotes the mark exactly when the band carries it', () => {
+    for (const page of PAGES) expect(page.image.alt.includes('the mark “synthetic”'), page.slug).toBe(isSynthetic(page));
   });
 
   test('JSON-LD kinds: WebSite on /, CreativeWork elsewhere', () => {

@@ -148,7 +148,7 @@ The band of each share image SHALL show, in printable text:
 - the mark "synthetic", when the frame shows a synthetic scene;
 - the credit *"Cat" by J-Toastie, CC-BY 3.0*, exactly as `LICENSES.md` sets it, when the frame shows the cat.
 
-The worlds a frame shows SHALL be declared in the registry, and whether they are synthetic and whose credit they need SHALL be read from the shared world data, never decided by hand. A frame that shows world A, B or C in any form (a live view, a still, a poster) shows the cat.
+The worlds a frame shows SHALL be declared in the registry, and whether they are synthetic and whose credit they need SHALL be read from the shared world data, never decided by hand. A frame that shows world A, B or C in any form (a live view, a still, a poster) shows the cat. A frame that shows a synthetic scene of the page's own, which is not a 4D.OS world, SHALL be declared in the registry as such, and only when the page itself labels that scene "Synthetic scene"; its band SHALL carry the mark too.
 
 The band SHALL be set in the page's own self-hosted typefaces. Every character of the band text SHALL exist in the typeface that draws it. The band's text and background colors SHALL come from the page's own color tokens, with a contrast of at least 4.5:1. Its text SHALL stay at least 32 pixels from every edge of the image.
 
@@ -158,6 +158,10 @@ The band SHALL be set in the page's own self-hosted typefaces. Every character o
 
 #### Scenario: Synthetic mark
 - **WHEN** the share image of any page whose frame shows a 4D.OS world is viewed
+- **THEN** its band reads "synthetic"
+
+#### Scenario: Synthetic mark on a scene of the page's own
+- **WHEN** the share image of `/landings/game-center/` is viewed, whose frame shows Rain Run on the cabinet screen, a scene the page labels "Synthetic scene"
 - **THEN** its band reads "synthetic"
 
 #### Scenario: No missing glyph
