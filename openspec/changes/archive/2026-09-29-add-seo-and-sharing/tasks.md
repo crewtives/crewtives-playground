@@ -229,7 +229,7 @@ Reading and importing from them is allowed: the font files under `src/4d-os/worl
 
 ## 6. Closing
 
-- [ ] 6.1 (D) Write `verification.md` next to this file:
+- [x] 6.1 (D) Write `verification.md` next to this file:
   - Environment: browser and renderer, Playwright, tsx and wrangler versions, platform;
   - per group, the measured figures: image weights, the pixel-identity result, test counts, the audit output, the fingerprint comparison with its element-count differences, and the HTTP checks;
   - a table per spec, `site-metadata`, `playground-hub` and `public-repository`, of scenario → how it was verified → result;
@@ -240,8 +240,14 @@ Reading and importing from them is allowed: the font files under `src/4d-os/worl
     - for the change that owns `<title>`: the tab titles under 30 characters (`/`, worlds B, C, D and E) and the descriptions over 160 (`/`, Game Center Yonjigen, Wind-Up Empire, worlds D and E), measured again on the final build.
 
   Verify that every scenario of the three delta specs appears in a table.
-- [ ] 6.2 (D) Run `openspec validate add-seo-and-sharing --strict` and fix until it passes. Verify that its output is "Change 'add-seo-and-sharing' is valid".
-- [ ] 6.3 (D) Archive the change with `openspec archive add-seo-and-sharing`, syncing the deltas into `openspec/specs/site-metadata/`, `playground-hub` and `public-repository`. Update `docs/openspec-workflow.md`: the new capability in "The living specs", the change's row in "The changes, in order", and a short section on the change. Verify with:
+
+  Recorded: `verification.md` was written from checks run again on the final code: typecheck, 712 tests with `dist/` deleted, a clean build with 0 `[museum]` or `[site]` lines, all six loops FRESH, the dist audit (20 `ok` lines) and its negative control, the HTTP checks under `wrangler dev`, a new fingerprint run against the branch's baseline (text, requests and errors identical on 30 of 30 pairs, only the expected head elements added), and a further `compose` of all 10 images with identical bytes. A script compared the scenario headers of the three delta specs with the rows of its tables: all 61 appear, 38 of `site-metadata`, 13 of `playground-hub` and 10 of `public-repository`, with no extra row.
+- [x] 6.2 (D) Run `openspec validate add-seo-and-sharing --strict` and fix until it passes. Verify that its output is "Change 'add-seo-and-sharing' is valid".
+
+  Recorded: after `verification.md` and the ticks of 6.1 and 6.2, the output is "Change 'add-seo-and-sharing' is valid", with no fix needed.
+- [x] 6.3 (D) Archive the change with `openspec archive add-seo-and-sharing`, syncing the deltas into `openspec/specs/site-metadata/`, `playground-hub` and `public-repository`. Update `docs/openspec-workflow.md`: the new capability in "The living specs", the change's row in "The changes, in order", and a short section on the change. Verify with:
   - `openspec validate --specs --strict`, which passes;
   - `openspec list`, which shows no active change;
   - `ls openspec/specs/site-metadata/spec.md`.
+
+  Recorded: `openspec archive add-seo-and-sharing --yes` (the flag skips the prompt for this task, which was still open while it ran) created `site-metadata` with 15 requirements and modified 2 requirements of `playground-hub` and 3 of `public-repository`; no scenario of the living specs was dropped. The new spec's Purpose is the delta's. `openspec validate --specs --strict` passes 17 of 17 specs, `openspec list` prints "No active changes found.", and `openspec/specs/site-metadata/spec.md` exists, so the link from `docs/site-metadata.md` now resolves. `docs/openspec-workflow.md` and the README list the new capability and this change.
