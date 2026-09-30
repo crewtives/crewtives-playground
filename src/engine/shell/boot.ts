@@ -1,6 +1,6 @@
 import type { RetroDisplay } from '../display/RetroDisplay';
 import type { Engine } from '../engine/Engine';
-import { loadPack, PackError, type Pack } from '../pack/loader';
+import { loadPack, PackError, type LoadOptions, type Pack } from '../pack/loader';
 import { prefersReducedMotion } from '../display/cssColor';
 
 export interface BootOptions {
@@ -15,6 +15,10 @@ export interface BootOptions {
   revealSteps?: number;
   /** Error text, in the world's own voice. */
   errorText?: (error: unknown) => string;
+  /** Options passed to `loadPack` (for example `source: false`, spec 4d-pack "Layers a page never draws"). */
+  load?: Omit<LoadOptions, 'onProgress'>;
+  /** The load progress, also reported to the caller: 0–1, and the bytes received over the total requested. */
+  onProgress?: (progress: number, received: number, total: number) => void;
 }
 
 export function defaultErrorText(error: unknown): string {
@@ -44,7 +48,13 @@ export async function bootPack(options: BootOptions): Promise<Pack> {
 
   let pack: Pack;
   try {
-    pack = await loadPack(options.url, { onProgress: (p) => setProgress(p) });
+    pack = await loadPack(options.url, {
+      ...options.load,
+      onProgress: (p, received, total) => {
+        setProgress(p);
+        options.onProgress?.(p, received, total);
+      },
+    });
   } catch (error) {
     boot.classList.add('is-error');
     if (message) message.textContent = (options.errorText ?? defaultErrorText)(error);

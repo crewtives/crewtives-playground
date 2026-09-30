@@ -213,15 +213,28 @@ export function parseDynamic(buffer: ArrayBuffer, meta: SceneMeta): DynamicLayer
 // Loading with byte-based progress
 
 export interface LoadOptions {
-  /** Progress 0–1 from the bytes received over the total declared in scene.json. */
+  /** Progress 0–1 from the bytes received over the total of the files requested (declared in scene.json). */
   onProgress?: (progress: number, received: number, total: number) => void;
   fetch?: typeof fetch;
   decodeSource?: (pages: Blob[], meta: SceneMeta) => Promise<SourceFrames>;
+  /**
+   * Whether to load the source frames (default true). A page none of whose views can show the frustum's
+   * image plane or use the source-camera light passes false: no `source/page-*` file is requested, the
+   * progress counts the static and dynamic layers only, and `pack.source` is a 1×1 placeholder per frame,
+   * so the GPU texture is still valid. The metadata (weight, frame count) is read from scene.json either way.
+   */
+  source?: boolean;
+}
+
+/** Source frames that are never drawn: one black 1×1 texel per frame (spec 4d-pack, "Layers a page never draws"). */
+export function placeholderSource(meta: SceneMeta): SourceFrames {
+  return { width: 1, height: 1, frameCount: meta.frameCount, data: new Uint8Array(4 * meta.frameCount) };
 }
 
 export async function loadPack(baseUrl: string, options: LoadOptions = {}): Promise<Pack> {
   const fetchImpl = options.fetch ?? globalThis.fetch.bind(globalThis);
   const decodeSource = options.decodeSource ?? decodeSourcePages;
+  const withSource = options.source ?? true;
   const base = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
 
   const sceneBytes = await fetchBytes(fetchImpl, base + SCENE_FILE, 'scene');
@@ -233,7 +246,8 @@ export async function loadPack(baseUrl: string, options: LoadOptions = {}): Prom
   }
   const meta = parseScene(json);
 
-  const total = [STATIC_FILE, DYNAMIC_FILE, ...meta.source.pages].reduce((sum, name) => sum + meta.files[name], 0);
+  const pages = withSource ? meta.source.pages : [];
+  const total = [STATIC_FILE, DYNAMIC_FILE, ...pages].reduce((sum, name) => sum + meta.files[name], 0);
   let received = 0;
   const report = () => options.onProgress?.(Math.min(1, total ? received / total : 1), received, total);
   const onChunk = (bytes: number) => {
@@ -245,15 +259,17 @@ export async function loadPack(baseUrl: string, options: LoadOptions = {}): Prom
   const [staticBytes, dynamicBytes, ...pageBytes] = await Promise.all([
     fetchBytes(fetchImpl, base + STATIC_FILE, 'static', onChunk),
     fetchBytes(fetchImpl, base + DYNAMIC_FILE, 'dynamic', onChunk),
-    ...meta.source.pages.map((page) => fetchBytes(fetchImpl, base + page, 'source', onChunk)),
+    ...pages.map((page) => fetchBytes(fetchImpl, base + page, 'source', onChunk)),
   ]);
 
   const staticLayer = parseStatic(staticBytes.buffer as ArrayBuffer, meta);
   const dynamicLayer = parseDynamic(dynamicBytes.buffer as ArrayBuffer, meta);
-  const source = await decodeSource(
-    pageBytes.map((bytes) => new Blob([bytes as Uint8Array<ArrayBuffer>], { type: 'image/png' })),
-    meta,
-  );
+  const source = withSource
+    ? await decodeSource(
+        pageBytes.map((bytes) => new Blob([bytes as Uint8Array<ArrayBuffer>], { type: 'image/png' })),
+        meta,
+      )
+    : placeholderSource(meta);
 
   return {
     url: base,

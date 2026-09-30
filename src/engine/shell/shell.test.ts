@@ -112,6 +112,81 @@ describe('wallClockText', () => {
   });
 });
 
+describe('bootPack', () => {
+  // The loader is replaced so the test sees exactly the options the boot passes on; the boot window,
+  // the display and the engine are the smallest doubles the function touches.
+  function setup() {
+    vi.resetModules();
+    const calls: Array<{ url: string; options: Record<string, unknown> & { onProgress?: (p: number, r: number, t: number) => void } }> = [];
+    const pack = { meta: { frameCount: 1 } };
+    vi.doMock('../pack/loader', () => ({
+      PackError: class extends Error {},
+      loadPack: async (url: string, options: (typeof calls)[number]['options']) => {
+        calls.push({ url, options });
+        options.onProgress?.(0, 0, 200);
+        options.onProgress?.(0.5, 100, 200);
+        options.onProgress?.(1, 200, 200);
+        return pack;
+      },
+    }));
+    // Reduced motion: the reveal is instant, so no ticker is needed.
+    vi.stubGlobal('window', { matchMedia: () => ({ matches: true }) });
+    const pct = { textContent: '' };
+    const style = { setProperty: vi.fn() };
+    const boot = {
+      hidden: true,
+      style,
+      classList: { add: vi.fn() },
+      querySelector: (selector: string) => (selector === '[data-boot-pct]' ? pct : null),
+    };
+    const display = { reveal: 0 };
+    const engine = { addTicker: vi.fn() };
+    return { calls, pack, pct, boot, display, engine, load: () => import('./boot') };
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.doUnmock('../pack/loader');
+    vi.resetModules();
+  });
+
+  it('passes the load options through and reports the bytes received and the total to the caller', async () => {
+    const env = setup();
+    const { bootPack } = await env.load();
+    const fetchImpl = vi.fn();
+    const seen: Array<[number, number, number]> = [];
+    const pack = await bootPack({
+      url: '/packs/whale-fall/',
+      boot: env.boot as unknown as HTMLElement,
+      display: env.display as never,
+      engine: env.engine as never,
+      load: { source: false, fetch: fetchImpl as unknown as typeof fetch },
+      onProgress: (p, received, total) => seen.push([p, received, total]),
+    });
+    expect(pack).toBe(env.pack);
+    expect(env.calls).toHaveLength(1);
+    expect(env.calls[0].url).toBe('/packs/whale-fall/');
+    expect(env.calls[0].options.source).toBe(false);
+    expect(env.calls[0].options.fetch).toBe(fetchImpl);
+    expect(seen).toEqual([
+      [0, 0, 200],
+      [0.5, 100, 200],
+      [1, 200, 200],
+    ]);
+    // The boot window still shows the percentage, and the instant reveal leaves it hidden.
+    expect(env.pct.textContent).toBe('100');
+    expect(env.boot.hidden).toBe(true);
+    expect(env.display.reveal).toBe(1);
+  });
+
+  it('without load options the loader gets only the progress callback (every file of the pack)', async () => {
+    const env = setup();
+    const { bootPack } = await env.load();
+    await bootPack({ url: '/packs/cat-stairs/', boot: env.boot as unknown as HTMLElement, display: env.display as never, engine: env.engine as never });
+    expect(Object.keys(env.calls[0].options)).toEqual(['onProgress']);
+  });
+});
+
 describe('setupSmoothScroll', () => {
   // Test doubles for Lenis, gsap and ScrollTrigger, and for window/history: the module is imported again in each test.
   function setup({ reduced = false } = {}) {

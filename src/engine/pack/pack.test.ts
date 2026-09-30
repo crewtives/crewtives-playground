@@ -353,6 +353,98 @@ describe('loadPack', () => {
   });
 });
 
+// ---------------------------------------------------------------------------------------------
+// Layers a page never draws (spec 4d-pack): loading without the source frames
+
+describe('loadPack without the source frames', () => {
+  /** A fetch that serves the pack's files and records every URL it is asked for. */
+  function recordingFetch(files: Map<string, Uint8Array>) {
+    const requested: string[] = [];
+    const fetchImpl = (async (url: string) => {
+      const name = url.replace('/packs/t/', '');
+      requested.push(name);
+      return new Response(files.get(name) as Uint8Array<ArrayBuffer>);
+    }) as typeof fetch;
+    return { requested, fetchImpl };
+  }
+
+  test('by default the source pages are requested and decoded', async () => {
+    const { out, files } = packFiles();
+    const { requested, fetchImpl } = recordingFetch(files);
+    let decoded = 0;
+    const decodeSource = async (pages: Blob[], meta: SceneMeta) => {
+      decoded = pages.length;
+      return stubSource(pages, meta);
+    };
+    const progress: Array<[number, number, number]> = [];
+    await loadPack('/packs/t', { fetch: fetchImpl, decodeSource, onProgress: (p, r, t) => progress.push([p, r, t]) });
+    for (const page of out.meta.source.pages) expect(requested).toContain(page);
+    expect(decoded).toBe(out.meta.source.pages.length);
+    const withPages = [STATIC_FILE, DYNAMIC_FILE, ...out.meta.source.pages].reduce((sum, name) => sum + out.meta.files[name], 0);
+    expect(progress.at(-1)).toEqual([1, withPages, withPages]);
+  });
+
+  test('with source: false no source page is requested and the progress reaches 1 over static and dynamic', async () => {
+    const { out, files } = packFiles();
+    const { requested, fetchImpl } = recordingFetch(files);
+    const decodeSource = async () => {
+      throw new Error('decodeSource must not run without the source frames');
+    };
+    const progress: Array<[number, number, number]> = [];
+    const pack = await loadPack('/packs/t', { fetch: fetchImpl, decodeSource, source: false, onProgress: (p, r, t) => progress.push([p, r, t]) });
+
+    expect(requested.sort()).toEqual([DYNAMIC_FILE, SCENE_FILE, STATIC_FILE].sort());
+    expect(requested.some((name) => name.startsWith('source/'))).toBe(false);
+    const total = out.meta.files[STATIC_FILE] + out.meta.files[DYNAMIC_FILE];
+    expect(progress[0]).toEqual([0, 0, total]);
+    expect(progress.at(-1)).toEqual([1, total, total]);
+    for (let i = 1; i < progress.length; i++) expect(progress[i][0]).toBeGreaterThanOrEqual(progress[i - 1][0]);
+    // A valid texture of one texel per frame; the metadata still declares every file (the weight on disk).
+    expect(pack.source).toEqual({ width: 1, height: 1, frameCount: out.meta.frameCount, data: new Uint8Array(4 * out.meta.frameCount) });
+    expect(pack.meta.files).toEqual(out.meta.files);
+    expect(pack.dynamic.count).toBe(out.meta.counts.dynamic);
+  });
+
+  test('with source: false, at 50% of the requested bytes the progress is 50% ±5%', async () => {
+    const { files } = packFiles();
+    const controllers = new Map<string, ReadableStreamDefaultController<Uint8Array>>();
+    const fetchImpl = (async (url: string) => {
+      const name = url.replace('/packs/t/', '');
+      if (name === SCENE_FILE) return new Response(files.get(name) as Uint8Array<ArrayBuffer>);
+      const stream = new ReadableStream<Uint8Array>({ start: (controller) => void controllers.set(name, controller) });
+      return new Response(stream);
+    }) as typeof fetch;
+
+    const progress: number[] = [];
+    const loading = loadPack('/packs/t', { fetch: fetchImpl, decodeSource: stubSource, source: false, onProgress: (p) => progress.push(p) });
+    // Only the static and dynamic layers are requested.
+    await waitFor(() => controllers.size === 2);
+    expect([...controllers.keys()].sort()).toEqual([DYNAMIC_FILE, STATIC_FILE].sort());
+
+    const pending = [STATIC_FILE, DYNAMIC_FILE].map((name) => [name, files.get(name)!] as const);
+    const total = pending.reduce((sum, [, bytes]) => sum + bytes.byteLength, 0);
+    let budget = Math.floor(total / 2);
+    const sent = new Map<string, number>();
+    for (const [name, bytes] of pending) {
+      const take = Math.min(budget, bytes.byteLength);
+      for (let at = 0; at < take; at += 7) controllers.get(name)!.enqueue(bytes.slice(at, Math.min(take, at + 7)));
+      sent.set(name, take);
+      budget -= take;
+    }
+    await waitFor(() => progress.length > 0 && Math.abs(progress[progress.length - 1] - 0.5) < 0.05);
+    expect(progress[progress.length - 1]).toBeGreaterThanOrEqual(0.45);
+    expect(progress[progress.length - 1]).toBeLessThanOrEqual(0.55);
+
+    for (const [name, bytes] of pending) {
+      const controller = controllers.get(name)!;
+      if (sent.get(name)! < bytes.byteLength) controller.enqueue(bytes.slice(sent.get(name)));
+      controller.close();
+    }
+    await loading;
+    expect(progress[progress.length - 1]).toBe(1);
+  });
+});
+
 async function waitFor(condition: () => boolean, timeout = 2000) {
   const start = Date.now();
   while (!condition()) {
