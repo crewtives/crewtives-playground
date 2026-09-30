@@ -448,13 +448,13 @@
       },
       "region": {
         "x": 28,
-        "y": 368,
+        "y": 158,
         "width": 840,
         "height": 630
       },
       "frame": {
         "copied": "pixel for pixel: no scaling, re-dithering, overlaid pattern, filter or retouching",
-        "depicts": "the 4D.OS launcher: the windows of worlds A, Vitrine, B, Plate and C, Leader, each drawing the same synthetic black cat climbing a stairway, every moment at once, and below them the heading \"Two more plates.\" of worlds D and E",
+        "depicts": "the 4D.OS launcher: under the heading \"Three worlds.\" and its lede, the windows of worlds A, Vitrine, B, Plate and C, Leader, each drawing the same synthetic black cat climbing a stairway, every moment at once",
         "shows": [
           "a",
           "b",
@@ -500,8 +500,8 @@
       "image": {
         "width": 1200,
         "height": 630,
-        "bytes": 67172,
-        "sha256": "6194ab7730bc5bbbcd60025091b113b159103c5050bbd3d276be207f82461f22"
+        "bytes": 83217,
+        "sha256": "a109f1b615fca39c2d8673c4271cb82497023ddb8117866e4cfa6a7f6befc3e6"
       }
     },
     "4d-os-a.png": {
@@ -526,7 +526,7 @@
       },
       "frame": {
         "copied": "pixel for pixel: no scaling, re-dithering, overlaid pattern, filter or retouching",
-        "depicts": "world A, Vitrine: inside the red gallery wall, the vitrine of points where the synthetic black cat, in cyan, climbs the stairway, its earlier steps left behind as grey ghost cats, and the source camera drawn as a white frustum",
+        "depicts": "world A, Vitrine: inside the red gallery wall, the vitrine of points where the synthetic black cat, in cyan, climbs the stairway, its earlier steps left behind as gray ghost cats, and the source camera drawn as a white frustum",
         "shows": [
           "a"
         ]

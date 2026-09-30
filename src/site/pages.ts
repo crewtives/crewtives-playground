@@ -139,7 +139,7 @@ export const PAGES: readonly PageMeta[] = [
     title: '4D.OS: one engine, five worlds, every moment of a scene at once',
     description:
       '4D.OS: live 4D scenes with every moment drawn at once, in five worlds: a synthetic cat on a stairway in three, and two subjects built from equations.',
-    alt: `The 4D.OS launcher, captured from its live render: the windows of worlds A, Vitrine, B, Plate and C, Leader, each drawing the same synthetic black cat climbing a stairway, every moment at once, and below them the heading “Two more plates.” of worlds D and E. Beside it, a band reads “4D.OS”, “crewtives playground” and “One engine, five worlds”, with the mark “synthetic”. Cat model: ${CREDIT}.`,
+    alt: `The 4D.OS launcher, captured from its live render: under the heading “Three worlds.” and its lede, the windows of worlds A, Vitrine, B, Plate and C, Leader, each drawing the same synthetic black cat climbing a stairway, every moment at once. Beside it, a band reads “4D.OS”, “crewtives playground” and “One engine, five worlds”, with the mark “synthetic”. Cat model: ${CREDIT}.`,
     jsonLd: 'CreativeWork',
     frameShows: ['a', 'b', 'c'],
   }),
