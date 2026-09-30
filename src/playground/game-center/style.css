@@ -3118,6 +3118,18 @@ a {
     align-items: center;
     min-height: 44px;
   }
+
+  /* 2F: the cat's credit gets its own 44 px row under the cabinet, clear of the cabinet's link (a touch
+     area borrowed upward would overlap it); D and E keep the same empty row, so the cabinets stay equal. */
+  .aisle__slot {
+    grid-template-rows: minmax(0, 1fr) 44px;
+  }
+
+  .cab__credit a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
 }
 
 /* ───────────────────────── Phone in landscape: the handheld (横) ───────────────────────── */
