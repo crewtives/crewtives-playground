@@ -2447,6 +2447,241 @@ button.chip:active {
   }
 }
 
+/* ---------------------------------------------------------------- phone: the pinned stage */
+
+/* On a phone (portrait or landscape), Sow's dial and the lathe's plant become a stage with their
+   peephole beside them; stage.ts moves the peephole in (or, in the honeycomb, next to its "Put in the
+   Scope") and writes the chamber count on its frame. The stage sits under the engine's canvas
+   (z-index 2 < --engine-z), which paints the views over its field, and over the controls that scroll
+   beneath it (the species inputs are at 1). Nothing on it animates. Every rule here and in the two
+   blocks below lives under a phone gate, so a desktop never sees it. */
+@media (max-width: 699px) and (min-height: 521px), (max-width: 1023px) and (max-height: 520px) and (orientation: landscape) {
+  .bench-body > .toy {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: var(--stage-s) 96px;
+    align-items: start;
+  }
+  .bench--sow .bench-body > .toy {
+    background: var(--lilac);
+  }
+  .bench--lathe .bench-body > .toy {
+    background: var(--glaucous);
+  }
+  .bench-body > .toy-hint {
+    order: -1;
+    margin: 0;
+  }
+  .toy .sow-dial {
+    width: var(--stage-s);
+    max-width: none;
+    margin: 0;
+  }
+  .toy .lathe-view {
+    width: var(--stage-s);
+    border-radius: 20px;
+  }
+  /* The peephole's own layer inside the stage, above the dial's art and its finger ring. */
+  .toy .peephole {
+    position: relative;
+    z-index: 7;
+  }
+  .toy .peephole,
+  .hive-put-row .peephole {
+    --peep: 96px;
+  }
+  .toy .peephole-caption,
+  .hive-put-row .peephole-caption {
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+  .peephole-rail:not(:has(.peephole)) {
+    display: none;
+  }
+  /* The chamber count, clipped on the peephole's frame below the view's circle, like the Scope's
+     readout pill: the tucked gem no longer shows it here. */
+  .peephole-count {
+    position: relative;
+    display: block;
+    width: max-content;
+    height: 20px;
+    margin: -7px auto 0;
+    padding: 0 8px;
+    border-radius: 10px;
+    background: var(--sheet);
+    box-shadow: 0 0 0 1.5px var(--ink);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-variation-settings: 'MONO' 1;
+    font-weight: 700;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    line-height: 20px;
+  }
+  /* GOLDEN would sit over the plate, under the canvas: it moves onto the band at 12 o'clock. */
+  .toy .golden-stamp {
+    top: -4px;
+    padding: 2px 10px 3px;
+    font-size: 16px;
+    line-height: 1.2;
+  }
+  .hive-put-row {
+    align-items: flex-start;
+  }
+}
+
+/* Portrait phone: the copy comes before the stage without moving the DOM (the bench copy dissolves
+   into the bench body and `order` lifts the sub), the stage pins at the top of the screen and releases
+   where the section's controls end, full-bleed on its field with a hard ink edge. A control that takes
+   focus scrolls out from under it. */
+@media (max-width: 699px) and (min-height: 521px) {
+  .bench-body--sow,
+  .bench-body--lathe {
+    --stage-s: min(calc(100vw - 32px - 96px - 10px), calc(46svh - 16px));
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+  .bench-body--sow > .bench-copy,
+  .bench-body--lathe > .bench-copy {
+    display: contents;
+  }
+  .bench-body--sow .bench-copy > *,
+  .bench-body--lathe .bench-copy > * {
+    align-self: flex-start;
+  }
+  .bench-body--sow .bench-copy > .readouts,
+  .bench-body--sow .bench-copy > .scrub,
+  .bench-body--lathe .bench-copy > .slider-row,
+  .bench-body--lathe .bench-copy > .stretch {
+    align-self: stretch;
+  }
+  .bench-body--sow .bench-sub,
+  .bench-body--lathe .bench-sub {
+    order: -2;
+  }
+  .bench-body > .toy {
+    order: -1;
+    justify-content: space-between;
+    margin: 0 -16px;
+    padding: 8px 16px;
+    box-shadow: 0 2px 0 var(--ink);
+  }
+  .bench-body--sow > :not(.toy),
+  .bench-body--lathe > :not(.toy),
+  .bench-body--sow > :not(.toy) :is(a, button, input, label, [tabindex]),
+  .bench-body--lathe > :not(.toy) :is(a, button, input, label, [tabindex]) {
+    scroll-margin-top: calc(var(--stage-s) + 32px);
+  }
+}
+
+/* Landscape phone: the stage is a left column at screen height, the copy and the controls scroll on
+   the right; the honeycomb puts its frame on the left and its controls on the right. */
+@media (max-width: 1023px) and (max-height: 520px) and (orientation: landscape) {
+  .bench-body--sow,
+  .bench-body--lathe {
+    --stage-s: min(calc(100svh - 24px), 40vw);
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 24px;
+  }
+  .bench-body > .toy {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    gap: 10px;
+    padding: 12px 0;
+  }
+  .bench-body--sow > :not(.toy),
+  .bench-body--lathe > :not(.toy) {
+    grid-column: 2;
+    grid-row: auto;
+  }
+  /* In the narrow right column the sliders take its whole width, one per row; the Leaves label and
+     count sit above the track, so the Fibonacci ticks do not collide. */
+  .slider-row:not(.slider-row--pair) {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .slider-row:not(.slider-row--pair) > .slider-label {
+    grid-area: 1 / 1;
+  }
+  .slider-row:not(.slider-row--pair) > .leaves-out {
+    grid-area: 1 / 2;
+  }
+  .slider-row:not(.slider-row--pair) > input {
+    grid-area: 2 / 1 / 3 / -1;
+  }
+  .slider-row:not(.slider-row--pair) > .tick-marks {
+    grid-area: 3 / 1 / 4 / -1;
+  }
+  .slider-row--pair {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  /* The lathe's controls end with Pixels: a tail of field keeps the stage beside the last of them
+     (Sow's herbarium already does). */
+  .bench-body--lathe > .bench-copy {
+    margin-bottom: calc(var(--stage-s) - 50svh + 16px);
+  }
+  .bench--hive .column {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    column-gap: 24px;
+    align-items: start;
+  }
+  .bench--hive .column > :not(.hive-frame, .hive-controls) {
+    grid-column: 1 / -1;
+  }
+  .bench--hive .hive-frame {
+    grid-column: 1;
+    width: min(100%, calc((100svh - 56px) * 1.78));
+  }
+  .bench--hive .hive-controls {
+    grid-column: 2;
+    margin-top: 40px;
+  }
+}
+
+/* With a finger: "Hold to sow" keeps its hold through a drifting finger and raises no selection or
+   callout; the text links and the wordmark take 44 px, with their seed underline kept under the text
+   (as the skip link does); the Leaves tick labels let a touch through to their slider; a gem's drawing
+   leaves the touch to its button's box (in Chromium a touch on the drawing, within 2 px of the pinned
+   stage above it, went to the stage); and the hidden radios of the beads and species fill their labels
+   in WebKit too, which keeps a radio at its intrinsic 12 px despite `inset: 0`. */
+@media (pointer: coarse) {
+  .gem-art {
+    pointer-events: none;
+  }
+  .bead input,
+  .species-gem input {
+    width: 100%;
+    height: 100%;
+  }
+  .sow-hold {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  .wordmark,
+  .sections-nav a,
+  .footer-back a,
+  .footer-made a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .sections-nav a,
+  .footer-back a,
+  .footer-made a {
+    background-position: 0 calc(50% + 14px);
+  }
+  .tick-marks {
+    pointer-events: none;
+  }
+}
+
 /* Reduced motion: nothing slides or lifts by itself. */
 @media (prefers-reduced-motion: reduce) {
   *,

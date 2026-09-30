@@ -17,6 +17,7 @@ import { LatheController } from './lathe/controller';
 import { MAX_LEAVES } from './lathe/rosette';
 import { HiveController } from './hive/controller';
 import { combPatch, HIVE_LAYERS, HIVE_SEED, HIVE_SIZE } from './hive/hexLife';
+import { bindBenchStage, chamberAnnouncement } from './stage';
 
 // Bloomscope startup: the static HTML already carries the fields, the text and the index. This
 // wires up the controls, the Scope (with its physics) and, when WebGL2 exists, the 3D chunk that paints it.
@@ -76,6 +77,11 @@ const controller = new ScopeController(
   place();
 }
 
+// Phone: the pinned stage (stage.ts). After a rotation that flips it, the engine (or the 2D fallback,
+// which listens to resize) measures its views again.
+let relayout = (): void => void window.dispatchEvent(new Event('resize'));
+const setStageCount = bindBenchStage(() => relayout());
+
 const vogel = new VogelPrint($<HTMLCanvasElement>('.vogel'), hero, $<HTMLElement>('.eyepiece'), '#b2db2a');
 // The light on the knurl facets stays fixed on screen: the gradient turns against the barrel.
 const knurlLights = Array.from(document.querySelectorAll<SVGElement>('.knurl-light'));
@@ -83,7 +89,10 @@ controller.onBarrel = (beta) => {
   vogel.setBarrel(beta);
   for (const light of knurlLights) light.setAttribute('gradientTransform', `rotate(${-beta} 388 388)`);
 };
-controller.model.onChange(() => setGemCount(controller.model.count));
+controller.model.onChange(() => {
+  setGemCount(controller.model.count);
+  setStageCount(controller.model.count);
+});
 
 // The garden from a link (#g=), or the factory one.
 let sow = DEFAULT_SOW;
@@ -98,6 +107,7 @@ if (garden) {
   controller.model.reset(DEFAULT_GARDEN);
 }
 setGemCount(controller.model.count);
+setStageCount(controller.model.count);
 
 bindCopyLink(() => ({
   mode: controller.mode as MirrorMode,
@@ -181,21 +191,29 @@ const hiveToy = new HiveController(
   HIVE_SEED[device],
 );
 
-// "Put in the Scope": each toy carries its result into the chamber.
+// "Put in the Scope": each toy carries its result into the chamber. On a phone, while the section's
+// peephole is on screen, the chip lands in it and the section's live region says the new count.
 const gem = $<HTMLElement>('.chamber-gem');
 const eyepiece = $<HTMLElement>('.eyepiece');
+const peepholeOf = (section: HTMLElement, live: HTMLElement) => ({
+  view: $('.peephole-view', section),
+  landed: () => (live.textContent = chamberAnnouncement(controller.model.count)),
+});
+const sowPeephole = peepholeOf(sowSection, $('.sow-live', sowSection));
+const lathePeephole = peepholeOf(latheSection, $('.lathe-live', latheSection));
+const hivePeephole = peepholeOf(hiveSection, $('.hive-live', hiveSection));
 bindPutButtons(Array.from(document.querySelectorAll<HTMLButtonElement>('.put-in')), controller.model);
 $<HTMLButtonElement>('.sow-put').addEventListener('click', () => {
   if (sowToy.count < 1) return;
-  putInScope({ kind: 'head', angle: sowToy.alpha, seeds: sowToy.count }, controller.model, $('.sow-view'), gem, eyepiece);
+  putInScope({ kind: 'head', angle: sowToy.alpha, seeds: sowToy.count }, controller.model, $('.sow-view'), gem, eyepiece, sowPeephole);
 });
 $<HTMLButtonElement>('.lathe-put').addEventListener('click', () => {
   const p = latheToy.params;
-  putInScope({ kind: 'rosette', species: p.species, leaves: p.leaves, plump: p.plump, blush: p.blush, stretch: latheToy.stretch }, controller.model, $('.lathe-view'), gem, eyepiece);
+  putInScope({ kind: 'rosette', species: p.species, leaves: p.leaves, plump: p.plump, blush: p.blush, stretch: latheToy.stretch }, controller.model, $('.lathe-view'), gem, eyepiece, lathePeephole);
 });
 $<HTMLButtonElement>('.hive-put').addEventListener('click', () => {
   const cells = combPatch(hiveToy.hive, hiveToy.cursor);
-  putInScope({ kind: 'comb', rings: 3, seed: hiveToy.seed, cells }, controller.model, $('.hive-view'), gem, eyepiece);
+  putInScope({ kind: 'comb', rings: 3, seed: hiveToy.seed, cells }, controller.model, $('.hive-view'), gem, eyepiece, hivePeephole);
 });
 
 // The peepholes repeat the eyepiece's live description.
@@ -227,10 +245,12 @@ new IntersectionObserver(([entry]) => hiveToy.setVisible(entry.isIntersecting)).
 
 const toys: Record<'sow' | 'lathe' | 'hive', Toy> = { sow: sowToy, lathe: latheToy, hive: hiveToy };
 const sections = { sow: sowSection, lathe: latheSection, hive: hiveSection };
+const views = { sow: $<HTMLElement>('.sow-view'), lathe: $<HTMLElement>('.lathe-view'), hive: $<HTMLElement>('.hive-view') };
 
 if (hasWebGL2()) {
   const { mountScopeGl } = await import('./scope/gl');
   const gl = mountScopeGl(controller, hero, eyepiece, $<HTMLElement>('.inset-view'));
+  relayout = () => gl.engine.invalidateLayout();
   if (garden) controller.load(false);
   else controller.load();
   for (const view of peepholes) gl.addPeephole(view, view.closest('section') ?? hero);
@@ -238,8 +258,8 @@ if (hasWebGL2()) {
   const { mountLauncherGl } = await import('./index/tesseractView');
   mountLauncherGl(gl.engine, $<HTMLElement>('.tess-view'), $<HTMLElement>('#worlds'));
   const { mountBenchGl } = await import('./bench/gl');
-  const bench = mountBenchGl(gl.engine, { sow: sowToy, lathe: latheToy, hive: hiveToy }, { sow: $('.sow-view'), lathe: $('.lathe-view'), hive: $('.hive-view') });
-  for (const key of ['sow', 'lathe', 'hive'] as const) onFirstView(sections[key], () => bench.bloom(key));
+  const bench = mountBenchGl(gl.engine, { sow: sowToy, lathe: latheToy, hive: hiveToy }, views);
+  for (const key of ['sow', 'lathe', 'hive'] as const) onFirstView(sections[key], () => bench.bloom(key), views[key]);
   if (import.meta.env.DEV) Object.assign((window as unknown as { __bloomscope: object }).__bloomscope, { toys, noteLog });
 } else {
   // Without WebGL2 the 3D chunk is never even requested: everything is drawn in flat 2D with the same physics.
@@ -247,13 +267,9 @@ if (hasWebGL2()) {
   line.textContent = 'Your browser has no WebGL2, so the toys run in flat 2D.';
   line.hidden = false;
   const { mountFlat } = await import('./fallback2d');
-  mountFlat(controller, { eyepiece, inset: $<HTMLElement>('.inset-view'), peepholes }, toys, {
-    sow: $('.sow-view'),
-    lathe: $('.lathe-view'),
-    hive: $('.hive-view'),
-  });
+  mountFlat(controller, { eyepiece, inset: $<HTMLElement>('.inset-view'), peepholes }, toys, views);
   controller.load(!garden);
-  for (const key of ['sow', 'lathe', 'hive'] as const) onFirstView(sections[key], () => toys[key].bloom());
+  for (const key of ['sow', 'lathe', 'hive'] as const) onFirstView(sections[key], () => toys[key].bloom(), views[key]);
 }
 
 function bindCopyLink(current: () => Garden): void {

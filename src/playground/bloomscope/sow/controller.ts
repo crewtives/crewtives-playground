@@ -102,6 +102,7 @@ export class SowController implements Toy {
     for (let n = 0; n < this.count; n++) this.births[n] = now - (this.count - n) * 4;
     if (motion.reduced) this.bloomDone = true;
     this.bindDial();
+    this.bindFingerGrip();
     this.bindButtons();
     this.bindScrub();
     this.bindHover();
@@ -426,6 +427,44 @@ export class SowController implements Toy {
     });
     // Assistive technologies that set the value directly.
     input.addEventListener('input', () => this.setAngle(Number(input.value)));
+  }
+
+  /**
+   * With a finger (`(pointer: coarse)`), the outer grip becomes a ring at least 44 CSS px thick that
+   * stays inside the dial's own SVG box (it grows inward where it would pass the box), so it never
+   * catches a tap meant for a control scrolling out from under the pinned stage. Chromium ignores
+   * `touch-action` on SVG shapes, so a non-passive `touchstart` on the two grips keeps the page from
+   * scrolling when a drag starts on them; a swipe that starts on the plate inside the ring scrolls.
+   * The hit strokes are transparent: no pixel changes. With a fine pointer nothing is written.
+   */
+  private bindFingerGrip(): void {
+    const coarse = window.matchMedia('(pointer: coarse)');
+    const outer = this.el.outerGrip;
+    const grips = [this.el.outerGrip, this.el.vernierGrip];
+    const homeR = outer.getAttribute('r') ?? '296';
+    const keep = (event: TouchEvent) => event.preventDefault();
+    let fitted = false;
+    const fit = () => {
+      if (!coarse.matches) {
+        if (!fitted) return;
+        fitted = false;
+        outer.style.removeProperty('stroke-width');
+        if (!outer.getAttribute('style')) outer.removeAttribute('style');
+        outer.setAttribute('r', homeR);
+        for (const grip of grips) grip.removeEventListener('touchstart', keep);
+        return;
+      }
+      const size = this.el.dial.getBoundingClientRect().width;
+      if (size <= 0) return;
+      const half = 22 / (size / DIAL_GEOMETRY.size);
+      outer.style.strokeWidth = `${(2 * half).toFixed(2)}px`;
+      outer.setAttribute('r', Math.min(DIAL_GEOMETRY.bandIn + half, DIAL_GEOMETRY.size / 2 - half).toFixed(2));
+      if (!fitted) for (const grip of grips) grip.addEventListener('touchstart', keep, { passive: false });
+      fitted = true;
+    };
+    new ResizeObserver(fit).observe(this.el.dial);
+    coarse.addEventListener('change', fit);
+    fit();
   }
 
   private goNamed(direction: 1 | -1): void {

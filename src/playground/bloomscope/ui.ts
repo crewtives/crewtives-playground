@@ -4,6 +4,7 @@
 import type { DisplayMode } from '../../engine/display/RetroDisplay';
 import { displayRegistry } from '../shared/displays';
 import { sound } from '../shared/sound';
+import { STAGE_LANDSCAPE } from './stage';
 
 export function bindSound(button: HTMLButtonElement): void {
   const label = button.querySelector<HTMLElement>('.sound-label');
@@ -52,9 +53,9 @@ const CONTENT = 'h2, h3, p, a, button, input, label, img, svg, canvas, figure, [
 /**
  * The `n/7` gem appears when the Scope leaves the screen, and leads back to it. It tucks away (no
  * opacity, no clicks, 220 ms) while it would have text or a control beneath it: it only shows over
- * empty field. On the phone (≤ 699 px) it also tucks away while a peephole is on screen, because the
- * peephole already leads to the Scope. When it receives a chip ("Put in the Scope") it shows for a
- * moment even if it covers something.
+ * empty field. On the phone (≤ 699 px, or a landscape phone under the stage gate) it also tucks away
+ * while a peephole is on screen, because the peephole already leads to the Scope and shows the count.
+ * When it receives a chip ("Put in the Scope") it shows for a moment even if it covers something.
  */
 export function bindChamberGem(gem: HTMLAnchorElement, hero: HTMLElement): (count: number) => void {
   const count = gem.querySelector<HTMLElement>('.chamber-count');
@@ -64,7 +65,7 @@ export function bindChamberGem(gem: HTMLAnchorElement, hero: HTMLElement): (coun
   });
   io.observe(hero);
 
-  const phone = window.matchMedia('(max-width: 699px)');
+  const phone = window.matchMedia(`(max-width: 699px), ${STAGE_LANDSCAPE}`);
   const peeps = new Set<Element>();
   const peepIo = new IntersectionObserver((entries) => {
     for (const entry of entries) {

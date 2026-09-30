@@ -1,9 +1,11 @@
-// Shared pieces of the bench: "Put in the Scope" with the chip that flies to the chamber gem, the
-// bloom the first time a section comes on screen, and a live announcer capped per second.
+// Shared pieces of the bench: "Put in the Scope" with the chip that flies to the chamber gem (or, on
+// a phone, into the section's peephole), the bloom the first time a section comes on screen, and a
+// live announcer capped per second.
 
 import { motion } from '../../shared/motion';
 import type { ChamberModel } from '../chamberModel';
 import { specimenChip, type SpecimenSpec } from '../specimens/spec';
+import { onScreen, STAGE_QUERY } from '../stage';
 
 /** Whoever paints a toy: repaints when the state changed and requests frames while animating. */
 export interface ToyRenderer {
@@ -35,21 +37,31 @@ export function bindPutButtons(buttons: HTMLButtonElement[], model: ChamberModel
   render();
 }
 
+/** A section's peephole as the chip's destination on a phone, and what to do once the specimen is in. */
+export interface PeepholeDrop {
+  view: Element;
+  landed: () => void;
+}
+
 /**
  * Carries a toy's result into the chamber: a 40 px chip flies in an arc (520 ms, exponential
- * ease-out) from the toy to the `n/7` gem, and the specimen goes in when it lands. With reduced
- * motion it goes in instantly, with no flight.
+ * ease-out) from the toy to the `n/7` gem, and the specimen goes in when it lands. On a phone, while
+ * the section's peephole is on screen under a stage gate, the chip lands in that peephole instead and
+ * the gem is not summoned over the controls; `landed` then runs. With reduced motion it goes in
+ * instantly, with no flight.
  */
-export function putInScope(spec: SpecimenSpec, model: ChamberModel, from: Element, gem: HTMLElement, fallbackTarget: Element): boolean {
+export function putInScope(spec: SpecimenSpec, model: ChamberModel, from: Element, gem: HTMLElement, fallbackTarget: Element, peephole?: PeepholeDrop): boolean {
   if (model.full) return false;
+  const toPeephole = !!peephole && window.matchMedia(STAGE_QUERY).matches && onScreen(peephole.view);
   if (motion.reduced) {
     model.add(spec);
+    if (toPeephole) peephole.landed();
     return true;
   }
   const a = from.getBoundingClientRect();
-  // On the phone the gem may be tucked away: it shows up to receive the chip.
-  if (!gem.hidden) gem.dispatchEvent(new Event('chamber:incoming'));
-  const target = gem.hidden ? fallbackTarget : gem;
+  // On the phone the gem may be tucked away: it shows up to receive the chip, unless the peephole does.
+  if (!toPeephole && !gem.hidden) gem.dispatchEvent(new Event('chamber:incoming'));
+  const target = toPeephole ? peephole.view : gem.hidden ? fallbackTarget : gem;
   const b = target.getBoundingClientRect();
   const x0 = a.left + a.width / 2 - 20;
   const y0 = a.top + a.height / 2 - 20;
@@ -72,6 +84,10 @@ export function putInScope(spec: SpecimenSpec, model: ChamberModel, from: Elemen
   flight.onfinish = () => {
     chip.remove();
     model.add(spec);
+    if (toPeephole) {
+      peephole.landed();
+      return;
+    }
     if (!gem.hidden) {
       gem.classList.remove('is-bump');
       void gem.offsetWidth;
@@ -81,8 +97,12 @@ export function putInScope(spec: SpecimenSpec, model: ChamberModel, from: Elemen
   return true;
 }
 
-/** Calls `start` the first time the section comes on screen. */
-export function onFirstView(section: Element, start: () => void): void {
+/**
+ * Calls `start` the first time the section comes on screen. On a phone, under a stage gate, the toy's
+ * own `view` also starts it: in landscape a bench section can be more than five screens tall, so a
+ * fifth of it is never on screen at once and the toy would never bloom.
+ */
+export function onFirstView(section: Element, start: () => void, view?: Element): void {
   const io = new IntersectionObserver(
     (entries) => {
       if (!entries.some((e) => e.isIntersecting)) return;
@@ -92,6 +112,7 @@ export function onFirstView(section: Element, start: () => void): void {
     { threshold: 0.2 },
   );
   io.observe(section);
+  if (view && window.matchMedia(STAGE_QUERY).matches) io.observe(view);
 }
 
 /** Live announcer capped at one message per interval; the last pending one goes out at the end. */

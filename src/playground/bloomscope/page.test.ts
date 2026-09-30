@@ -8,6 +8,7 @@ import { SHEETS } from '../museum/collection';
 import { ChamberModel, MAX_SPECIMENS, readoutText } from './chamberModel';
 import { decodeGarden, encodeGarden, gardenFromHash, type Garden } from './garden';
 import { DEFAULT_GARDEN, GOLDEN_ANGLE } from './specimens/spec';
+import { STAGE_LANDSCAPE, STAGE_PORTRAIT, STAGE_QUERY } from './stage';
 
 const html = readFileSync(resolve(import.meta.dirname, '../../../sites/playground/bloomscope/index.html'), 'utf8');
 const tokens = readFileSync(resolve(import.meta.dirname, 'tokens.css'), 'utf8');
@@ -322,5 +323,99 @@ describe('garden link', () => {
     expect(decodeGarden(wrongVersion)).toBeNull();
     const tooMany = Buffer.from(JSON.stringify([1, 0, 0, 1, GOLDEN_ANGLE, Array(8).fill(['c', 2, 1])])).toString('base64url');
     expect(decodeGarden(tooMany)).toBeNull();
+  });
+});
+
+/** Every style rule of a stylesheet, one entry per selector, with its media conditions (nested ones joined by " && "). */
+function styleRules(source: string): { media: string; selector: string; body: string }[] {
+  const out: { media: string; selector: string; body: string }[] = [];
+  const walk = (css: string, media: string[]) => {
+    let i = 0;
+    while (i < css.length) {
+      const open = css.indexOf('{', i);
+      if (open < 0) break;
+      let prelude = css.slice(i, open);
+      prelude = prelude.slice(prelude.lastIndexOf(';') + 1).trim();
+      let depth = 1;
+      let j = open + 1;
+      for (; depth > 0 && j < css.length; j++) {
+        if (css[j] === '{') depth++;
+        else if (css[j] === '}') depth--;
+      }
+      const body = css.slice(open + 1, j - 1);
+      if (prelude.startsWith('@media')) walk(body, [...media, prelude.slice(6).trim()]);
+      else if (!prelude.startsWith('@')) for (const selector of prelude.split(',')) out.push({ media: media.join(' && '), selector: selector.trim().replace(/\s+/g, ' '), body });
+      i = j;
+    }
+  };
+  walk(source.replace(/\/\*[\s\S]*?\*\//g, ''), []);
+  return out;
+}
+
+describe('pinned stage on phones: every rule is gated (Desktop unchanged)', () => {
+  // The rules that touched the stage's elements before the stage existed: the desktop layout and the
+  // tablet and phone blocks that already served every width. Anything added since must sit under a gate.
+  const BEFORE = new Set([
+    ' || .bench-body',
+    ' || .bench-body--sow',
+    ' || .bench-body--lathe',
+    ' || .toy',
+    ' || .peephole-rail',
+    ' || .peephole',
+    ' || .peephole-view',
+    ' || .peephole-rim',
+    ' || .peephole-caption',
+    ' || .peephole:hover .peephole-caption',
+    ' || .peephole:focus-visible',
+    ' || .bench-body--sow .toy',
+    ' || .bench-body--sow .bench-copy',
+    ' || .bench-body--sow .herbarium',
+    '(max-width: 1279px) || .peephole-rail',
+    '(max-width: 1279px) || .peephole',
+    '(max-width: 1279px) || .bench-body',
+    '(max-width: 1279px) || .bench-body--sow',
+    '(max-width: 1279px) || .bench-body--lathe',
+    '(max-width: 1023px) || .bench-body--sow',
+    '(max-width: 1023px) || .bench-body--lathe',
+    '(max-width: 1023px) || .bench-body--sow .toy',
+    '(max-width: 1023px) || .bench-body--sow .bench-copy',
+    '(max-width: 1023px) || .bench-body--sow .herbarium',
+    '(max-width: 1023px) || .bench-body--lathe .toy',
+    '(max-width: 1023px) || .peephole-rail',
+    '(max-width: 1023px) || .peephole',
+    '(max-width: 699px) || .peephole-rail',
+    '(max-width: 699px) || .peephole',
+    '(max-width: 699px) || .peephole-caption',
+    '(max-width: 699px) || .bench-body',
+  ]);
+  const gated = (media: string) =>
+    media.split(' && ').some((m) => m === '(pointer: coarse)' || m.split(',').every((part) => [STAGE_PORTRAIT, STAGE_LANDSCAPE].includes(part.trim())));
+  const touchesStage = (rule: { selector: string; body: string }) =>
+    /\.bench-body|\.toy\b(?!-)|\.peephole/.test(rule.selector) || /scroll-margin|touch-callout/.test(rule.body);
+
+  it('each rule that touches the bench body, the toy, a peephole, scroll-margin or a touch callout is from before or gated', () => {
+    const loose = styleRules(style).filter((rule) => touchesStage(rule) && !BEFORE.has(`${rule.media} || ${rule.selector}`) && !gated(rule.media));
+    expect(loose.map((rule) => `${rule.media || '(no media)'} ${rule.selector}`)).toEqual([]);
+  });
+
+  it('the stage exists under the two stage gates, "Hold to sow" keeps its callout rule under a coarse pointer', () => {
+    const rules = styleRules(style);
+    expect(rules.some((r) => r.media === STAGE_QUERY && r.selector === '.bench-body > .toy' && /position:\s*sticky/.test(r.body))).toBe(true);
+    expect(rules.some((r) => r.media === STAGE_PORTRAIT && /scroll-margin-top/.test(r.body))).toBe(true);
+    expect(rules.some((r) => r.media === STAGE_LANDSCAPE && r.selector === '.bench-body > .toy')).toBe(true);
+    const hold = rules.filter((r) => r.selector === '.sow-hold' && /touch-callout/.test(r.body));
+    expect(hold.map((r) => r.media)).toEqual(['(pointer: coarse)']);
+  });
+
+  it('the stage sits below the engine canvas, and its height follows the small viewport, never dvh', () => {
+    const stage = styleRules(style).find((r) => r.media === STAGE_QUERY && r.selector === '.bench-body > .toy');
+    expect(stage?.body).toMatch(/z-index:\s*2;/);
+    expect(tokens).toMatch(/--engine-z:\s*5;/);
+    expect(style + tokens).not.toMatch(/\bdvh\b/);
+    expect(style).toMatch(/--stage-s: min\(calc\(100vw - 32px - 96px - 10px\), calc\(46svh - 16px\)\)/);
+  });
+
+  it("the stage's ink edge reads against the Sow and lathe fields (≥ 3:1)", () => {
+    for (const field of ['lilac', 'glaucous']) expect(contrast(token('ink'), token(field))).toBeGreaterThanOrEqual(3);
   });
 });
