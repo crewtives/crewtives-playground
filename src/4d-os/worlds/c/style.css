@@ -1114,6 +1114,11 @@ body {
   [data-docked] label:has(input:checked) {
     border-color: var(--leader);
   }
+  /* The browser scrolls only the small box into view on focus; the margin brings the whole 44 px
+     cell, and the box's focus ring inside it, onto the screen. */
+  [data-docked] input {
+    scroll-margin-block: 20px;
+  }
   /* The camera's frame beside its reading, so the card stays short. */
   [data-docked][data-window='source'] .win__body {
     display: grid;
