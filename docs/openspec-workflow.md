@@ -89,8 +89,9 @@ The first four changes introduced the 15 capabilities below. The last column nam
 | [`prepare-public-release`](../openspec/changes/archive/2026-09-29-prepare-public-release/) | 2026-09-29 | 2026-09-29 | `public-repository` | `work-loops`, `playground-museum`, `playground-hub` |
 | [`add-seo-and-sharing`](../openspec/changes/archive/2026-09-29-add-seo-and-sharing/) | 2026-09-29 | 2026-09-29 | `site-metadata` | `playground-hub`, `public-repository` |
 | [`adapt-for-phones`](../openspec/changes/archive/2026-09-30-adapt-for-phones/) | 2026-09-29 | 2026-09-30 | `phone-ergonomics` | `desktop-shell`, `story-page`, `cosmic-landings`, `4d-pack`, `playground-hub`, `playground-museum`, `landing-bloomscope`, `landing-game-center`, `landing-wind-up-empire`, `site-metadata` |
+| [`move-cat-credit-out-of-share-images`](../openspec/changes/archive/2026-09-30-move-cat-credit-out-of-share-images/) | 2026-09-30 | 2026-09-30 | none | `site-metadata`, `public-repository` |
 
-The "Opened" date comes from each change's `.openspec.yaml`, and the "Archived" date from its folder name. Changes overlapped: the cosmic-landings change was opened the day the first one was archived, and ran alongside the next two, and `adapt-for-phones` was opened the day `add-seo-and-sharing` was archived. `prepare-public-release` and `add-seo-and-sharing` were archived the same day, so their folders sort by name: `2026-09-29-add-seo-and-sharing` is listed before `2026-09-29-prepare-public-release`, although it came after it.
+The "Opened" date comes from each change's `.openspec.yaml`, and the "Archived" date from its folder name. Changes overlapped: the cosmic-landings change was opened the day the first one was archived, and ran alongside the next two, and `adapt-for-phones` was opened the day `add-seo-and-sharing` was archived. `move-cat-credit-out-of-share-images` was opened and archived the day `adapt-for-phones` was archived, and sorts after it by name. `prepare-public-release` and `add-seo-and-sharing` were archived the same day, so their folders sort by name: `2026-09-29-add-seo-and-sharing` is listed before `2026-09-29-prepare-public-release`, although it came after it.
 
 ### 1. `add-4d-os-local-demo`
 
@@ -172,7 +173,7 @@ The site was public but barely existed for search engines and link previews: no 
 
 - one page registry, `src/site/pages.ts`, in a new build-time layer that no page imports (D1);
 - a Vite plugin in both site configs that injects the canonical link, the `og:*` and `twitter:*` tags, the icons and a minimal JSON-LD block right after the viewport meta, so that previews that read only the first 32 KiB find them, and that fails the build on an unregistered page or a description that drifted from the registry (D2, D3, D4);
-- share images made from real frames: an 840×630 region of a real capture, copied pixel for pixel, beside a band set in the work's own typefaces with the title, the "synthetic" mark and, wherever the cat appears, its CC-BY credit inside the image. Each has a provenance sidecar and a `LICENSES.md` row, and its URL carries a version taken from its own hash (D5);
+- share images made from real frames: an 840×630 region of a real capture, copied pixel for pixel, beside a band set in the work's own typefaces with the title, the "synthetic" mark and, wherever the cat appears, its CC-BY credit inside the image (a later change, `move-cat-credit-out-of-share-images`, took the credit out of the band; see section 8). Each has a provenance sidecar and a `LICENSES.md` row, and its URL carries a version taken from its own hash (D5);
 - `robots.txt`, `sitemap.xml`, a 404 page in the museum's visual language with the Worker's `404-page` handling, and a `_headers` rule that keeps the `workers.dev` hosts out of search results, named only by placeholders (D6);
 - unit tests that never read `dist/`, plus `tools/audit-site.ts` for the built output (D7).
 
@@ -190,6 +191,12 @@ Every page opened on a phone without sideways scroll, but most toys could not be
 - adds a development-only phone check, [`tools/check-phone.ts`](../tools/check-phone.ts), with one module per work (D18).
 
 Its desktop proof has three layers (D16): deep desktop screenshots compared shot by shot, a release fingerprint of every route, and the museum loops recorded again with every frame hash unchanged (D17). The only intended desktop differences are listed in D15 and in its `verification.md`. Because each loop's provenance names the commit it was recorded at, the branch is merged without squashing. Its `verification.md` lists what only a real phone can show, such as Safari's collapsing toolbar, as pending.
+
+### 8. `move-cat-credit-out-of-share-images`
+
+A small change with one decision. The share images of `/4d-os/` and worlds A, B and C drew the line *"Cat" by J-Toastie, CC-BY 3.0* at the foot of their band. Seen on the finished cards, the credit under the title block (series, site name, title, "synthetic") weighed the band down and read as clutter, so the band no longer carries it. CC-BY 3.0 section 4(b) lets the credit be given "in any reasonable manner", so it now travels with each image in five places instead (D1, D2): the page's `og:image:alt` and `twitter:image:alt`, the page's JSON-LD `isBasedOn`, the image's sidecar and `provenance.json`, its row in `LICENSES.md`, and the visible credit of every page that shows the cat. This supersedes the one point of `add-seo-and-sharing` D5 that put the credit in the band. Keeping a smaller credit in the band was rejected: it would still sit in the same title block and change its look, and at 14 or 16 px it would read at about 6 or 7 px in a card shown 500 px wide, a credit that is there but cannot be read.
+
+Nothing else about the cards changed. The band's layout rule already pushes its foot to the bottom margin, so the mark "synthetic" drops to where the credit was and the four bands end up laid out like those of worlds D and E (D3). The four images were composed again from the same frames, with no new capture (D5): their frames are pixel-identical, the six other images keep their bytes, sidecars and `?v=` versions, and the records keep the credit apart from the band text (D4). The launcher's frame is a real capture, so it still shows the page's own credit line, which is page content and is never retouched. Its `verification.md` also records why one scenario keeps its old name, "Cat credit inside the image": OpenSpec refuses to drop a scenario from a modified requirement, so its WHEN/THEN was rewritten under the same name.
 
 ## How to read a change
 
@@ -252,7 +259,7 @@ In `prepare-public-release`, most of the verification is the same check repeated
 
 ## Paths in archived changes
 
-**Paths and names inside archived changes describe the repository as it was when each change was made, before `prepare-public-release` restructured it.** The exception is `add-seo-and-sharing`, which came after the restructure and uses today's layout. The older paths were left as written on purpose, because a decision or a measurement only makes sense against the tree it was made on. The archived texts were translated and sanitized, but their paths were not updated. To find a file today, use this table:
+**Paths and names inside archived changes describe the repository as it was when each change was made, before `prepare-public-release` restructured it.** The exceptions are `add-seo-and-sharing` and the changes after it, which came after the restructure and use today's layout. The older paths were left as written on purpose, because a decision or a measurement only makes sense against the tree it was made on. The archived texts were translated and sanitized, but their paths were not updated. To find a file today, use this table:
 
 | Path in archived changes | Path today |
 |---|---|

@@ -284,8 +284,9 @@ by change; some of the changes overlapped.
   worlds A to C), the playground landings, the cosmic landings and organic motion (worlds D and E, the
   gesture hero, the walking cat), the museum, the preparation of this public release, and the site's
   metadata and share images (canonical URLs, link-preview cards, `robots.txt`, `sitemap.xml` and the
-  404 page), and the adaptation of every page and toy for phones (with a desktop that stays
-  pixel-identical).
+  404 page), the adaptation of every page and toy for phones (with a desktop that stays
+  pixel-identical), and moving the cat's credit out of the share images' band and into their
+  metadata.
 - **The loop.** Each change goes propose → apply → verify → archive. Proposing writes the change's
   artifacts; applying works through `tasks.md`, each task with the command or check that proves it;
   verifying records the results (in `verification.md`, or in the tasks for `prepare-public-release`);
