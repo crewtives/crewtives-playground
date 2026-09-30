@@ -160,7 +160,7 @@ export function posterSidecar(p: LoopProvenance, createdAt: string): PosterSidec
   return {
     prompt:
       `Origin: not generated. Frame 0 of the FORWARD pass of loop ${p.loop} (${p.work.sheet}), recorded from the live render of ${p.route} at commit ${p.commit} on ${p.recorded}, ` +
-      `one pixel per display block (${p.native.width} x ${p.native.height}, ${p.palette.length}-colour palette), saved as lossless WebP and verified identical to that frame ` +
+      `one pixel per display block (${p.native.width} x ${p.native.height}, ${p.palette.length}-color palette), saved as lossless WebP and verified identical to that frame ` +
       `(SHA-256 ${p.poster.hash} over RGBA). Full record: ${LOOP_FILES.provenance} in this folder.`,
     createdAt,
   };

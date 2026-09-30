@@ -453,7 +453,7 @@ async function recordSow(page: any, config: CaptureConfig, options: Options, pre
   const backdrop = (await readPalette(page, config.paletteRoot, [sow.backdropToken]))[0];
   if (!palette.includes(backdrop)) throw new CaptureError(`bloomscope: the background ${backdrop} (${sow.backdropToken}) is not a color of Sow's palette`);
   await hidePage(page, options.show, backdrop);
-  prep.push({ kind: 'background', selector: 'html, body', color: backdrop, note: `page background behind the canvas set to the palette colour the Sow view paints its background with (${sow.backdropToken})` });
+  prep.push({ kind: 'background', selector: 'html, body', color: backdrop, note: `page background behind the canvas set to the palette color the Sow view paints its background with (${sow.backdropToken})` });
   const rect = await captureRect(page, config, options.shift);
   if (await page.evaluate((s: string) => document.activeElement !== document.querySelector(s), sow.hold)) throw new CaptureError('bloomscope: "Hold to sow" lost focus');
 
