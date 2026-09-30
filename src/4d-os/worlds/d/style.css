@@ -1278,9 +1278,13 @@ strong {
     display: contents;
   }
   .glance__read dt {
-    font: 600 11px / 1.2 var(--font-display);
+    font: 600 12px / 1.2 var(--font-display);
     letter-spacing: 0.06em;
     color: var(--beam);
+  }
+  /* The ratio's label stays on one line at 12 px: Tektur's width axis, condensed like the display voice. */
+  .glance__phi dt {
+    font-stretch: 87.5%;
   }
   .glance__read dd {
     margin: 0;
@@ -1338,15 +1342,20 @@ strong {
     gap: 8px;
   }
   .deck__hint {
-    font-size: 11px;
+    font-size: 12px;
   }
   .timeline__tc {
     font-size: 1.25rem;
   }
+  .read dt small {
+    font-size: 12px;
+  }
 
   /* The monitor drops to the control strip (main.ts): two segmented rows under the timeline, 1 px
      cells that share their stroke; the checked one gets the second stroke inside, the same double
-     stroke as the tube's boxes. The box is hidden: the whole cell is the finger's target. */
+     stroke as the tube's boxes. The box is hidden: the whole cell is the finger's target.
+     Each row is a block with a floated legend and floated cells, never a flex row: WebKit does not lay
+     out a fieldset's legend as a flex item and put it on a row of its own (35 px more deck on iOS). */
   .deck .monitor {
     display: grid;
     gap: 6px;
@@ -1354,28 +1363,35 @@ strong {
     border: 0;
   }
   .deck .seg {
-    flex-wrap: nowrap;
-    align-items: stretch;
-    gap: 0;
+    --row: 30px;
+    display: block;
   }
   .deck .seg legend {
-    flex: 0 0 4.6rem;
-    align-self: center;
-    margin: 0;
-    padding: 4px 6px 3px;
-    margin-left: -6px;
+    float: left;
+    width: 4.6rem;
+    height: var(--row);
+    margin: 0 0 0 -6px;
+    padding: 0 6px;
+    font-size: 12px;
+    line-height: var(--row);
     background: var(--glass);
     color: var(--beam);
   }
   .deck .seg label {
     position: relative;
-    flex: 1 1 0;
+    float: left;
+    /* The cells share the rest of the row; each after the first overlaps its neighbor's stroke by 1 px. */
+    width: calc((100% - 4.6rem + 6px + 1px) / 2);
     justify-content: center;
-    min-height: 30px;
+    min-height: var(--row);
     padding: 0 6px;
     border: 1px solid var(--beam-dim);
     background: var(--glass);
     white-space: nowrap;
+  }
+  .deck .seg label:first-of-type:nth-last-of-type(3),
+  .deck .seg label:first-of-type:nth-last-of-type(3) ~ label {
+    width: calc((100% - 4.6rem + 6px + 2px) / 3);
   }
   .deck .seg label + label {
     margin-left: -1px;
@@ -1521,12 +1537,96 @@ strong {
     margin-left: auto;
   }
   .deck .seg legend {
-    flex-basis: auto;
+    width: auto;
     margin-right: 2px;
   }
-  .deck .seg label {
-    flex: 0 0 auto;
+  .deck .seg label,
+  .deck .seg label:first-of-type:nth-last-of-type(3),
+  .deck .seg label:first-of-type:nth-last-of-type(3) ~ label {
+    width: auto;
     padding: 0 10px;
+  }
+}
+
+/* ---------- Touch on phones: the drawing stays, the hit grows ---------- */
+
+/* 44 px targets under a coarse pointer (spec phone-ergonomics "Touch targets"; design D10). The keys and
+   the segmented cells grow as real cells (their neighbors are too close for a pseudo hit area); the
+   timeline keeps its 24 px ruler with a 44 px hit area around it; the θ scrub and the links grow with
+   padding that negative margins give back, so nothing around them moves. */
+@media (max-width: 760px) and (pointer: coarse), (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+  .deck__keys {
+    gap: 6px;
+  }
+  .key {
+    flex: none;
+    width: 44px;
+    height: 44px;
+  }
+  .deck .seg {
+    --row: 44px;
+  }
+  .deck .seg label {
+    min-width: 44px;
+  }
+  /* The track's box grows 20 px upward, over the head, which takes no input, and its ruler and
+     playhead move down by as much, so the drawing stays where it was. Nothing grows below the ruler:
+     in landscape the glass under the deck stays free for a swipe (a hit area below it, even a pseudo-
+     element, took the swipes that start there). */
+  .timeline__track {
+    height: 44px;
+    margin-top: -14px;
+  }
+  .timeline__ruler {
+    top: 20px;
+  }
+  .timeline__playhead {
+    top: 16px;
+  }
+  /* Above the next readout row, which its padding reaches over. */
+  .scrub {
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    min-width: 44px;
+    padding-block: 7px;
+    margin-block: -7px;
+    border-bottom: 0;
+  }
+  /* The dotted underline stays on the figure, where it was. */
+  .scrub [data-read='theta'] {
+    border-bottom: 1px dotted var(--beam);
+  }
+  .scrub:hover [data-read='theta'] {
+    border-bottom-color: var(--beam-hot);
+  }
+  .playground-back {
+    max-width: calc(8em + 20px);
+    margin: -8px -12px 0 0;
+    padding: 8px 12px 8px 8px;
+  }
+  .colophon__nav {
+    row-gap: 0;
+  }
+  .colophon__nav a {
+    min-width: 44px;
+    padding-block: 16px;
+  }
+}
+
+/* A 360 px phone: the timeline's head keeps one line; the word "frame" is left to screen readers. */
+@media (max-width: 370px) {
+  .timeline__state,
+  .timeline__frame {
+    white-space: nowrap;
+  }
+  .timeline__frame-word {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 

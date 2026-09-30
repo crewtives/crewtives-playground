@@ -260,3 +260,104 @@
   }
 }
 
+
+/* ---------- Phones: stills first, the scene live on request (main.ts askFirst; design D11) ---------- */
+
+@media (max-width: 760px), (orientation: landscape) and (max-height: 500px) {
+  /* The button: the page's one action, an ink field like the title bars; asked, it turns into the
+     progress line (paper field, ink rule along its foot), then into the quiet "Scene live". */
+  .stage__run {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin: 20px 0 0;
+    padding: 0 16px;
+    background: var(--l-ink);
+    color: var(--l-paper);
+    border: 1px solid var(--l-ink);
+    border-radius: 0;
+    font: 12px / 1 'Departure Mono', ui-monospace, monospace;
+    cursor: pointer;
+  }
+  .stage__run[aria-disabled='true'] {
+    background: var(--l-paper);
+    color: var(--l-ink);
+    cursor: default;
+  }
+  .stage__run.is-loading::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: calc(var(--progress, 0) * 100%);
+    height: 3px;
+    background: var(--l-ink);
+  }
+  .stage__run.is-live {
+    border-color: var(--l-muted);
+    color: var(--l-muted);
+  }
+  /* Its own status message, for assistive technologies only. */
+  .stage__status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  /* The still fills its view's box, out of the flow, so it cannot size the box (WebKit let an in-flow
+     still grow the 4:3 box by 2 px): the live view takes the same box. */
+  .worlds .world__view {
+    position: relative;
+  }
+  .world__view > .world__still {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: var(--l-ink);
+  }
+  /* "still", in the title bar's own type, inverted. */
+  .world__tag {
+    align-self: center;
+    margin: 0 auto 0 8px;
+    padding: 0 5px;
+    background: var(--l-paper);
+    color: var(--l-ink);
+    font: 11px / 14px 'Departure Mono', ui-monospace, monospace;
+  }
+  /* The button and window A's still share the first screen, 390×664 included. */
+  .stage > .worlds {
+    margin-top: 24px;
+  }
+  /* The note is a sentence: 12 px on phones. */
+  .more__note {
+    font-size: 12px;
+  }
+}
+
+
+/* Touch: the link back grows downward to 44 px (the bar sits above it), and keyboard hints go. */
+@media (pointer: coarse) {
+  .playground-back {
+    margin: -6px -14px 0 0;
+    padding: 6px 14px 22px 8px;
+  }
+}
+@media (hover: none) and (pointer: coarse) {
+  .status__keys {
+    display: none;
+  }
+}
+
+/* Landscape phone: the two plates take the same windows as the row above, so each fits the screen. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .worlds--more {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

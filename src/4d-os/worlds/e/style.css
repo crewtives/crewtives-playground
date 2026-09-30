@@ -109,6 +109,7 @@ a {
 .clock__ch,
 .readouts dt,
 .monitor legend,
+.stage-dock legend,
 .trace__ch,
 .trace__note,
 .hint,
@@ -1002,6 +1003,10 @@ var {
     --band-h: 148px;
     --gutter: 16px;
   }
+  /* The world's own token beats the html rule above (attribute over type selector): same selector here. */
+  :root[data-world='e'] {
+    --gutter: 16px;
+  }
 
   .obs__track {
     height: 260svh;
@@ -1041,6 +1046,10 @@ var {
     display: none;
   }
 
+  /* Below the hero, only Layers stays in the monitor: one column. */
+  .monitor {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .recorder {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: auto auto;
@@ -1202,6 +1211,137 @@ var {
   }
 }
 
+/* ---------- The stage deck on narrow screens and landscape phones ---------- */
+
+@media (max-width: 760px), (orientation: landscape) and (max-height: 500px) {
+  /* The stage deck (main.ts placeDeck): the first-screen tools dock on the recorder, inside the pinned
+     stage, as one console with it: a void field in 44 px rows split by grid hairlines, keys and the NOW
+     line, then Time, then Colors. The checked cell is E's inversion, a flat bone field with void text,
+     never a blend. Each row is a block with a floated legend and floated cells: WebKit does not lay out
+     a fieldset's legend as a flex item. */
+  .stage-dock {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: var(--band-h);
+    padding: 0 var(--gutter);
+    background: var(--void);
+    border-top: var(--hair) solid var(--grid);
+  }
+  .stage-dock .stage-keys {
+    position: static;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 44px;
+  }
+  .stage-dock .keys {
+    align-self: stretch;
+    border-width: 0 var(--hair);
+  }
+  .stage-dock .key {
+    width: 44px;
+    height: 44px;
+  }
+  .stage-dock__now {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 0 0 0 auto;
+    font: 500 18px / 1 var(--font-instrument);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  [data-deck-now='timecode'] {
+    color: var(--bone);
+  }
+  [data-deck-now='state'] {
+    font-size: 15px;
+    color: var(--accent-current, var(--bone));
+  }
+  /* The hint rides above the deck as a void chip on the scene. */
+  .stage-dock .hint {
+    position: absolute;
+    left: var(--gutter);
+    bottom: calc(100% + 8px);
+    padding: 4px 6px 3px;
+    background: var(--void);
+  }
+  .stage-dock .seg {
+    display: block;
+    height: 45px;
+    border-top: var(--hair) solid var(--grid);
+  }
+  .stage-dock .seg legend {
+    float: left;
+    width: 4.5rem;
+    height: 44px;
+    margin: 0;
+    padding: 0;
+    font-size: 15px;
+    line-height: 44px;
+  }
+  .stage-dock .seg label {
+    float: left;
+    width: calc((100% - 4.5rem) / 2);
+    height: 44px;
+    justify-content: center;
+    padding: 0 6px;
+    border-left: var(--hair) solid var(--grid);
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .stage-dock .seg label:first-of-type:nth-last-of-type(3),
+  .stage-dock .seg label:first-of-type:nth-last-of-type(3) ~ label {
+    width: calc((100% - 4.5rem) / 3);
+  }
+  .stage-dock .seg label:last-of-type {
+    border-right: var(--hair) solid var(--grid);
+  }
+  .stage-dock .seg label:has(input:checked) {
+    background: var(--bone);
+    color: var(--void);
+  }
+  /* The whole cell is the finger's target: the radio covers it, unseen, and the cell draws E's pixel
+     diamond itself, hollow or filled. */
+  .stage-dock .seg label {
+    position: relative;
+  }
+  .stage-dock .seg input[type='radio'] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    mask: none;
+    cursor: pointer;
+  }
+  .stage-dock .seg label::before {
+    content: '';
+    flex: none;
+    width: 11px;
+    height: 11px;
+    background: var(--periwinkle);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 11' shape-rendering='crispEdges'%3E%3Cpath d='M5 0h1v1h-1zM4 1h1v1h-1zM6 1h1v1h-1zM3 2h1v1h-1zM7 2h1v1h-1zM2 3h1v1h-1zM8 3h1v1h-1zM1 4h1v1h-1zM9 4h1v1h-1zM0 5h1v1h-1zM10 5h1v1h-1zM1 6h1v1h-1zM9 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM3 8h1v1h-1zM7 8h1v1h-1zM4 9h1v1h-1zM6 9h1v1h-1zM5 10h1v1h-1z'/%3E%3C/svg%3E") center / 11px 11px no-repeat;
+  }
+  .stage-dock .seg label:has(input:checked)::before {
+    background: var(--void);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 11' shape-rendering='crispEdges'%3E%3Cpath d='M5 0h1v1h-1zM4 1h3v1h-3zM3 2h5v1h-5zM2 3h7v1h-7zM1 4h9v1h-9zM0 5h11v1h-11zM1 6h9v1h-9zM2 7h7v1h-7zM3 8h5v1h-5zM4 9h3v1h-3zM5 10h1v1h-1z'/%3E%3C/svg%3E");
+  }
+  /* Focus inside the cell, in the ink that stands out on it. */
+  .stage-dock .seg label:has(input[type='radio']:focus-visible) {
+    outline: 1px solid var(--bone);
+    outline-offset: -4px;
+  }
+  .stage-dock .seg label:has(input[type='radio']:checked:focus-visible) {
+    outline-color: var(--void);
+  }
+  .boot__weight {
+    margin-left: 10px;
+    color: var(--periwinkle);
+  }
+}
+
 /* Landscape phone or short screen: the console also goes below. */
 @media (orientation: landscape) and (max-height: 500px) {
   html {
@@ -1235,6 +1375,55 @@ var {
   .monitor .keys,
   .monitor .hint {
     display: none;
+  }
+  /* The deck sits on the recorder at the right, flush with the edge like the desktop's column: keys and
+     the NOW line on one row, Time and Colors on the next. The title keeps the top left. */
+  .stage-dock {
+    position: absolute;
+    top: auto;
+    right: 0;
+    bottom: var(--band-h);
+    left: auto;
+    display: grid;
+    grid-template-columns: auto auto;
+    padding: 0 var(--gutter) 0 0;
+    background: var(--void);
+    border-width: var(--hair) 0 0 var(--hair);
+    border-style: solid;
+    border-color: var(--grid);
+  }
+  .stage-dock .stage-keys {
+    grid-column: 1 / -1;
+    position: static;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 44px;
+    padding-right: 12px;
+  }
+  .stage-dock .keys {
+    border-width: 0 var(--hair) 0 0;
+    background: var(--void);
+  }
+  .stage-dock .hint {
+    right: var(--gutter);
+    left: auto;
+  }
+  .stage-dock .seg {
+    height: 45px;
+  }
+  .stage-dock .seg legend {
+    width: auto;
+    padding: 0 10px 0 12px;
+  }
+  .stage-dock .seg label,
+  .stage-dock .seg label:first-of-type:nth-last-of-type(3),
+  .stage-dock .seg label:first-of-type:nth-last-of-type(3) ~ label {
+    width: auto;
+    padding: 0 12px;
+  }
+  .stage-dock .seg + .seg {
+    border-left: var(--hair) solid var(--grid);
   }
   .recorder {
     grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
@@ -1274,5 +1463,37 @@ var {
     position: static;
     height: auto;
     padding: 12px 0;
+  }
+}
+
+/* ---------- Touch: 44 px targets ---------- */
+
+/* The back tab grows visibly into a 44 px strip (an invisible hit area below it would sit over the
+   title, and the slate lets taps through), and the slate moves down under it. */
+@media (pointer: coarse) {
+  .playground-back {
+    height: 44px;
+    padding: 0 12px;
+    line-height: 44px;
+  }
+  .slate {
+    top: 52px;
+  }
+}
+
+/* Below the hero on a phone: the Layers rows and the transport at 44 px. */
+@media (max-width: 760px) and (pointer: coarse), (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+  /* The rows grow into the gutter on the left, so a finger left of the box still lands on its row. */
+  .monitor .seg label {
+    min-height: 44px;
+    margin-left: -16px;
+    padding-left: 16px;
+  }
+  .transport__play {
+    width: 44px;
+    height: 44px;
+  }
+  .transport__track {
+    height: 44px;
   }
 }

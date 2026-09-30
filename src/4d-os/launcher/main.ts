@@ -14,8 +14,16 @@ import { bindWallClock } from '../../engine/shell/wallClock';
 import { playbackLabel, timecode, TimeController } from '../../engine/time/TimeController';
 import { TimeViewer, type TimeViewerOptions } from '../../engine/viewer/TimeViewer';
 import { sidePreset } from '../../engine/shell/sidePreset';
+import { formatBytes } from '../../engine/shell/packStats';
+
+/** The pack's weight in binary units, read from cat-stairs/scene.json when the site is built (sites/4d-os/vite.config.ts). */
+declare const __LAUNCHER_PACK_WEIGHT__: string;
 
 const PACK_URL = `${import.meta.env.BASE_URL}packs/cat-stairs/`;
+/** Narrow screens and landscape phones: stills first, and the scene live on request (design adapt-for-phones D11). */
+const NARROW = '(max-width: 760px), (orientation: landscape) and (max-height: 500px)';
+/** Each window's still: the landings' published capture of that world, copied byte for byte. */
+const STILLS = { a: 'a-vitrine', b: 'b-plate', c: 'c-leader' } as const;
 
 const $ = <T extends HTMLElement = HTMLElement>(selector: string) => {
   const node = document.querySelector<T>(selector);
@@ -29,9 +37,13 @@ async function main(): Promise<void> {
   bindWallClock($('[data-wall-clock]'));
 
   const status = $('.status');
-  const setProgress = (p: number) => {
+  const pct = $('[data-boot-pct]');
+  const message = $('[data-boot-message]');
+  const ask = askFirst(window.matchMedia(NARROW), status);
+  const setProgress = (p: number, received = 0, total = 0) => {
     status.style.setProperty('--progress', String(p));
-    $('[data-boot-pct]').textContent = String(Math.round(p * 100));
+    pct.textContent = String(Math.round(p * 100));
+    ask.progress(p, received, total);
   };
 
   const displays = (['a', 'b', 'c'] as const).map((world) => {
@@ -42,15 +54,20 @@ async function main(): Promise<void> {
     return { world, root, display };
   });
 
+  // On a phone nothing of the pack is requested until the visitor asks for it; on a desktop, at once.
+  await ask.go;
   let pack;
   try {
-    pack = await loadPack(PACK_URL, { onProgress: (p) => setProgress(p) });
+    pack = await loadPack(PACK_URL, { onProgress: setProgress });
   } catch (error) {
-    $('[data-boot-message]').textContent = 'Could not load the scene.';
+    message.textContent = 'Could not load the scene.';
+    ask.failed();
     throw error;
   }
   setProgress(1);
   status.classList.add('is-ready');
+  // The stills leave before the viewers read their boxes: each view is live in the same box.
+  ask.live();
 
   // Every moment at once, in all three windows at the same time.
   const time = new TimeController({ frameCount: pack.meta.frameCount, fps: pack.meta.fps, mode: 'all' });
@@ -103,6 +120,135 @@ async function main(): Promise<void> {
     });
     time.play(1);
   }
+}
+
+/**
+ * Stills first on narrow screens (spec cosmic-landings, "Presence in the launcher"). While `query` matches
+ * and the scene has not been asked for, each of windows A, B and C shows its world's still inside its view's
+ * box (the box keeps its role and description, so the still is `alt=""`), its title bar says "still", and a
+ * "Run the scene live" button under the lede, with the pack's weight, takes the place of the progress line.
+ * Activating it resolves `go`: the button keeps its place and the focus (`aria-disabled`, never `disabled`),
+ * shows the progress in its label, then reads "Scene live", which a status node of its own announces
+ * (`.status` is a live region that also holds the ticking timecode). On a desktop, or when the query stops
+ * matching before the visitor asks, `go` resolves at once and the page loads as it always has; whatever
+ * the query created is removed when it stops matching, and the progress line comes back.
+ */
+function askFirst(query: MediaQueryList, status: HTMLElement): { go: Promise<void>; progress: (p: number, received: number, total: number) => void; live: () => void; failed: () => void } {
+  const line = status.querySelector<HTMLElement>('.status__line')!;
+  const lede = $('.stage__lede');
+  let phase: 'asking' | 'loading' | 'live' | 'failed' = query.matches ? 'asking' : 'loading';
+  let asked = false;
+  let label = `Run the scene live · ${__LAUNCHER_PACK_WEIGHT__}`;
+  let fraction = 0;
+  let button: HTMLButtonElement | null = null;
+  let announcer: HTMLElement | null = null;
+  let start: () => void = () => {};
+  const go = new Promise<void>((resolve) => (start = resolve));
+  const windows = (Object.keys(STILLS) as Array<keyof typeof STILLS>).map((world) => ({
+    world,
+    view: $(`.world__view[data-view="${world}"]`),
+    title: $(`.world[data-world="${world}"] .world__title`),
+  }));
+
+  const activate = () => {
+    if (phase !== 'asking') return;
+    phase = 'loading';
+    asked = true;
+    label = `Loading 0% · 0.0 / ${__LAUNCHER_PACK_WEIGHT__}`;
+    render();
+    start();
+  };
+
+  const render = () => {
+    const phone = query.matches && (phase === 'asking' || asked);
+    // The progress line: replaced by the button while it exists.
+    if (phone) line.remove();
+    else if (!line.isConnected) status.prepend(line);
+
+    if (phone && !button) {
+      button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'stage__run';
+      button.addEventListener('click', activate);
+      announcer = document.createElement('p');
+      announcer.className = 'stage__status';
+      announcer.setAttribute('role', 'status');
+      lede.after(button, announcer);
+    } else if (!phone && button) {
+      button.remove();
+      announcer?.remove();
+      button = null;
+      announcer = null;
+    }
+    if (button) {
+      button.textContent = label;
+      button.classList.toggle('is-loading', phase === 'loading');
+      button.classList.toggle('is-live', phase === 'live');
+      button.style.setProperty('--progress', String(fraction));
+      if (phase === 'asking') button.removeAttribute('aria-disabled');
+      else button.setAttribute('aria-disabled', 'true');
+    }
+
+    const stills = phone && phase !== 'live';
+    for (const { world, view, title } of windows) {
+      const still = view.querySelector('.world__still');
+      if (stills && !still) {
+        const img = document.createElement('img');
+        img.className = 'world__still';
+        img.src = `${import.meta.env.BASE_URL}launcher/${STILLS[world]}.webp`;
+        img.width = 1200;
+        img.height = 900;
+        img.alt = '';
+        img.decoding = 'async';
+        view.append(img);
+        const tag = document.createElement('span');
+        tag.className = 'world__tag';
+        tag.textContent = 'still';
+        title.firstElementChild!.after(tag);
+      } else if (!stills && still) {
+        still.remove();
+        title.querySelector('.world__tag')?.remove();
+      }
+    }
+  };
+
+  render();
+  query.addEventListener('change', () => {
+    // Leaving the narrow layout before asking: load as the desktop does.
+    if (phase === 'asking' && !query.matches) {
+      phase = 'loading';
+      start();
+    }
+    render();
+  });
+  if (phase === 'loading') start();
+
+  return {
+    go,
+    progress: (p, received, total) => {
+      // The loader reports the bytes; the last call, after the load, only sets 100 %.
+      if (phase !== 'loading' || !total) return;
+      fraction = p;
+      const mib = (bytes: number) => (bytes / 1024 ** 2).toFixed(1);
+      label = `Loading ${Math.round(p * 100)}% · ${mib(received)} / ${formatBytes(total)}`;
+      if (button) {
+        button.textContent = label;
+        button.style.setProperty('--progress', String(p));
+      }
+    },
+    live: () => {
+      phase = 'live';
+      label = 'Scene live';
+      render();
+      if (announcer) announcer.textContent = 'Scene live';
+    },
+    failed: () => {
+      phase = 'failed';
+      label = 'Could not load the scene';
+      render();
+      if (announcer) announcer.textContent = 'Could not load the scene.';
+    },
+  };
 }
 
 main().catch((error) => console.error('[4D.OS · launcher]', error));

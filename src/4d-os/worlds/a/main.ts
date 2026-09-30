@@ -15,8 +15,16 @@ import { TimeController } from '../../../engine/time/TimeController';
 import { TimeViewer } from '../../../engine/viewer/TimeViewer';
 import { LifeStackView } from '../../../engine/views/lifeStack';
 import { TesseractView } from '../../../engine/views/tesseract';
+import { bindDock } from '../../../engine/window/dock';
 import { bindWindows } from '../../../engine/window/windows';
 import { bindPlan } from './plan';
+
+/**
+ * Narrow screens: phones in portrait, and phones in landscape, too short for the floating desktop. The
+ * windows stop floating and gather in the window dock under the rail (spec desktop-shell "Narrow
+ * viewport"); the same string gates the desk rules of style.css.
+ */
+const NARROW = '(max-width: 760px), (orientation: landscape) and (max-height: 500px)';
 
 const PACK_URL = new URLSearchParams(location.search).get('pack') ?? `${import.meta.env.BASE_URL}packs/cat-stairs/`;
 const integer = new Intl.NumberFormat('en-US');
@@ -45,10 +53,20 @@ async function main(): Promise<void> {
   let life: LifeStackView;
   bindWindows();
   bindShades();
-  // On desktop, Layers and Display start folded against the edge: the display case comes first.
-  if (matchMedia('(min-width: 761px)').matches) {
-    for (const button of document.querySelectorAll<HTMLButtonElement>('.drawers .win__shade')) button.click();
-  }
+  // On desktop, Layers and Display start folded against the edge: the display case comes first. On
+  // narrow screens the dock replaces folding: a drawer folded on the desktop unfolds on entering them.
+  const narrow = matchMedia(NARROW);
+  const shades = () => document.querySelectorAll<HTMLButtonElement>('.drawers .win__shade');
+  if (!narrow.matches) for (const button of shades()) button.click();
+  narrow.addEventListener('change', () => {
+    if (narrow.matches) for (const button of shades()) if (button.getAttribute('aria-expanded') === 'false') button.click();
+  });
+  bindDock({
+    query: NARROW,
+    windows: ['layers', 'display', 'source', 'plan', 'clock'],
+    initial: 'layers',
+    mount: (bar) => $('.rail').after(bar),
+  });
   setupSmoothScroll();
 
   // Views that do not depend on the pack.

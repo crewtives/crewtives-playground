@@ -15,6 +15,7 @@ import { bindZoomHero, type HeroPhaseId } from '../../../engine/shell/zoomHero';
 import { TimeController } from '../../../engine/time/TimeController';
 import { TimeViewer, aspectOf } from '../../../engine/viewer/TimeViewer';
 import { LifeStackView } from '../../../engine/views/lifeStack';
+import { bindDock } from '../../../engine/window/dock';
 import { bindWindows } from '../../../engine/window/windows';
 import { TesseractView } from '../../../engine/views/tesseract';
 import { addAurora } from './aurora';
@@ -38,7 +39,25 @@ async function main(): Promise<void> {
   markDepth();
   display.onChange(markDepth);
 
-  bindGraticule($('.desk__graticule'));
+  // Windows stacked below the hero on desktop terms: mobile in portrait and phone in landscape. There
+  // the windows gather in the window dock at the bottom of the pinned first screen (spec desktop-shell
+  // "Narrow viewport"). It is bound before the pack loads, so no undocked window ever shows over the
+  // plate; the framing follows the open window once the plate exists.
+  const stacked = window.matchMedia('(max-width: 760px), (orientation: landscape) and (max-height: 500px)');
+  let docked: HTMLElement | null = null;
+  let followDock = () => {};
+  bindDock({
+    query: stacked.media,
+    windows: ['sequence', 'exposures', 'layers', 'display', 'source', 'clock'],
+    initial: null,
+    mount: (bar) => $('.desk__layer').prepend(bar),
+    onChange: (open) => {
+      docked = open;
+      followDock();
+    },
+  });
+
+  bindGraticule($('.desk__graticule'), 64, () => stacked.matches);
   setupSmoothScroll();
 
   // Views that do not depend on the pack: they start right away, with the shared display.
@@ -85,13 +104,34 @@ async function main(): Promise<void> {
   plate.setMaxPointSize(6);
   // On desktop the column of cards takes the right side and the sequence sheet the bottom: the subject
   // is centered in the free glass by shifting the projection window (without moving camera or pivot).
-  // Windows stacked below the hero (style.css): mobile in portrait and phone in landscape. `portrait` is
-  // the vertical view, where the walk crosses the screen.
-  const stacked = window.matchMedia('(max-width: 760px), (orientation: landscape) and (max-height: 500px)');
+  // `portrait` is the vertical view, where the walk crosses the screen.
   const portrait = window.matchMedia('(max-width: 760px) and (orientation: portrait)');
+  // A docked window open over the lower plate leaves the glass between the caption and its top: the
+  // plate is framed there, smaller, instead of being covered. The band is read from live rects.
+  const freeBand = (): { top: number; bottom: number } | null => {
+    if (!docked || !stacked.matches) return null;
+    const box = plateElement.getBoundingClientRect();
+    const win = docked.getBoundingClientRect();
+    if (box.height <= 0 || win.left >= box.right - 1 || win.right <= box.left + 1 || win.top >= box.bottom - 1) return null;
+    const top = 8 / box.height;
+    // Never under the chase camera's smallest frame (a fifth of the view).
+    const bottom = Math.max(top + 0.21, (win.top - 8 - box.top) / box.height);
+    return bottom >= 0.98 ? null : { top, bottom };
+  };
   const framePlate = () => {
-    if (stacked.matches) plate.camera.clearViewOffset();
-    else plate.camera.setViewOffset(1, 1, 0.085, -0.035, 1, 1);
+    const band = freeBand();
+    if (band) {
+      // The whole view scaled into the band (at least to half its size), centered on it.
+      const k = Math.min(1, Math.max(0.5, band.bottom - band.top));
+      const middle = (band.top + band.bottom) / 2;
+      plate.camera.setViewOffset(1, 1, -(1 - k) / (2 * k), -(middle - k / 2) / k, 1 / k, 1 / k);
+      // The band, as fractions of the plate's height, for the phone check.
+      plateElement.dataset.band = `${band.top.toFixed(4)} ${band.bottom.toFixed(4)}`;
+    } else {
+      if (stacked.matches) plate.camera.clearViewOffset();
+      else plate.camera.setViewOffset(1, 1, 0.085, -0.035, 1, 1);
+      delete plateElement.dataset.band;
+    }
     engine.invalidate(plate);
   };
   framePlate();
@@ -125,8 +165,17 @@ async function main(): Promise<void> {
   const rail = $('.desk__rail');
   const sheet = $('.sheet');
   const wideDesk = window.matchMedia('(min-width: 1200px)');
+  const dock = () => document.querySelector<HTMLElement>('.dock');
   const plateFrame = (): ViewFrame => {
-    if (stacked.matches) return { left: 0.03, top: 0.04, right: 0.97, bottom: 0.9 };
+    if (stacked.matches) {
+      const band = freeBand();
+      if (band) return { left: 0.03, top: band.top, right: 0.97, bottom: band.bottom };
+      // The dock lies over the bottom of the plate in portrait: the full plate stays above it.
+      const bar = dock()?.getBoundingClientRect();
+      const box = plateElement.getBoundingClientRect();
+      const overlap = bar && bar.left < box.right - 1 && bar.top < box.bottom && box.height > 0;
+      return { left: 0.03, top: 0.04, right: 0.97, bottom: overlap ? Math.min(0.9, (bar.top - 8 - box.top) / box.height) : 0.9 };
+    }
     const width = Math.max(1, plateElement.clientWidth);
     const height = Math.max(1, plateElement.clientHeight);
     return {
@@ -201,8 +250,25 @@ async function main(): Promise<void> {
     onDissolve: dissolve,
     onPhase: (phase) => (hint.textContent = HINTS[phase]),
   });
-  // The full-plate framing changes with the view's size: the rest position stays at 3.4 m (2.6 m on mobile).
-  new ResizeObserver(() => hero.setZ0(chase.zoomFor(restDistance()))).observe(plateElement);
+  // The full-plate framing changes with the view's size and with the docked window: the rest position
+  // stays at 3.4 m (2.6 m on mobile).
+  const refit = () => hero.setZ0(chase.zoomFor(restDistance()));
+  new ResizeObserver(refit).observe(plateElement);
+  // The open card's height can change (its clock line, a resize): the band follows it.
+  const dockedSize = new ResizeObserver(() => followDock());
+  let observed: HTMLElement | null = null;
+  followDock = () => {
+    if (observed !== docked) {
+      if (observed) dockedSize.unobserve(observed);
+      observed = docked;
+      if (docked) dockedSize.observe(docked);
+    }
+    framePlate();
+    refit();
+    engine.requestFrame();
+  };
+  // A window opened from the dock while the pack was loading.
+  if (docked) followDock();
   // Development only: checking the gesture from Playwright.
   if (import.meta.env.DEV) Object.assign(window, { __b: { engine, plate, chase, hero, time } });
 

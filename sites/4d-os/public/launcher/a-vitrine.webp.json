@@ -1,0 +1,4 @@
+{
+  "prompt": "Pre-existing raster, not generated: a byte-for-byte copy of sites/playground/public/landings/_shared/stills/a.webp (SHA-256 9a1d2bf3d7a66f1630bb4dd01dd96e2c31040b728f1f3a3c6481fad66cd3c3cc), the still of 4D.OS world A · Vitrine, served with the 4D.OS site for the launcher's phone layout (stills until the visitor runs the scene live). Its record: Pre-existing raster, not generated: the still of 4D.OS world A · Vitrine (/4d-os/a/). Origin: src/pipeline/captures/a-vitrine.png. Method: Screenshot of the live render of /a/ (pack cat-stairs) playing at frame 300, Chromium headless (Playwright) with SwiftShader at 1440×900, cropped to 4:3 (1200×900 from x=240); converted to WebP with cwebp -lossless -z 9, not resized, retouched or re-dithered. Captured: 2026-09-25. Synthetic scene. Credit: \"Cat\" by J-Toastie, CC-BY 3.0. Full record: sites/playground/public/landings/_shared/stills/provenance.json.",
+  "createdAt": "2026-09-25T01:01:37.486Z"
+}

@@ -13,6 +13,8 @@
   --case-w: round(down, 64vw, 3px);
   --case-h: round(down, calc(var(--case-w) * 9 / 16), 3px);
   --case-top: calc(var(--u) * 28);
+  /* The rail's play key and track: 11 units, 15 on a coarse pointer (the 45 px touch target). */
+  --rail-key: 33px;
   --engine-z: 5;
   scrollbar-color: var(--ink) var(--paper);
   background: var(--wall);
@@ -409,15 +411,15 @@ body {
 
 .rail__body {
   display: grid;
-  grid-template-columns: 33px auto 1fr auto;
+  grid-template-columns: var(--rail-key) auto 1fr auto;
   align-items: center;
   gap: calc(var(--u) * 4);
   padding: calc(var(--u) * 2) calc(var(--u) * 3);
 }
 
 .rail__play {
-  width: 33px;
-  height: 33px;
+  width: var(--rail-key);
+  height: var(--rail-key);
   padding: 0;
   border: 0;
   background: var(--ink);
@@ -453,7 +455,7 @@ body {
 
 .rail__track {
   position: relative;
-  height: 33px;
+  height: var(--rail-key);
   cursor: ew-resize;
   touch-action: none;
   --focus-ring: var(--ink);
@@ -1125,9 +1127,12 @@ body {
 }
 
 /* ------------------------------------------------------------------------------------------
-   Narrow screens: the display case full width and the windows stacked below, without dragging. */
+   Narrow screens (phones in portrait, and phones in landscape, too short for the floating desktop;
+   the NARROW query of main.ts): the display case full width, the windows no longer dragged. With
+   the script, the tool windows gather in the window dock under the rail (spec desktop-shell "Narrow
+   viewport"); without it, they stack below. */
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (orientation: landscape) and (max-height: 500px) {
   :root {
     --case-w: round(down, calc(100vw - 24px), 3px);
     --case-top: 60px;
@@ -1137,10 +1142,6 @@ body {
   .win__title {
     touch-action: auto;
     cursor: default;
-  }
-
-  body {
-    font-size: 16px;
   }
 
   .desk {
@@ -1156,7 +1157,7 @@ body {
     left: auto;
     top: auto;
     align-self: center;
-    margin: 18px 0 12px;
+    margin: var(--case-room, 18px) 0 12px;
     order: 1;
   }
 
@@ -1183,7 +1184,7 @@ body {
   }
 
   .rail__body {
-    grid-template-columns: 33px 1fr auto;
+    grid-template-columns: var(--rail-key) 1fr auto;
     grid-template-areas:
       'play tc state'
       'track track track';
@@ -1209,10 +1210,128 @@ body {
   .source { order: 6; }
   .drawers { order: 7; width: auto; }
   .plan { order: 8; }
-  .notice { order: 9; }
+
+  /* The Gallery notice asks for a drag that is disabled here. */
+  .notice {
+    display: none;
+  }
 
   .source__frame {
     width: 100%;
+  }
+
+  .plan__map {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+  }
+
+  /* The window dock: ink title bars side by side on the wall, one per window; the open one is a
+     paper tab joined to its window, like a drawer pulled out of the cabinet. The ink rule under the
+     row is the open window's top edge. */
+  [data-docked][hidden] {
+    display: none !important;
+  }
+
+  [data-dock] .drawers {
+    display: contents;
+  }
+
+  [data-dock] .dock { order: 3; }
+  [data-dock] [data-docked] { order: 4; }
+  [data-dock] .desk__title { order: 5; }
+  [data-dock] .label { order: 6; }
+
+  .dock {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--u);
+    align-items: end;
+  }
+
+  .dock:has([aria-expanded='true']) {
+    background: linear-gradient(var(--ink), var(--ink)) bottom / 100% var(--hair) no-repeat;
+  }
+
+  .dock__button {
+    min-width: 0;
+    height: calc(var(--u) * 15);
+    margin: 0;
+    padding: 0 var(--u);
+    border: var(--hair) solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    font: 400 var(--pixel-size) / 1 var(--font-pixel);
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: pointer;
+    touch-action: pan-y;
+    --focus-ring: var(--paper);
+  }
+
+  .dock__button:hover {
+    background: color-mix(in oklab, var(--paper) 16%, var(--ink));
+  }
+
+  .dock__button[aria-expanded='true'] {
+    position: relative;
+    z-index: 1;
+    border-bottom-color: var(--paper);
+    background: var(--paper);
+    color: var(--ink);
+    cursor: default;
+  }
+
+  /* The open window hangs from its tab: the gap of the column is taken back and its top edge is the
+     dock's rule. Its title bar is the tab, so its own is only read by assistive technologies. */
+  [data-dock] [data-docked] {
+    margin-top: -12px;
+    border-top: 0;
+  }
+
+  [data-docked] > .win__title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  [data-docked] .win__shade {
+    display: none;
+  }
+
+  /* Options become chips: the 11 px pixel box stays, the row becomes a 45 px cell. */
+  [data-docked] .field {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--u);
+  }
+
+  [data-docked].display .field {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  [data-docked] .field label {
+    min-width: 0;
+    min-height: calc(var(--u) * 15);
+    /* The box sits a half target from the cell's edge, so the whole cell answers around it. */
+    padding: 0 calc(var(--u) * 3) 0 calc(var(--u) * 6);
+    border: var(--hair) solid color-mix(in oklab, var(--ink) 25%, var(--paper));
+    touch-action: pan-y;
+  }
+
+  [data-docked] .field label:has(input:checked) {
+    border-color: var(--ink);
+  }
+}
+
+/* Narrow and phones in portrait: the rooms, Room 7's vertical case and the footer. A phone in
+   landscape keeps the desktop rooms (and gets its own Room 7 below). */
+@media (max-width: 760px) {
+  body {
+    font-size: 16px;
   }
 
   /* With a 12 px margin, the crop marks move closer to the frame so they do not overflow. */
@@ -1228,12 +1347,6 @@ body {
   .case__crop--tr { right: -11px; top: -11px; }
   .case__crop--bl { left: -11px; bottom: -11px; }
   .case__crop--br { right: -11px; bottom: -11px; }
-
-  .plan__map {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 3 / 2;
-  }
 
   .room {
     padding: 72px 20px 84px;
@@ -1291,13 +1404,134 @@ body {
     justify-self: start;
   }
 
+  /* The footer's tail after the last question stays under half a screen (spec story-page). */
+  main > .room:last-child {
+    padding-bottom: 48px;
+  }
+
   .foot {
-    padding: 48px 20px 72px;
+    gap: 24px;
+    padding: 36px 20px 48px;
   }
 
   .foot__mark {
-    width: 216px;
-    height: 216px;
+    width: 180px;
+    height: 180px;
+  }
+}
+
+/* A phone in landscape: the display case and its rail on the left, fitted to the height; the dock
+   and its open window on the right, never over the case. Room 7 takes two columns, its header on
+   the left and a 16:9 case on the right, fitted to the height. */
+@media (orientation: landscape) and (max-height: 500px) {
+  :root {
+    --case-w: min(round(down, 57vw, 3px), round(down, calc((100svh - 102px - var(--case-room, 18px)) * 16 / 9), 3px));
+  }
+
+  [data-dock] .desk {
+    display: grid;
+    grid-template-columns: var(--case-w) minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto;
+    grid-template-areas:
+      'case dock'
+      'case win'
+      'rail win'
+      'title label';
+    column-gap: 24px;
+    row-gap: 12px;
+    align-items: start;
+  }
+
+  [data-dock] .desk > .case { grid-area: case; align-self: start; margin: var(--case-room, 18px) 0 0; }
+  [data-dock] .rail { grid-area: rail; }
+  [data-dock] .dock { grid-area: dock; }
+  [data-dock] [data-docked] { grid-area: win; margin-top: -12px; }
+  [data-dock] .desk__title { grid-area: title; }
+  [data-dock] .label { grid-area: label; }
+
+  /* Beside the case the rail keeps one key's height: the timecode and the state stack beside the
+     play key, and the track takes the rest of the row. */
+  .rail__body {
+    grid-template-columns: var(--rail-key) auto minmax(0, 1fr);
+    grid-template-areas:
+      'play tc track'
+      'play state track';
+    row-gap: 0;
+  }
+
+  .rail__state {
+    text-align: left;
+  }
+
+  /* Nothing covers the case's corner here, unlike the desktop's Plan window. */
+  .case__tag {
+    left: 9px;
+  }
+
+  .scrolltime__stage {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: minmax(0, 1fr) auto;
+    column-gap: 24px;
+    align-items: center;
+    padding: 18px 20px;
+  }
+
+  .scrolltime .room__head {
+    grid-row: 1;
+    grid-column: 1;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .scrolltime__hint {
+    grid-column: 1 / -1;
+  }
+
+  .case--wide {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+    --wide-w: min(round(down, 58vw, 3px), round(down, calc((100svh - 72px) * 16 / 9), 3px));
+    height: round(down, calc(var(--wide-w) * 9 / 16), 3px);
+  }
+
+  .scrolltime__read {
+    grid-row: 2;
+    grid-column: 1;
+    justify-content: start;
+  }
+}
+
+/* Touch: 45 px targets (15 of the 3 px units). The drawings keep their size where they belong to
+   the pixel grid; the shade and the link back grow a transparent hit area. */
+@media (pointer: coarse) {
+  :root {
+    --rail-key: 45px;
+  }
+
+  .field label {
+    min-height: calc(var(--u) * 15);
+  }
+
+  .win__shade {
+    position: relative;
+  }
+
+  .win__shade::before {
+    content: '';
+    position: absolute;
+    inset: -17px;
+  }
+
+  /* The ink tab stays 18 px tall; its box reaches 45 px below the top edge. */
+  .playground-back {
+    height: calc(var(--u) * 15);
+    background: linear-gradient(var(--ink), var(--ink)) top / 100% var(--win-title-h) no-repeat;
+    --focus-ring: var(--paper);
+  }
+
+  /* On narrow screens the display case starts below the link's touch area. */
+  :root {
+    --case-room: 39px;
   }
 }
 

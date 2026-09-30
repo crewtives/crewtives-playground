@@ -75,5 +75,15 @@ FORM: hydrophone spectrogram waterfall (bioacoustics), position 3 of 7 on the or
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
 
+## Phone: the stage deck (adapt-for-phones)
+On narrow screens E follows D's stage deck (`phone-ergonomics`; `cosmic-landings` "Live first screen on the same engine"; design D10 of `adapt-for-phones`) in its own language: under `(max-width: 760px), (orientation: landscape) and (max-height: 500px)`, `placeDeck()` in `main.ts` creates a `.stage-dock` at the end of the pinned stage and moves into it the stage keys and the Time and Colors fieldsets (the same nodes: names, listeners and tab order kept). The deck and the recorder read as one console: a void field in 44 px rows split by grid hairlines, keys with the NOW line, then Time, then Colors, with Handjet legends and E's pixel diamonds; the checked cell is a flat bone field with void text (E's inversion, never a blend). The hint rides above it as a void chip.
+- **The NOW line** is a pair of `aria-hidden` mirrors (`data-deck-now`, never `data-now`): `bindDesktop` collects `[data-now]` once, so the deck writes them itself from its own time subscription with `timecode()` and `playbackLabel()`, each time it creates them, and drops them with the deck. The real outputs stay in the transport for assistive technologies.
+- **Framing:** the full plate fits the free glass between the title block and the deck's hint, read from live rects; in landscape, right of the title and above the deck. The desktop framing is unchanged.
+- **Landscape:** the deck sits on the recorder at the right, flush with the edge like the desktop's column: keys and the NOW line on one row, Time and Colors on the next; the title keeps the top left. (The first plan put it at the top right, where it covered the title at 844×390.)
+- **Targets:** the cells are the finger's targets (the radio covers the cell, unseen; the cell draws the diamond); under a coarse pointer the back tab is a visible 44 px bone strip with the slate at 52 px, and below the hero the Layers rows, the transport play and its track are 44 px.
+- **Gutter:** the phone gutter is set on `:root[data-world='e']`, which the world's own token no longer beats.
+- **Weight:** E loads its pack without the source frames (`loadPack` `source: false`): none of its views can show them. On phones the boot shows the bytes received over the total next to the percentage ("n / 27.0 MiB"); "Weight on disk" still reads the pack's declared 52.8 MiB.
+- **Unchanged:** the desktop, the gesture, the story, and no motion under reduced motion.
+
 ## Unresolved
 - The finish review (task 8.5 of `add-cosmic-landings-and-organic-motion`) and the regeneration of `docs/design/DESIGN.md` were left for the end of that change.

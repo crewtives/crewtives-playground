@@ -36,6 +36,7 @@ FIRST VIEWPORT:
 - On the right: a vertical rail of edge codes, plus clock, layers and display as leader cards.
 - At the bottom, a full-width horizontal strip (≈18vh) with the atlas's source frames, perforations, codes and numbers. A fixed gate at the center marks the NOW, and the strip slides under it during playback, with the timecode above.
 - Primary action: grab the strip.
+- Phones (up to 820 px wide, or landscape up to 500 px tall): the slate, the gate, the strip and then the **window dock** (spec desktop-shell "Narrow viewport"; design adapt-for-phones D9): four black leader bands (Layers, Stock, Camera, Clock) in the dot-matrix edge type, 44 px tall; the open band carries the leak's orange edge and its card hangs from it, with the card's edge code moved to a leader band at its bottom edge. Layers is open on arrival. The gate is half the screen, less on short phones (`min(50svh, 117svh − 566px)`), so that a short scroll shows any card whole with at least 85 % of the gate. In landscape the slate, the dock and its card take the left column and the gate and the strip the right one, the strip's head standing beside the film, so gate and strip fit one screen and no card covers the gate. Touch targets are 44 px (the strip's key, the ruler, the options, the link back's box below its tab).
 
 Signature interaction: pulling the strip through the gate, with inertia; in rewind, the edge floods with orange.
 

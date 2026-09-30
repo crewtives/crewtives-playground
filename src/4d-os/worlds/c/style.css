@@ -992,14 +992,226 @@ body {
     grid-template-columns: 1fr;
   }
   .tail {
+    margin-top: 0;
     padding: 36px 16px 24px;
+  }
+  /* The footer's mark no taller than the screen is wide, and the tail after the last question under
+     half a screen (spec story-page). */
+  .reels > .reel:last-child {
+    padding-bottom: 48px;
+  }
+  .tail__mark {
+    height: min(80vw, 56svh);
+    min-height: 0;
+  }
+
+  /* The window dock: black leader bands under the strip, one per card, and the open card hangs from
+     its band. The open band has the leak's orange edge; the card's edge code moves to a leader band at
+     its bottom edge, since its own title is the band above. */
+  [data-docked][hidden] {
+    display: none !important;
+  }
+  [data-dock] .desk {
+    min-height: 0;
+    grid-template-areas:
+      'slate'
+      'gate'
+      'strip'
+      'dock'
+      'cards';
+  }
+  /* The gate is half the screen, less on short phones, so that a short scroll shows any open card
+     whole together with at least 85% of the gate. */
+  [data-dock] .gate {
+    height: min(50svh, calc(117svh - 566px));
+  }
+  [data-dock] .gate__aperture {
+    min-height: 0;
+  }
+  .dock {
+    grid-area: dock;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .dock__button {
+    min-width: 0;
+    height: 44px;
+    margin: 0;
+    padding: 0 6px;
+    border: 0;
+    background: var(--leader);
+    color: var(--paper);
+    font: 700 var(--pixel-size) / 1 var(--font-pixel);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: pointer;
+    touch-action: pan-y;
+  }
+  .dock__button:hover {
+    background: var(--pal-16-1);
+  }
+  .dock__button[aria-expanded='true'] {
+    background: var(--leader);
+    box-shadow: inset 0 -4px 0 var(--leak);
+    cursor: default;
+  }
+  .dock__button:focus-visible {
+    outline: 2px solid var(--leader);
+    outline-offset: 2px;
+  }
+  [data-dock] .desk__cards {
+    display: block;
+    margin-top: -16px;
+  }
+  [data-docked] {
+    display: flex;
+    flex-direction: column-reverse;
+    border-top: 0;
+    touch-action: pan-y;
+  }
+  [data-docked] > .win__title {
+    justify-content: flex-end;
+    box-shadow: none;
+  }
+  [data-docked] > .win__title > span:first-child {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  /* Options become cells of 44 px; the legend stands on the left of its first row, like an edge code.
+     A positioned legend is an ordinary child of its fieldset in every engine. */
+  [data-docked] fieldset {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    margin-bottom: 8px;
+    padding-left: 64px;
+  }
+  [data-docked] legend {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    line-height: 44px;
+  }
+  [data-docked][data-window='display'] fieldset {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  [data-docked] label {
+    min-width: 0;
+    min-height: 44px;
+    /* The box sits a half target from the cell's edge, so the whole cell answers around it. */
+    padding: 0 10px 0 16px;
+    border: var(--hair) solid color-mix(in oklab, var(--leader) 35%, var(--paper));
+  }
+  [data-docked] label:has(input:checked) {
+    border-color: var(--leader);
+  }
+  /* The camera's frame beside its reading, so the card stays short. */
+  [data-docked][data-window='source'] .win__body {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 10px;
+    align-items: end;
+  }
+  [data-docked] .source__meta {
+    margin: 0;
   }
 }
 
-/* Phone in landscape: the gate takes up almost the full height, like the first screen in portrait. */
+/* Phone in landscape: the gate takes up almost the full height, like the first screen in portrait.
+   With the dock, the slate, the dock and its card take the left column; the gate and the strip the
+   right one, so the gate and the strip fit one screen and no card covers the gate. */
 @media (orientation: landscape) and (max-height: 500px) {
   .gate {
     height: 80svh;
+  }
+  [data-dock] .desk {
+    height: 100svh;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'slate gate'
+      'dock gate'
+      'cards gate'
+      'cards strip';
+    gap: 12px 16px;
+    padding: 12px;
+  }
+  [data-dock] .slate {
+    padding-top: 20px;
+  }
+  [data-dock] .slate__title {
+    font-size: 2rem;
+  }
+  [data-dock] .gate {
+    height: auto;
+    min-height: 0;
+  }
+  [data-dock] .gate__aperture {
+    min-height: 0;
+  }
+  [data-dock] .desk__cards {
+    margin-top: -12px;
+  }
+  /* The strip's head stands beside the film: play, timecode and state stacked. */
+  [data-dock] .strip {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'head film'
+      'head track';
+    column-gap: 12px;
+  }
+  [data-dock] .strip__head {
+    grid-area: head;
+    flex-direction: column;
+    align-items: start;
+    gap: 8px;
+    margin: 0;
+  }
+  [data-dock] .strip__state {
+    margin-left: 0;
+  }
+  [data-dock] .strip__window {
+    grid-area: film;
+    --frame-w: 80px;
+  }
+  [data-dock] .strip .timeline__track {
+    grid-area: track;
+  }
+}
+
+/* Touch: 44 px targets on the strip, the ruler and the rows; the link back's leader tab stays
+   16 px tall and its box reaches 44 px below the top edge. */
+@media (pointer: coarse) {
+  .strip__play {
+    width: 44px;
+    height: 44px;
+  }
+  .timeline__track {
+    height: 44px;
+  }
+  .win label {
+    min-height: 44px;
+  }
+  .playground-back {
+    align-items: flex-start;
+    height: 44px;
+    padding-top: 2px;
+    background: linear-gradient(var(--leader), var(--leader)) top / 100% 16px no-repeat;
+  }
+  .playground-back:focus-visible {
+    outline: 2px solid var(--leader);
+    outline-offset: 2px;
   }
 }
 

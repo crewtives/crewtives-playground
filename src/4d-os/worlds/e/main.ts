@@ -9,10 +9,10 @@ import { closeUp } from '../../../engine/shell/closeUp';
 import { prefersReducedMotion } from '../../../engine/display/cssColor';
 import { installDevRafShim } from '../../../engine/shell/devRafShim';
 import { bindDesktop } from '../../../engine/shell/desktop';
-import { packStats } from '../../../engine/shell/packStats';
+import { formatBytes, packStats } from '../../../engine/shell/packStats';
 import { setupSmoothScroll } from '../../../engine/shell/smoothScroll';
 import { bindZoomHero, type HeroPhaseId } from '../../../engine/shell/zoomHero';
-import { TimeController } from '../../../engine/time/TimeController';
+import { playbackLabel, timecode, TimeController } from '../../../engine/time/TimeController';
 import { TimeViewer } from '../../../engine/viewer/TimeViewer';
 import { TesseractView } from '../../../engine/views/tesseract';
 import { WHALE_FALL, fallStateAtFrame, properTimeExact } from '../../../pipeline/scenes/whaleFall';
@@ -33,6 +33,8 @@ const $ = <T extends HTMLElement = HTMLElement>(selector: string) => {
 };
 
 const reduced = prefersReducedMotion();
+/** Narrow screens and landscape phones: the console goes below the hero and the first-screen tools dock in the stage. */
+const STACKED = '(max-width: 760px), (orientation: landscape) and (max-height: 500px)';
 
 async function main(): Promise<void> {
   if (import.meta.env.DEV) installDevRafShim();
@@ -47,12 +49,20 @@ async function main(): Promise<void> {
   // The footer's mark does not depend on the 4D pack.
   engine.add(new TesseractView($('[data-view="tesseract"]'), { colorToken: '--bone', size: 0.9 }));
 
+  // On narrow screens the first-screen tools dock in the stage from the first paint, boot included.
+  const stacked = window.matchMedia(STACKED);
+  const deck = placeDeck(stacked, $('.obs__stage'));
+
   const booting = bootPack({
     url: PACK_URL,
     boot: $('[data-boot]'),
     display,
     engine,
     errorText: (error) => `The signal did not arrive. ${defaultErrorText(error)}`,
+    // No view of E can show the frustum's image plane or use the source-camera light (all of them set
+    // frustum and frustumLight off, and no control turns them on): the source frames are not requested.
+    load: { source: false },
+    onProgress: bootWeight(stacked, $('[data-boot] .boot__pct')),
   });
   // The lens textures are computed while the bytes arrive, not during the reveal.
   prepareLensTextures();
@@ -65,6 +75,7 @@ async function main(): Promise<void> {
   const time = new TimeController({ frameCount, fps, mode: 'all' });
   engine.addTicker((dt) => time.update(dt));
   time.subscribe(() => engine.invalidate());
+  deck.attach(time);
 
   const viewElement = $('[data-view="scene"]');
   const view = new TimeViewer({
@@ -105,9 +116,26 @@ async function main(): Promise<void> {
   engine.add(view);
 
   const narrow = window.matchMedia('(max-width: 760px)');
+  const landscapePhone = window.matchMedia('(orientation: landscape) and (max-height: 500px)');
   const restDistance = () => (portrait.matches ? 4.2 : narrow.matches ? 3.3 : 3.6);
-  // On the desktop the full plate leaves the title's corner clear.
-  const plateFrame = (): ViewFrame => (narrow.matches ? { left: 0.03, top: 0.16, right: 0.97, bottom: 0.97 } : { left: 0.03, top: 0.2, right: 0.97, bottom: 0.97 });
+  const slate = $('.slate');
+  const slateTitle = $('.slate__title');
+  // On the desktop the full plate leaves the title's corner clear. With the stage deck, the plate fits the
+  // free glass read from live rects, like D's: below the title and above the deck and its hint (in
+  // landscape, right of the title and above the deck).
+  const plateFrame = (): ViewFrame => {
+    const dock = deck.dock();
+    if (!dock) return narrow.matches ? { left: 0.03, top: 0.16, right: 0.97, bottom: 0.97 } : { left: 0.03, top: 0.2, right: 0.97, bottom: 0.97 };
+    const box = viewElement.getBoundingClientRect();
+    const width = Math.max(1, box.width);
+    const height = Math.max(1, box.height);
+    const hint = dock.querySelector('.hint')?.getBoundingClientRect();
+    const dockTop = dock.getBoundingClientRect().top;
+    const bottom = ((hint && hint.height > 0 ? Math.min(hint.top, dockTop) : dockTop) - box.top - 8) / height;
+    // Landscape: the title alone (fit to its text; the slate's line is hidden there) takes the top left.
+    if (landscapePhone.matches) return { left: (slateTitle.getBoundingClientRect().right - box.left + 12) / width, top: 0.04, right: 0.97, bottom };
+    return { left: 0.03, top: (slate.getBoundingClientRect().bottom - box.top + 8) / height, right: 0.97, bottom };
+  };
   const chase = bindChaseCam({
     engine,
     viewer: view,
@@ -302,6 +330,111 @@ async function main(): Promise<void> {
 
   // Development only: verification from Playwright.
   if (import.meta.env.DEV) Object.assign(window, { __e: { engine, view, chase, hero, time, pack, plate, horizon, plateClock, fall } });
+}
+
+/**
+ * The stage deck (spec cosmic-landings "Live first screen on the same engine"; design D10), the twin of
+ * D's `placeMonitor`: while `query` matches, a `.stage-dock` at the end of the stage holds the stage keys
+ * and the Time and Colors fieldsets. The same nodes move, so they keep their names, their listeners and
+ * the tab order (keys, Time, Colors, then Layers and the transport below the hero). The NOW line is a pair
+ * of aria-hidden mirrors (`data-deck-now`, never `data-now`: `bindDesktop` collects `[data-now]` once, when
+ * it is called, and would never see a mirror created later); the real outputs stay in the transport for
+ * assistive technologies. The mirrors are written here, from a time subscription of their own, each time
+ * they are created. When the query stops matching, every node goes back where it was and the mirrors and
+ * their subscription are dropped.
+ */
+function placeDeck(query: MediaQueryList, stage: HTMLElement): { dock: () => HTMLElement | null; attach: (time: TimeController) => void } {
+  const keys = $('.stage-keys');
+  const keysBefore = keys.nextElementSibling;
+  const fieldsetOf = (selector: string) => $(selector).closest('fieldset')!;
+  const timeSet = fieldsetOf('input[name="mode"]');
+  const colorsSet = fieldsetOf('input[name="depth"]');
+  const monitor = timeSet.parentElement!;
+  const colorsBefore = colorsSet.nextElementSibling;
+  let dock: HTMLElement | null = null;
+  let now: HTMLElement | null = null;
+  let time: TimeController | null = null;
+  let unsubscribe: (() => void) | null = null;
+
+  const mirror = (name: string) => {
+    const span = document.createElement('span');
+    span.dataset.deckNow = name;
+    return span;
+  };
+  const addMirrors = () => {
+    if (!dock || !time || now) return;
+    const clock = time;
+    const tc = mirror('timecode');
+    const state = mirror('state');
+    now = document.createElement('p');
+    now.className = 'stage-dock__now';
+    now.setAttribute('aria-hidden', 'true');
+    now.append(tc, state);
+    keys.querySelector('.keys')!.after(now);
+    const write = () => {
+      tc.textContent = timecode(clock.state.frame, clock.fps);
+      state.textContent = playbackLabel(clock.state);
+    };
+    write();
+    unsubscribe = clock.subscribe(write);
+  };
+  const place = () => {
+    if (query.matches && !dock) {
+      dock = document.createElement('div');
+      dock.className = 'stage-dock';
+      stage.append(dock);
+      dock.append(keys, timeSet, colorsSet);
+      addMirrors();
+    } else if (!query.matches && dock) {
+      unsubscribe?.();
+      unsubscribe = null;
+      now?.remove();
+      now = null;
+      stage.insertBefore(keys, keysBefore);
+      monitor.insertBefore(colorsSet, colorsBefore);
+      monitor.insertBefore(timeSet, colorsSet);
+      dock.remove();
+      dock = null;
+    }
+  };
+  place();
+  query.addEventListener('change', place);
+  return {
+    dock: () => dock,
+    attach: (clock) => {
+      time = clock;
+      addMirrors();
+    },
+  };
+}
+
+/**
+ * The boot's weight on narrow screens: the MiB received over the total the page requests, next to the
+ * percentage (a phone waits long enough to want the scale). Created while `query` matches, removed when it
+ * stops matching; the returned function is the boot's progress callback.
+ */
+function bootWeight(query: MediaQueryList, line: HTMLElement): (progress: number, received: number, total: number) => void {
+  let text = '';
+  let node: HTMLElement | null = null;
+  const place = () => {
+    if (query.matches && !node) {
+      node = document.createElement('span');
+      node.className = 'boot__weight';
+      // The percentage already reports the progress to the live region: the weight is for the eye.
+      node.setAttribute('aria-hidden', 'true');
+      node.textContent = text;
+      line.append(node);
+    } else if (!query.matches && node) {
+      node.remove();
+      node = null;
+    }
+  };
+  place();
+  query.addEventListener('change', place);
+  return (_progress, received, total) => {
+    text = `${formatBytes(received)} / ${formatBytes(total)}`;
+    if (node) node.textContent = text;
+  };
 }
 
 /**

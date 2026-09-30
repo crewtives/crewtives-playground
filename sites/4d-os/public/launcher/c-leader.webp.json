@@ -1,0 +1,4 @@
+{
+  "prompt": "Pre-existing raster, not generated: a byte-for-byte copy of sites/playground/public/landings/_shared/stills/c.webp (SHA-256 5f89f8cd52203b093fb82fdd462dd7337ffc5e3737e905b0cca8e3aa140f0e9a), the still of 4D.OS world C · Leader, served with the 4D.OS site for the launcher's phone layout (stills until the visitor runs the scene live). Its record: Pre-existing raster, not generated: the still of 4D.OS world C · Leader (/4d-os/c/). Origin: src/pipeline/captures/c-leader.png. Method: Screenshot of the live render of /c/ (pack cat-stairs) playing at frame 334, Chromium headless (Playwright) with SwiftShader at 1440×900, cropped to 4:3 (1200×900 from x=0); converted to WebP with cwebp -lossless -z 9, not resized, retouched or re-dithered. Captured: 2026-09-25. Synthetic scene. Credit: \"Cat\" by J-Toastie, CC-BY 3.0. Full record: sites/playground/public/landings/_shared/stills/provenance.json.",
+  "createdAt": "2026-09-25T01:01:37.597Z"
+}

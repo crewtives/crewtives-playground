@@ -1,6 +1,7 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
+import { formatBytes, packBytes } from '../../src/engine/shell/packStats.ts';
 import { siteMetadata } from '../../src/site/build/plugin.ts';
 import { packSaver } from '../../tools/vite/pack-saver.ts';
 import { repoSrcInDev } from '../../tools/vite/repo-src-in-dev.ts';
@@ -19,7 +20,15 @@ function entry(path: string): string {
 // them under `vite dev` because they exist on disk, but they are not listed here.
 const worldPages = ['a', 'b', 'c', 'd', 'e'].map((name) => [name, entry(resolve(site, name, 'index.html'))] as const);
 
+/**
+ * The weight of the launcher's pack, as its "Run the scene live" button shows it on phones (spec
+ * cosmic-landings, "Presence in the launcher"): the sum of the files in `cat-stairs/scene.json`, in binary
+ * units, read when the site is built, so the phone requests no file of the pack before the button.
+ */
+const launcherPackWeight = formatBytes(packBytes(JSON.parse(readFileSync(resolve(site, 'public/packs/cat-stairs/scene.json'), 'utf8'))));
+
 export default defineConfig(({ command }) => ({
+  define: { __LAUNCHER_PACK_WEIGHT__: JSON.stringify(launcherPackWeight) },
   root: site,
   // The build is published at playground.crewtives.com/4d-os/; in development it is still served from the root.
   base: command === 'build' ? '/4d-os/' : '/',

@@ -30,6 +30,7 @@ FIRST VIEWPORT:
 - Under the vitrine and as wide as it, the timeline as a museum rail, with the primary action (play).
 - Top left the room plan; top right the clock.
 - Layers and display folded against the left edge.
+- Phones (the NARROW query of main.ts: up to 760 px wide, or landscape up to 500 px tall): the vitrine full width, the rail under it, then the **window dock** (spec desktop-shell "Narrow viewport"; design adapt-for-phones D9): five ink title bars side by side on the wall (Layers, Display, Camera 1, Plan, Clock), 45 px tall on the 3 px grid; the open one is a paper tab joined to its window, whose top edge is the ink rule under the row. Layers is open on arrival, and the vitrine and any window are whole together on the first screen at 360–430 px. The options become 45 px cells around the 11 px pixel box. The Gallery notice and the shades are hidden (dragging is off). In landscape the vitrine and its rail fill the left, fitted to the height, and the dock with its window stands on the right, never over the case; Room 7 turns into two columns with a 16:9 case fitted to the height. Touch targets are 45 px; the link back keeps its 18 px ink tab and its box reaches 45 px, so the vitrine starts below it.
 
 Signature interaction: dragging the rail slides the spotlight (the frustum light) across the vitrine.
 

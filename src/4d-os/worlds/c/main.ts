@@ -13,10 +13,17 @@ import { paintSourceFrame } from '../../../engine/shell/sourceFrames';
 import { TimeController } from '../../../engine/time/TimeController';
 import { TimeViewer, aspectOf } from '../../../engine/viewer/TimeViewer';
 import { LifeStackView } from '../../../engine/views/lifeStack';
+import { bindDock } from '../../../engine/window/dock';
 import { bindWindows } from '../../../engine/window/windows';
 import { TesseractView } from '../../../engine/views/tesseract';
 import { leakTexture } from './film';
 import { bindFilmStrip } from './strip';
+
+/**
+ * Narrow screens (C's desktop needs 820 px) and phones in landscape: the cards gather in the window
+ * dock under the strip (spec desktop-shell "Narrow viewport"); the same string gates style.css.
+ */
+const NARROW = '(max-width: 820px), (orientation: landscape) and (max-height: 500px)';
 
 const PACK_URL = `${import.meta.env.BASE_URL}packs/cat-stairs/`;
 
@@ -33,6 +40,12 @@ async function main(): Promise<void> {
   display.onChange(() => engine.invalidate());
 
   setupSmoothScroll();
+  bindDock({
+    query: NARROW,
+    windows: ['layers', 'display', 'source', 'clock'],
+    initial: 'layers',
+    mount: (bar) => $('.strip').after(bar),
+  });
 
   engine.add(
     new LifeStackView($('[data-view="life"]'), {

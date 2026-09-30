@@ -57,10 +57,17 @@ export function bindSequenceSheet(list: HTMLElement, time: TimeController, pack:
   };
 }
 
-/** Muybridge grid: numbers the columns of the engraved grid (one every 64 px). */
-export function bindGraticule(graticule: HTMLElement, spacing = 64): () => void {
+/** How far a column number reaches past its line: its 5 px offset and up to two digits. */
+const GRATICULE_NUMBER_REACH = 24;
+
+/**
+ * Muybridge grid: numbers the columns of the engraved grid (one every 64 px). While `whole()` is true
+ * (narrow screens), a number the glass's edge would cut in half is left out.
+ */
+export function bindGraticule(graticule: HTMLElement, spacing = 64, whole: () => boolean = () => false): () => void {
   const draw = () => {
-    const columns = Math.floor(graticule.clientWidth / spacing);
+    const width = graticule.clientWidth;
+    const columns = Math.floor((whole() ? width - GRATICULE_NUMBER_REACH : width) / spacing);
     const fragment = document.createDocumentFragment();
     for (let i = 1; i <= columns; i++) {
       const number = document.createElement('span');
