@@ -150,7 +150,7 @@ export const PAGES: readonly PageMeta[] = [
     title: 'Vitrine · 4D.OS: a synthetic cat climbing stairs in a red gallery',
     description:
       'A live 4D reconstruction hung like a museum piece: every moment of a synthetic black cat climbing a flight of stairs in an alley at night, on display at once.',
-    alt: `World A, Vitrine, captured from its live render: inside the red gallery wall, the vitrine of points where the synthetic black cat, in cyan, climbs the stairway, its earlier steps left behind as grey ghost cats, and the source camera drawn as a white frustum. Beside it, a band reads “4D.OS”, “crewtives playground” and “Vitrine”, with the mark “synthetic”. Cat model: ${CREDIT}.`,
+    alt: `World A, Vitrine, captured from its live render: inside the red gallery wall, the vitrine of points where the synthetic black cat, in cyan, climbs the stairway, its earlier steps left behind as gray ghost cats, and the source camera drawn as a white frustum. Beside it, a band reads “4D.OS”, “crewtives playground” and “Vitrine”, with the mark “synthetic”. Cat model: ${CREDIT}.`,
     jsonLd: 'CreativeWork',
     frameShows: ['a'],
   }),
