@@ -263,6 +263,9 @@ body::after {
   height: 28px;
   cursor: ew-resize;
   touch-action: none;
+  /* A drag on it selects no text (and so starts no drag autoscroll), with a mouse or a finger. */
+  user-select: none;
+  -webkit-user-select: none;
 }
 .clock__rail {
   position: absolute;
@@ -1037,10 +1040,16 @@ html {
 
 /* ≤759: one column; the bar in two rows at the top and the clock fixed at the bottom. */
 @media (max-width: 759px) {
-  /* The target of a jump lands below the bar, and focus is never covered by the clock. */
+  /* The target of a jump lands just below the bar's sticky row, and focus is never covered by the clock. */
   html {
-    scroll-padding-top: 96px;
-    scroll-padding-bottom: 96px;
+    /* The title row scrolls away (8 px of padding, a 20 px line and 2 of the 8 px gap): only the
+       navigation row stays, 45 px with the 6 px bands that keep its 44 px hit areas inside the bar. */
+    --bar-title-row: 30px;
+    --bar-stuck: 45px;
+    /* The clock bar: the loops line in two lines above the states and the scrubber. */
+    --clock-h: 79px;
+    scroll-padding-top: calc(var(--bar-stuck) + var(--M));
+    scroll-padding-bottom: calc(var(--clock-h) + var(--M));
     /* The épure is 17M (272 px) wide: 21.5 units read at 12 px. */
     --ep-label: 21.5px;
   }
@@ -1048,13 +1057,18 @@ html {
   .ep-label {
     letter-spacing: 0;
   }
+  /* The bar sheds its title row: sticky with a negative top, so only the navigation row stays. */
   .bar {
+    top: calc(-1 * var(--bar-title-row));
     grid-template-columns: 1fr;
-    gap: 4px;
+    gap: 8px;
     padding: 8px var(--M) 6px;
   }
   .bar__title {
     font-size: 1.0625rem;
+    /* One fixed line, so the offset that sheds it stays exact. */
+    line-height: 20px;
+    white-space: nowrap;
   }
   /* No breaks inside each link: at 320 px all four fit with 4 px between them. */
   .bar__nav {
@@ -1066,7 +1080,7 @@ html {
     inset: auto 0 0 0;
     z-index: 20;
     justify-self: stretch;
-    padding: 6px var(--M) calc(6px + env(safe-area-inset-bottom));
+    padding: 6px var(--M) calc(8px + env(safe-area-inset-bottom));
     background: var(--sheet);
     border-top: 1px solid var(--ink);
   }
@@ -1078,8 +1092,11 @@ html {
     flex: 1;
     width: auto;
   }
+  /* The states give up most of their tracking, and the scrubber takes the width: 151 px at 390. */
   .clock__state {
-    padding: 9px 7px 8px;
+    padding: 9px 5px 8px;
+    letter-spacing: 0.02em;
+    gap: 5px;
   }
   .museum {
     padding-inline: var(--M);
@@ -1158,7 +1175,173 @@ html {
     padding-bottom: calc(2 * var(--M));
   }
   body {
-    padding-bottom: 96px;
+    padding-bottom: var(--clock-h);
+  }
+}
+
+/* Phone in landscape (the query of worlds B, D and E): height is the scarce axis. The bar is static in
+   one row; the clock is docked at the bottom in one row (states, a long scrubber, the loops line in two
+   lines at the right); each sheet reads as on the desktop, the VISTA fitted to the height beside its
+   épure. After the ≤759 block, which it overrides at 667 px wide. */
+@media (orientation: landscape) and (max-height: 500px) {
+  html {
+    --clock-h: 47px;
+    scroll-padding-top: var(--M);
+    scroll-padding-bottom: calc(var(--clock-h) + var(--M));
+    --ep-label: 21.5px;
+  }
+  .bar {
+    position: static;
+    grid-template-columns: auto 1fr;
+    gap: var(--M);
+    padding: 6px var(--M);
+  }
+  .bar__title {
+    font-size: 1.0625rem;
+  }
+  .bar__nav {
+    justify-content: flex-end;
+    gap: calc(0.5 * var(--M));
+  }
+  .clock {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 20;
+    grid-column: auto;
+    grid-row: auto;
+    justify-self: stretch;
+    display: flex;
+    align-items: center;
+    gap: var(--M);
+    min-height: var(--clock-h);
+    padding: 1px var(--M) calc(1px + env(safe-area-inset-bottom));
+    background: var(--sheet);
+    border-top: 1px solid var(--ink);
+  }
+  .clock__controls {
+    order: 0;
+    flex: 1;
+    width: auto;
+  }
+  .clock__scrub {
+    flex: 1;
+    width: auto;
+  }
+  .clock__state {
+    padding-inline: 6px;
+    letter-spacing: 0.02em;
+    gap: 5px;
+  }
+  .clock__line {
+    order: 1;
+    max-width: 30ch;
+    text-align: left;
+  }
+  body {
+    padding-bottom: var(--clock-h);
+  }
+  .museum {
+    padding-inline: var(--M);
+  }
+  .sheet__frame {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'views epure'
+      'views title-block'
+      'text text';
+    grid-template-rows: auto 1fr auto;
+    padding: calc(0.5 * var(--M));
+    column-gap: var(--M);
+    row-gap: calc(0.5 * var(--M));
+  }
+  /* The tools sit at the top right of the épure's cell, never on the fillet under the bar. */
+  .sheet__tools {
+    position: static;
+    transform: none;
+    grid-area: epure;
+    justify-self: end;
+    align-self: start;
+    z-index: 1;
+  }
+  .vista {
+    padding: calc(0.5 * var(--M));
+  }
+  /* The single VISTA fits the band between the bar and the docked clock (221 px, k = 3, at 390 tall). */
+  .sheet__views:not(.sheet__views--three) .vista__slot,
+  .sheet--featured .vista__slot {
+    width: calc(100svh - var(--clock-h) - 45px - 2.5 * var(--M) - 6px);
+    aspect-ratio: 1;
+  }
+  .sheet__epure {
+    width: min(17 * var(--M), 100%);
+    max-width: none;
+    justify-self: start;
+  }
+  /* 001: the three VISTAS side by side across the sheet, the épure and the title block below. */
+  .sheet__frame:has(.sheet__views--three) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      'views views'
+      'epure title-block'
+      'text text';
+  }
+  .sheet__views--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .sheet__views--three .credit {
+    grid-column: 1 / -1;
+  }
+  /* 000: column and tesseract side by side; the title block and the text below. */
+  .sheet--method .sheet__frame {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      'column tesseract'
+      'title-block text';
+  }
+  .sheet--method .sheet__tools {
+    grid-area: column;
+  }
+}
+
+/* Index rows on a phone in portrait: the number and the form above the poster, in a 5M column; the text
+   takes the rest of the width, so the dimensions fit one line. The DOM order does not change. */
+@media (max-width: 759px) and (orientation: portrait) {
+  .index__link {
+    grid-template-columns: calc(5 * var(--M)) minmax(0, 1fr);
+    grid-template-areas:
+      'meta name'
+      'thumb name'
+      'thumb dims'
+      'thumb date';
+    grid-template-rows: auto auto auto 1fr;
+    align-items: start;
+    column-gap: calc(0.75 * var(--M));
+    row-gap: 4px;
+    padding-block: 12px;
+  }
+  .index__link .index__no {
+    grid-area: meta;
+  }
+  .index__link .index__form {
+    grid-area: meta;
+    justify-self: end;
+  }
+  .index__link .index__thumb {
+    grid-area: thumb;
+    width: calc(5 * var(--M));
+    height: calc(3 * var(--M));
+  }
+  .index__link .index__name {
+    grid-area: name;
+  }
+  .index__link .index__dims {
+    grid-area: dims;
+  }
+  .index__link .index__date {
+    grid-area: date;
+  }
+  .index__credit {
+    padding-left: calc(5.75 * var(--M));
   }
 }
 
@@ -1282,4 +1465,102 @@ g.axo-proj {
 .ep-hinge {
   fill: transparent;
   cursor: ns-resize;
+}
+
+/* ── Touch screens: the drawing stays, the hit grows ──────────────────────────────────────────── */
+/* Each control keeps its drawn size; a transparent, centered hit area of 44 × 44 CSS px grows around it
+   (`::after`, or `::before` on the scrubber, whose states already draw their dot with `::before`). Full-
+   width ruled rows simply become 44 px tall. A desktop mouse never matches this query. */
+@media (pointer: coarse) {
+  .bar__link,
+  .bar__button,
+  .clock__state,
+  .tool,
+  .vista__label > a {
+    position: relative;
+  }
+  .bar__link::after,
+  .bar__button::after,
+  .clock__state::after,
+  .clock__scrub::before,
+  .tool::after,
+  .vista__label > a::after {
+    content: '';
+    position: absolute;
+    top: calc(50% - 22px);
+    bottom: calc(50% - 22px);
+    left: min(0px, calc(50% - 22px));
+    right: min(0px, calc(50% - 22px));
+  }
+  /* The VISTA label's link fills its ruled box (the same drawn box), so the hit centers on it. */
+  .vista__label:has(> a) {
+    padding: 0;
+  }
+  .vista__label > a {
+    display: block;
+    padding: 6px 8px 5px;
+  }
+  .title-block__more > summary,
+  .title-block__enter,
+  .colophon__shortcuts,
+  .index__gate a {
+    min-height: 44px;
+  }
+  .colophon__back a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  /* "House pixels": each label is the target of its radio, 44 px tall and reaching 21 px past it. */
+  .house-pixels {
+    column-gap: 0;
+  }
+  .house-pixels label {
+    min-height: 44px;
+    padding-inline: 12px;
+  }
+  /* Without its default top margin the radio sits at the label's center. */
+  .house-pixels input {
+    margin-block: 0;
+  }
+
+  /* The ground line claims no touch, so a swipe that starts on an épure scrolls the page. The fold is
+     dragged from a grip at the line's right end (created by the script): a 14 px square ink mark split
+     by the ground line, flush with the épure's right edge, whose 44 px hit area grows to the left. It is
+     square so it is never read as the NOW. The ground line sits at 300 of the épure's 480 × 600 units:
+     62.5 % of its width. */
+  .ep-hinge {
+    pointer-events: none;
+  }
+  .sheet__epure {
+    container-type: inline-size;
+  }
+  .ep-grip {
+    position: absolute;
+    top: calc(62.5cqi - 22px);
+    right: 0;
+    width: 44px;
+    height: 44px;
+    cursor: ns-resize;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  .ep-grip::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    right: 0;
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid var(--ink);
+    background:
+      linear-gradient(var(--ink), var(--ink)) center / 100% 1px no-repeat,
+      var(--sheet);
+  }
+  /* Folded, the épure is hidden under its dihedron: so is its grip ("Fold" and F return it to flat). */
+  .sheet__epure.is-folding .ep-grip {
+    visibility: hidden;
+  }
 }

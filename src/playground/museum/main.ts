@@ -8,6 +8,7 @@ import { motion } from '../shared/motion';
 import { hasWebGL2 } from '../shared/probe';
 import type { RuntimeSheet } from './build/render';
 import { clockKey, isTextField, PageClock, ScrubChase, type ClockState } from './clock';
+import { clockAria, type ClockAriaWrite } from './clockAria';
 import type { FoldOptions } from './fold';
 import { LoopPlayer } from './player';
 
@@ -190,16 +191,34 @@ function paintClockUi(): void {
   for (const button of stateButtons) setAttr(button, 'aria-pressed', String(button.dataset.state === clock.state));
   const frame = clock.frame;
   scrub.style.setProperty('--pos', String(frame / (clock.frames - 1)));
-  // While the clock runs, the scrubber's value does not change on every frame (a screen reader would
-  // read it non-stop): it says which way it is going. In HOLD, or while it is used, it says its position:
-  // the requested one, even if the clock is still chasing it.
-  if (clock.running) setAttr(scrub, 'aria-valuetext', clock.state === 'rewind' ? 'rewinding' : 'playing forward');
-  else {
-    const value = (scrubTarget ?? frame) + 1;
-    setAttr(scrub, 'aria-valuenow', String(value));
-    setAttr(scrub, 'aria-valuetext', `frame ${value} of ${clock.frames}, hold`);
-  }
+  exposePosition();
 }
+
+/**
+ * The scrubber's value for assistive technologies (clockAria.ts): at once on focus and on every change
+ * of state, at most once a second while the clock runs unfocused, and not while it runs with focus (a
+ * screen reader would announce every write). In HOLD, or while it is used, it is the requested
+ * position, even if the clock is still chasing it.
+ */
+let exposed: ClockAriaWrite | null = null;
+function exposePosition(focusing = false): void {
+  const write = clockAria(
+    {
+      state: clock.state,
+      frame: clock.running ? clock.frame : (scrubTarget ?? clock.frame),
+      frames: clock.frames,
+      focused: document.activeElement === scrub,
+      now: performance.now(),
+    },
+    exposed,
+    focusing,
+  );
+  if (!write) return;
+  exposed = write;
+  setAttr(scrub, 'aria-valuenow', String(write.value));
+  setAttr(scrub, 'aria-valuetext', write.text);
+}
+scrub.addEventListener('focus', () => exposePosition(true));
 
 /** A gesture on the clock: with reduced motion it requests the loops of the sheets on screen. */
 function clockGesture(): void {
@@ -269,6 +288,10 @@ function scrubTo(frame: number): void {
   else chase();
 }
 scrub.addEventListener('pointerdown', (event) => {
+  // No text selection and no drag autoscroll. Preventing the default also keeps a mouse press from
+  // focusing the scrubber, so it is focused here: the arrow keys go on working after a drag.
+  event.preventDefault();
+  scrub.focus({ preventScroll: true });
   scrub.setPointerCapture(event.pointerId);
   setState('hold');
   scrubTo(frameAt(event.clientX));
@@ -467,7 +490,11 @@ for (const row of $$<HTMLElement>('.index__row[data-sheet]')) {
     hover = window.setTimeout(open, 300);
   });
   link.addEventListener('pointerleave', close);
-  link.addEventListener('focus', open);
+  // Focus from the keyboard shows it. Focus from a press does not: swapping the poster for the canvas
+  // between the press and the release takes the click away from the link (a tap on the poster).
+  link.addEventListener('focus', () => {
+    if (link.matches(':focus-visible')) open();
+  });
   link.addEventListener('blur', close);
 }
 
@@ -520,6 +547,31 @@ function foldOptions(sheetEl: HTMLElement, dragged: boolean): FoldOptions {
 function foldSettled(sheetEl: HTMLElement, on: boolean): void {
   noise(0.06, 900, 'bandpass', 0.35);
   announcer.textContent = `Sheet ${sheetEl.dataset.sheet} ${on ? 'folded' : 'flat'}`;
+  if (on) showFold(sheetEl);
+}
+
+// On a phone the fold view can land under the fixed clock bar. Once it settles, the page scrolls the
+// least distance that shows it whole (instant with reduced motion), unless the visitor has touched,
+// scrolled or typed since the fold began: the scroll is theirs.
+const phone = matchMedia('(max-width: 759px)');
+let foldBegan = 0;
+let lastInput = 0;
+for (const type of ['pointerdown', 'touchstart', 'wheel', 'keydown'] as const) {
+  window.addEventListener(type, () => (lastInput = performance.now()), { capture: true, passive: true });
+}
+function showFold(sheetEl: HTMLElement): void {
+  if (!phone.matches || lastInput > foldBegan) return;
+  const views = $$<HTMLElement>('.fold-view, .fold-axo', sheetEl);
+  if (!views.length) return;
+  const top = Math.min(...views.map((v) => v.getBoundingClientRect().top));
+  const bottom = Math.max(...views.map((v) => v.getBoundingClientRect().bottom));
+  const style = getComputedStyle(root);
+  const floor = innerHeight - (parseFloat(style.scrollPaddingBottom) || 0);
+  const ceiling = parseFloat(style.scrollPaddingTop) || 0;
+  // Down only as far as the view's top can go without passing under the bar.
+  const distance = Math.min(bottom - floor, top - ceiling);
+  if (bottom <= floor || distance <= 0) return;
+  window.scrollBy({ top: distance, behavior: motion.reduced ? 'instant' : 'smooth' });
 }
 
 function toggleFold(sheetEl: HTMLElement, dragged = false): void {
@@ -527,6 +579,7 @@ function toggleFold(sheetEl: HTMLElement, dragged = false): void {
   const previous = folded;
   const on = previous !== sheetEl;
   folded = on ? sheetEl : null;
+  if (on) foldBegan = performance.now();
   if (previous && previous !== sheetEl) foldButton(previous)?.setAttribute('aria-pressed', 'false');
   const button = foldButton(sheetEl);
   button?.setAttribute('aria-pressed', String(on));
@@ -617,19 +670,67 @@ function dragHinge(sheetEl: HTMLElement, down: PointerEvent): void {
   window.addEventListener('pointercancel', up);
 }
 
+// On a touch screen the ground line claims nothing (CSS turns its pointer events off, so a swipe that
+// starts on an épure scrolls the page): the fold is dragged from a grip at the line's right end, which
+// exists only while the pointer is coarse. A drag on the grip turns the plane; a tap acts like "Fold".
+const coarse = matchMedia('(pointer: coarse)');
+function grip(sheetEl: HTMLElement): HTMLElement {
+  const el = document.createElement('span');
+  el.className = 'ep-grip';
+  el.setAttribute('aria-hidden', 'true');
+  el.addEventListener('pointerdown', (down) => {
+    if (down.button > 0) return;
+    dragHinge(sheetEl, down);
+    let moved = 0;
+    const move = (event: PointerEvent) => {
+      if (event.pointerId === down.pointerId) moved = Math.max(moved, Math.hypot(event.clientX - down.clientX, event.clientY - down.clientY));
+    };
+    const up = (event: PointerEvent) => {
+      if (event.pointerId !== down.pointerId) return;
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+      window.removeEventListener('pointercancel', up);
+      if (event.type === 'pointerup' && moved < 8) toggleFold(sheetEl);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+    window.addEventListener('pointercancel', up);
+  });
+  return el;
+}
+function placeGrips(): void {
+  for (const button of $$<HTMLButtonElement>('[data-action="fold"]')) {
+    const sheetEl = button.closest<HTMLElement>('.sheet')!;
+    for (const figure of $$<HTMLElement>('.sheet__epure', sheetEl)) {
+      const placed = figure.querySelector(':scope > .ep-grip');
+      if (coarse.matches && !placed && figure.querySelector('.ep-hinge')) figure.append(grip(sheetEl));
+      else if (!coarse.matches) placed?.remove();
+    }
+  }
+}
+
 // Sheet 000 does not follow the clock, but it also folds.
 for (const tools of $$<HTMLElement>('.sheet--method .sheet__tools')) tools.hidden = false;
 for (const button of $$<HTMLButtonElement>('[data-action="fold"]')) {
   const sheetEl = button.closest<HTMLElement>('.sheet')!;
   button.addEventListener('click', () => toggleFold(sheetEl));
-  // Dragging on the ground line also folds. With a finger, that gesture does not scroll the page: it is
-  // claimed when the touch starts, because Chromium does not apply touch-action to the shapes of an SVG.
-  // Without JavaScript, touching the ground line still scrolls the page.
+  // Dragging on the ground line also folds. Where the primary pointer is fine, a finger on the line (a
+  // touch laptop's) does not scroll the page: it is claimed when the touch starts, because Chromium does
+  // not apply touch-action to the shapes of an SVG. Where it is coarse, the grip claims the gesture
+  // instead. Without JavaScript, touching the ground line still scrolls the page.
   for (const hinge of $$<SVGRectElement>('.ep-hinge', sheetEl)) {
-    hinge.addEventListener('touchstart', (event) => event.preventDefault(), { passive: false });
+    hinge.addEventListener(
+      'touchstart',
+      (event) => {
+        if (!coarse.matches) event.preventDefault();
+      },
+      { passive: false },
+    );
     hinge.addEventListener('pointerdown', (down) => dragHinge(sheetEl, down));
   }
 }
+placeGrips();
+coarse.addEventListener('change', placeGrips);
 if (!hasWebGL2()) {
   const line = $<HTMLElement>('.nogl');
   if (line) line.hidden = false;

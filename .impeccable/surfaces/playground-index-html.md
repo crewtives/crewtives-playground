@@ -16,7 +16,7 @@ related_targets: []
 **Proof:** every figure, date and stroke about a work comes from the work itself or from the collection's curation (pack, code, curated dates, loop provenance); the loops are the display's native buffer, verified pixel by pixel and with published provenance; scenes labeled "synthetic"; the cat's CC-BY credit next to every image of the cat.
 
 **Constraints:**
-- visible text in English; tab title "crewtives playground"; the only `h1` is the collection's title;
+- visible text in English; tab title "crewtives playground · a museum of live graphics experiments"; the only `h1` is the collection's title, "crewtives playground";
 - a luminous house (option "b" of the exploration): a light sheet, ink, a visible grid; the gradients of crewtives.com only as a wash of light, never under body text;
 - OFL or equivalent typefaces, the museum's own (none of the 23 families already in use, nor their siblings); missing arrows and signs drawn in SVG;
 - nothing moves with time except what the page clock governs; reduced motion honored live; without WebGL2 and without JavaScript the museum stays complete as a document;
@@ -51,15 +51,17 @@ FIRST VIEWPORT:
 - Top bar y 0–60, hairline under it: the h1 "crewtives playground" left; the page clock centered (REWIND · HOLD · FORWARD as mono text buttons with the active one filled, the scrubber as a ruled 45-tick line, and the line "Loops recorded from the live render; the works run live." under it); right: "Index of sheets", "Sound off" and "crewtives.com".
 - Featured sheet 004 below, framed by its border fillet with zone ticks. VISTA column x 60–840 (26M): the Sow loop square in its paper passe-partout, the largest region of the screen. Épure column x 900–1380 (16M): elevation y 90–390, ground line at y 390, plan y 390–690, legend "plan: where · elevation: when"; the title block y 720–870 under the épure, with "Enter Bloomscope" as the primary action in its last box.
 - Lavender wash visible across the top third.
-- 390×844. Top bar 56 px: h1 left; "Index" and "Sound off" right. The VISTA fills the width inside 15 px gutters (360 px square slot at y 72–432) and is the largest region; épure and title block follow below. The clock is a fixed bottom bar (72 px: the three states, the scrubber, and the loops line in one row of small type above them).
+- 390×844. Top bar 75 px at load, in two rows: the h1, then "Index", "Grid", "Sound off" and "crewtives.com". Once the page scrolls past the title, the title row goes with it and only the navigation row stays, 45 px. The VISTA fills the width inside 16 px gutters (square slot) and is the largest region; the tools row, the épure and the title block follow below. The clock is a fixed bottom bar, 79 px plus the bottom safe area: the loops line in two lines of small type above the three states and a 151 px scrubber (121 px at 360, 81 px at 320). On a touch screen every control answers over 44 × 44 px and keeps its drawn size, and each épure's ground line carries a 14 px square ink grip at its right end: the fold's drag starts there, and a swipe anywhere else on the épure scrolls the page.
+- 844×390 (a phone in landscape, up to 500 px tall). The bar scrolls with the page in one 45 px row; the clock is docked at the bottom in one 47 px row (the states, a 361 px scrubber, the loops line in two lines at the right). Each single-VISTA sheet reads as on the desktop: the VISTA fitted to the height (the featured loop at 221 px, k = 3) beside its épure, with the NOW of the elevation on screen; sheet 001's three VISTAS sit side by side, the épure and the title block below.
 
-SIGNATURE INTERACTION: The page clock's scrubber. Dragging it moves every loop on screen and every NOW (VISTA frame, elevation dot, plan dot, reference line, fold dot) together, in the same painted frame; release leaves the clock in HOLD at that frame. J, K and L give REWIND, HOLD and FORWARD with no speed steps. Second gesture, the only 3D one: the fold. "Fold", a drag on the ground line, or F turns the vertical plane about the ground line from 0° to 90°, and the épure becomes the dihedral with the trail standing in space, rendered by the same Engine and RetroDisplay as the works.
+SIGNATURE INTERACTION: The page clock's scrubber. Dragging it moves every loop on screen and every NOW (VISTA frame, elevation dot, plan dot, reference line, fold dot) together, in the same painted frame; release leaves the clock in HOLD at that frame. J, K and L give REWIND, HOLD and FORWARD with no speed steps. Second gesture, the only 3D one: the fold. "Fold", a drag on the ground line (on a touch screen, from its grip), or F turns the vertical plane about the ground line from 0° to 90°, and the épure becomes the dihedral with the trail standing in space, rendered by the same Engine and RetroDisplay as the works.
 
 MOTION GRAMMAR:
 - Only the page clock moves the works and the NOWs.
 - Light changes only with scroll; the fold moves only on request.
 - Nothing moves with time or with the pointer outside the clock.
 - Jumps between sheets are short scrolls (instant with reduced motion).
+- On a phone, a fold that settles under the clock bar scrolls into view once, the least distance, unless the visitor has touched the page since pressing it (instant with reduced motion).
 - The loop wrap is a declared cut in one painted frame, never a crossfade.
 - With reduced motion everything starts still (HOLD on the poster frame) and only what the visitor asks for moves.
 
