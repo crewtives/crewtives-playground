@@ -1511,13 +1511,19 @@ g.axo-proj {
     align-items: center;
     min-height: 44px;
   }
-  /* "House pixels": each label is the target of its radio, 44 px tall and reaching 21 px past it. */
+  /* "House pixels": each label is the target of its radio, 44 px tall and reaching 21 px past it on
+     the left; the text ends the label, and the next label's padding is the gap between options. */
   .house-pixels {
     column-gap: 0;
   }
+  /* The legend takes its own line (still floated, so it stays a flex item and off the border), so
+     the three options share the next one from 360 px up instead of orphaning "Millions". */
+  .house-pixels legend {
+    flex-basis: 100%;
+  }
   .house-pixels label {
     min-height: 44px;
-    padding-inline: 12px;
+    padding-inline: 12px 0;
   }
   /* Without its default top margin the radio sits at the label's center. */
   .house-pixels input {
