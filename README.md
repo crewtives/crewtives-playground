@@ -272,7 +272,8 @@ by change; some of the changes overlapped.
   `synthetic-bake`, `procedural-subject`, `time-viewer` and `dither-display`; the 4D.OS pages by
   `desktop-shell`, `hero-gesture`, `story-page` and `cosmic-landings`; the playground by
   `playground-hub`, `playground-museum`, `work-loops` and the three `landing-*` specs; what every page
-  tells search engines and link previews by `site-metadata`, which `add-seo-and-sharing` added; the
+  tells search engines and link previews by `site-metadata`, which `add-seo-and-sharing` added; what
+  every page guarantees on phones by `phone-ergonomics`, which `adapt-for-phones` added; the
   repository itself by `public-repository`, which `prepare-public-release` added.
 - **Archived changes.** [`openspec/changes/archive/`](openspec/changes/archive/) keeps every completed
   change: `proposal.md` (why and what), `design.md` (numbered decisions; the main ones record the
@@ -283,7 +284,8 @@ by change; some of the changes overlapped.
   worlds A to C), the playground landings, the cosmic landings and organic motion (worlds D and E, the
   gesture hero, the walking cat), the museum, the preparation of this public release, and the site's
   metadata and share images (canonical URLs, link-preview cards, `robots.txt`, `sitemap.xml` and the
-  404 page).
+  404 page), and the adaptation of every page and toy for phones (with a desktop that stays
+  pixel-identical).
 - **The loop.** Each change goes propose → apply → verify → archive. Proposing writes the change's
   artifacts; applying works through `tasks.md`, each task with the command or check that proves it;
   verifying records the results (in `verification.md`, or in the tasks for `prepare-public-release`);

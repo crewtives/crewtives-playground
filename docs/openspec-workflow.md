@@ -76,6 +76,8 @@ The first four changes introduced the 15 capabilities below. The last column nam
 
 `add-seo-and-sharing` added a 17th, [`site-metadata`](../openspec/specs/site-metadata/spec.md). It covers what every public page tells search engines and link previews, and the site files around it: one page registry, canonical URLs, Open Graph and X card tags, structured data, icons, share images made from real frames with their credits and provenance, `robots.txt`, `sitemap.xml`, the 404 page and noindex on the non-canonical host.
 
+`adapt-for-phones` added an 18th, [`phone-ergonomics`](../openspec/specs/phone-ergonomics/spec.md). It covers what every public page guarantees on phones: 44 px touch areas that never overlap, a control's effect visible while it is used, scrolling that is never trapped, short and landscape screens, pinned and docked panels that never hide focus, readable text and contrast of phone-only elements, and a desktop that stays pixel-identical.
+
 ## The changes, in order
 
 | Change | Opened | Archived | New capabilities | Modified capabilities |
@@ -86,8 +88,9 @@ The first four changes introduced the 15 capabilities below. The last column nam
 | [`add-playground-museum`](../openspec/changes/archive/2026-09-28-add-playground-museum/) | 2026-09-25 | 2026-09-28 | `playground-museum`, `work-loops` | `playground-hub`, `landing-bloomscope`, `landing-wind-up-empire` |
 | [`prepare-public-release`](../openspec/changes/archive/2026-09-29-prepare-public-release/) | 2026-09-29 | 2026-09-29 | `public-repository` | `work-loops`, `playground-museum`, `playground-hub` |
 | [`add-seo-and-sharing`](../openspec/changes/archive/2026-09-29-add-seo-and-sharing/) | 2026-09-29 | 2026-09-29 | `site-metadata` | `playground-hub`, `public-repository` |
+| [`adapt-for-phones`](../openspec/changes/archive/2026-09-30-adapt-for-phones/) | 2026-09-29 | 2026-09-30 | `phone-ergonomics` | `desktop-shell`, `story-page`, `cosmic-landings`, `4d-pack`, `playground-hub`, `playground-museum`, `landing-bloomscope`, `landing-game-center`, `landing-wind-up-empire`, `site-metadata` |
 
-The "Opened" date comes from each change's `.openspec.yaml`, and the "Archived" date from its folder name. Changes overlapped: the cosmic-landings change was opened the day the first one was archived, and ran alongside the next two. The last two were archived the same day, so their folders sort by name: `2026-09-29-add-seo-and-sharing` is listed before `2026-09-29-prepare-public-release`, although it came after it.
+The "Opened" date comes from each change's `.openspec.yaml`, and the "Archived" date from its folder name. Changes overlapped: the cosmic-landings change was opened the day the first one was archived, and ran alongside the next two, and `adapt-for-phones` was opened the day `add-seo-and-sharing` was archived. `prepare-public-release` and `add-seo-and-sharing` were archived the same day, so their folders sort by name: `2026-09-29-add-seo-and-sharing` is listed before `2026-09-29-prepare-public-release`, although it came after it.
 
 ### 1. `add-4d-os-local-demo`
 
@@ -175,6 +178,19 @@ The site was public but barely existed for search engines and link previews: no 
 
 Its gates (D8) are the build's `[museum]` check for loop freshness, a check that the sheet sources are untouched, and fingerprints of every route before and after: visible text and pixels stay identical, and only the expected head elements are added. Its `verification.md` lists what can only be checked on a real host, the preview's `noindex` header and real unfurls in chat and social apps, as pending. It was planned for two groups working in parallel, one on the metadata and one on the images, with a single meeting point (D10).
 
+### 7. `adapt-for-phones`
+
+Every page opened on a phone without sideways scroll, but most toys could not be used there as intended: the control sat one or two screens away from what it changed (Bloomscope's lathe, Sow, Game Center's 4F glass, the tool windows of worlds A, B and C), many controls were smaller than a finger, some drags started when the visitor only meant to scroll, and on a phone world E and the launcher each transferred more than 50 MB, much of it files that none of their views drew. The hard constraint was the opposite of the SEO change's: the phone rules could touch any file, including the sheets' sources, but at 1440×900 and 1680×1050 with a mouse every page had to paint the same pixels, and the six museum loops had to be recorded again with identical frames. The change:
+
+- sets one phone vocabulary for the whole playground, five patterns (pinned stage, stage deck, window dock, bottom bar, side by side in landscape) and four micro-rules, each work drawing them in its own language, with no drawer anywhere (D1);
+- gates every layout and behavior change behind a phone query or a coarse pointer, with the same query strings in CSS and script, and creates phone-only elements by script (D2, D3);
+- adds a headless window dock, `src/engine/window/dock.ts`, for worlds A, B and C (D9), a stage deck for D and E (D10), and a loader option that skips the source frames no view of E draws, plus a launcher that shows stills on phones and loads its pack on request (D11);
+- fixes two bugs on every device: a drag on the museum's scrubber no longer scrolls the page to the top, and the scrubber reports its real position to assistive technologies (D5); a quick press on a museum index row follows its link (D21);
+- gives the 4D.OS pages and the museum descriptive tab titles, tightens five descriptions to search-result length, replaces the false "A local experiment" lines and removes the `data:,` icon placeholders from the sources (D12 to D14);
+- adds a development-only phone check, [`tools/check-phone.ts`](../tools/check-phone.ts), with one module per work (D18).
+
+Its desktop proof has three layers (D16): deep desktop screenshots compared shot by shot, a release fingerprint of every route, and the museum loops recorded again with every frame hash unchanged (D17). The only intended desktop differences are listed in D15 and in its `verification.md`. Because each loop's provenance names the commit it was recorded at, the branch is merged without squashing. Its `verification.md` lists what only a real phone can show, such as Safari's collapsing toolbar, as pending.
+
 ## How to read a change
 
 Every change folder has the same core files. Read them in this order:
@@ -230,7 +246,7 @@ OpenSpec's `spec-driven` schema has no verification artifact. This repository ad
   A change with a large, separate verification can split it, as `add-playground-museum` did with `verification-loops.md`.
 - **The closing task validates the change.** From the second change on, it runs `openspec validate <change>` (with `--strict` in most) before the change is archived.
 
-The browser automation and measurement scripts behind these records were written for each check and kept outside the repository, so the figures in `verification.md` are the record. The exceptions are part of the product: the loop recorder, [`tools/capture-loops.ts`](../tools/capture-loops.ts), and, from `add-seo-and-sharing`, the share-image tool [`tools/capture-og.ts`](../tools/capture-og.ts) and the audit of the built output, [`tools/audit-site.ts`](../tools/audit-site.ts).
+The browser automation and measurement scripts behind these records were written for each check and kept outside the repository, so the figures in `verification.md` are the record. The exceptions are part of the product: the loop recorder, [`tools/capture-loops.ts`](../tools/capture-loops.ts), and, from `add-seo-and-sharing`, the share-image tool [`tools/capture-og.ts`](../tools/capture-og.ts) and the audit of the built output, [`tools/audit-site.ts`](../tools/audit-site.ts); and, from `adapt-for-phones`, the phone check [`tools/check-phone.ts`](../tools/check-phone.ts).
 
 In `prepare-public-release`, most of the verification is the same check repeated after each stage: page fingerprints, `tsc`, the tests and the build (D11). The result and any accepted exception are written into the task that ran the check.
 

@@ -25,7 +25,7 @@ A request for any other path that the site does not serve SHALL receive a 404 st
 
 Game Center Yonjigen and Wind-Up Empire SHALL remain published at their routes, outside the collection: they MUST NOT appear as museum sheets or as rows of its sheet index.
 
-The playground MUST NOT change any route under `/4d-os/`. The 404 page answering unknown paths there does not change a route. A link with a fragment pointing to a section or to a state of a playground page (the museum or a landing), including sheet links `#sheet-NNN`, SHALL open the page at that section or in that state: the page MUST NOT jump back to the top on load. 4D.OS SHALL keep its current load behavior.
+The playground MUST NOT change any route under `/4d-os/`. The 404 page answering unknown paths there does not change a route. A link with a fragment pointing to a section or to a state of a playground page (the museum or a landing), including sheet links `#sheet-NNN`, SHALL open the page at that section or in that state: the page MUST NOT jump back to the top on load. 4D.OS SHALL keep its current load behavior, except where a requirement of a 4D.OS page changes it (`4d-pack` "Layers a page never draws", and the launcher's phone stills in `cosmic-landings` "Presence in the launcher").
 
 #### Scenario: Museum at the root
 - **WHEN** `/` is requested after the museum deploy
@@ -56,8 +56,8 @@ The playground MUST NOT change any route under `/4d-os/`. The 404 page answering
 - **THEN** the museum stays positioned at sheet 002 and does not jump to the top
 
 #### Scenario: 4D.OS intact
-- **WHEN** `/4d-os/` and `/4d-os/a/` through `/4d-os/e/` are opened after the change
-- **THEN** they load and behave the same as before, except for each page's link back to the playground and the pack-weight label, which now reads MiB
+- **WHEN** `/4d-os/` and `/4d-os/a/` through `/4d-os/e/` are opened after a playground change
+- **THEN** they respond at the same routes, and on a desktop with a fine pointer they load and render as before, except for the changes their own requirements name
 
 #### Scenario: Site files at the root
 - **WHEN** `/robots.txt`, `/sitemap.xml` and `/favicon.ico` are requested
@@ -302,7 +302,7 @@ Each playground page (the museum and the landings) SHALL:
 - show the build mark "demo build 0.1"; on each landing, in the footer;
 - label as a synthetic scene every world, every still and every loop of a synthetic scene;
 - carry visible credits for the typefaces with their licenses, for the libraries it uses in the browser with their licenses, and for the "Cat" model with its CC-BY line;
-- use "<Name> · crewtives playground" as the tab title on each landing and "crewtives playground" in the museum.
+- use "<Name> · crewtives playground" as the tab title on each landing and "crewtives playground · a museum of live graphics experiments" in the museum, which names the site first and then says what it is to a visitor who arrives from a search result.
 
 No page SHALL show the line "One of three candidate landings" or link to the old comparison page (`/landings/`, exactly), and no text SHALL present a landing as a candidate for the playground's front page. Instead:
 - each landing that is not in the museum's collection (currently Game Center Yonjigen and Wind-Up Empire) SHALL show in the footer the line "Not in the collection yet · Playground", where "Playground" is a link to `/`;
@@ -337,7 +337,7 @@ A landing toy that is not finished at publication SHALL be shown as an honest em
 
 #### Scenario: Museum title and stamp
 - **WHEN** `/` is opened
-- **THEN** the tab is titled "crewtives playground" and the page shows "demo build 0.1" and the credits
+- **THEN** the tab is titled "crewtives playground · a museum of live graphics experiments" and the page shows "demo build 0.1" and the credits
 
 #### Scenario: No candidates
 - **WHEN** the published HTML of the museum and the landings is searched

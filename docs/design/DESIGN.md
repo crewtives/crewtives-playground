@@ -1886,7 +1886,7 @@ The playground museum at `/` (`sites/playground/index.html`). The build generate
 
 **The Mono Is Data Rule.** Fira Mono carries only data, readings, the title block, the clock and the tools. Navigation, titles and wall text are in Geologica.
 
-**The Drawing Stays, the Hit Grows Rule.** On a coarse pointer each control keeps its drawn size; a transparent centered `::after` (`::before` on the scrubber) grows its hit to 44 × 44. Full-width ruled rows (Sheet data, Enter, Keyboard shortcuts, the gate row, the House pixels labels, Back to the top) simply become 44 px tall.
+**The Drawing Stays, the Hit Grows Rule.** On a coarse pointer each control keeps its drawn size; a transparent centered `::after` (`::before` on the scrubber) grows its hit to 44 × 44. Full-width ruled rows (Sheet data, Enter, Keyboard shortcuts, the gate row, the House pixels labels, Back to the top) simply become 44 px tall; in House pixels the legend then takes its own line, so the three options share one row from 360 px wide.
 
 **The Grip, Not Strip Rule.** The ground line claims no touch (`pointer-events: none` on a coarse pointer): a swipe anywhere on an épure scrolls. The fold is dragged from a grip at the line's right end: a 14 px square ink mark split by the line, flush with the épure's right edge, its 44 px hit growing 30 px to the left; square so it is never read as the NOW; hidden while its sheet is folded; `aria-hidden` (Fold and F are the accessible path). A tap on it acts like Fold.
 
