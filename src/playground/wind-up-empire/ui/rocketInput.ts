@@ -42,8 +42,10 @@ export function aimText(aim: number): string {
   return `${Math.abs(deg)} degrees toward ${deg > 0 ? 'prograde' : 'retrograde'}`;
 }
 
-/** Pull and aim from the vector pointer − rocket (CSS px, y pointing down). */
-export function pullFromVector(dx: number, dy: number, previousAim: number): { detents: number; aim: number } {
+/** Pull and aim from the vector pointer − rocket (CSS px, y pointing down). With `clampForward` (an
+ * established touch pull), a pointer that comes forward of the rocket, toward the Whirl, pulls nothing. */
+export function pullFromVector(dx: number, dy: number, previousAim: number, clampForward = false): { detents: number; aim: number } {
+  if (clampForward && dy <= 0) return { detents: 0, aim: previousAim };
   const distance = Math.hypot(dx, dy);
   const detents = Math.min(DETENTS, Math.floor((Math.min(distance, FULL_PULL) / FULL_PULL) * DETENTS + 1e-9));
   // −P points from the pointer to the rocket; the angle is measured from "up" (toward the Whirl).
@@ -51,10 +53,25 @@ export function pullFromVector(dx: number, dy: number, previousAim: number): { d
   return { detents, aim };
 }
 
+/** The widest first move, off straight back, that still reads as a pull (the aim itself stops at ±60°). */
+const PULL_CONE = (75 * Math.PI) / 180;
+
+/**
+ * The first move of a touch that started on the rocket (design adapt-for-phones D8): a pull only when it
+ * heads away from the Whirl (down the screen, within 75° of straight back). A move toward the Whirl, or
+ * sideways, is not a pull: the rocket leaves it to the browser, which scrolls the page natively.
+ */
+export function touchPull(dx: number, dy: number): boolean {
+  return dy > 0 && Math.atan2(Math.abs(dx), dy) <= PULL_CONE;
+}
+
 export class RocketInput {
   private readonly o: RocketInputOptions;
   private origin = { x: 0, y: 0 };
   private pointerId: number | null = null;
+  /** A touch on the rocket: undecided until its first move, then a pull or left to the page's scroll. */
+  private touch: 'pending' | 'pull' | 'scroll' | null = null;
+  private touchStart = { x: 0, y: 0 };
   private keyTimer = 0;
   private previewTimer = 0;
 
@@ -71,21 +88,55 @@ export class RocketInput {
       this.pointerId = event.pointerId;
       button.setPointerCapture(event.pointerId);
       button.classList.add('is-pulling');
+      // A touch waits for its first move (the touchmove below) before it pulls anything.
+      this.touch = event.pointerType === 'touch' ? 'pending' : null;
       this.begin();
-      this.move(event.clientX, event.clientY);
+      if (!this.touch) this.move(event.clientX, event.clientY);
     });
     button.addEventListener('pointermove', (event) => {
-      if (event.pointerId === this.pointerId) this.move(event.clientX, event.clientY);
+      if (event.pointerId !== this.pointerId || this.touch === 'pending' || this.touch === 'scroll') return;
+      this.move(event.clientX, event.clientY);
     });
     const end = (event: PointerEvent, cancel: boolean) => {
       if (event.pointerId !== this.pointerId) return;
       this.pointerId = null;
       button.classList.remove('is-pulling');
-      if (cancel) this.cancel();
+      const scroll = this.touch !== null && this.touch !== 'pull';
+      this.touch = null;
+      if (cancel || scroll) this.cancel();
       else this.release();
     };
     button.addEventListener('pointerup', (event) => end(event, false));
     button.addEventListener('pointercancel', (event) => end(event, true));
+
+    // Touch: the grab keeps `touch-action: pan-y` on a coarse pointer, so a vertical swipe is the
+    // browser's to scroll. Only this listener can keep it: on the first move it asks `touchPull`, and
+    // only a pull away from the Whirl cancels the scroll. The page never scrolls itself.
+    button.addEventListener(
+      'touchstart',
+      (event) => {
+        const t = event.touches[0];
+        if (t) this.touchStart = { x: t.clientX, y: t.clientY };
+      },
+      { passive: true },
+    );
+    button.addEventListener(
+      'touchmove',
+      (event) => {
+        const t = event.touches[0];
+        if (!t || this.touch === null) return;
+        if (this.touch === 'pending') {
+          this.touch = touchPull(t.clientX - this.touchStart.x, t.clientY - this.touchStart.y) ? 'pull' : 'scroll';
+          if (this.touch === 'scroll') {
+            // Zero notches and no ghost: the release cancels.
+            this.o.pull.detents = 0;
+            this.o.invalidate();
+          }
+        }
+        if (this.touch === 'pull' && event.cancelable) event.preventDefault();
+      },
+      { passive: false },
+    );
 
     button.addEventListener('keydown', (event) => {
       if (event.key === ' ') {
@@ -156,7 +207,7 @@ export class RocketInput {
   }
 
   private move(x: number, y: number): void {
-    const next = pullFromVector(x - this.origin.x, y - this.origin.y, this.o.pull.aim);
+    const next = pullFromVector(x - this.origin.x, y - this.origin.y, this.o.pull.aim, this.touch === 'pull');
     this.setAim(next.aim);
     this.setDetents(next.detents);
   }
@@ -209,6 +260,7 @@ export class RocketInput {
 
   private cancel(): void {
     this.stopKeys();
+    this.touch = null;
     if (this.pointerId !== null) {
       try {
         this.o.button.releasePointerCapture(this.pointerId);

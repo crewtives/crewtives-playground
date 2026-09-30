@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { Fleet, flightLines } from './fleet';
 import { LOAD_SPIN, createTop, stepTop, timeToTopple } from './tops';
-import { aimText, pullFromVector } from './ui/rocketInput';
+import { aimText, pullFromVector, touchPull } from './ui/rocketInput';
 
 const deg = Math.PI / 180;
 
@@ -30,6 +30,35 @@ describe('rocket pull', () => {
     expect(pullFromVector(1, 2, 0.3).aim).toBe(0.3);
     expect(aimText(20 * deg)).toBe('20 degrees toward prograde');
     expect(aimText(0)).toBe('straight at the Whirl');
+  });
+});
+
+describe('rocket pull on a touch screen (adapt-for-phones D8)', () => {
+  it('touchPull: a first move away from the Whirl is a pull; toward it, or sideways, is not', () => {
+    // y points down the screen; the Whirl is up from the rocket.
+    expect(touchPull(0, 12)).toBe(true);
+    expect(touchPull(-9, 12)).toBe(true);
+    expect(touchPull(10, 3)).toBe(true);
+    expect(touchPull(0, -12)).toBe(false);
+    expect(touchPull(5, -30)).toBe(false);
+    expect(touchPull(20, 0)).toBe(false);
+    expect(touchPull(30, 5)).toBe(false);
+    expect(touchPull(0, 0)).toBe(false);
+  });
+
+  it('an established touch pull clamps a forward drag to 0 detents and no launch', () => {
+    // A finger dragged 160 px forward, toward the Whirl, pulls nothing and keeps the aim.
+    expect(pullFromVector(0, -160, 0.2, true)).toEqual({ detents: 0, aim: 0.2 });
+    expect(pullFromVector(40, -1, 0, true).detents).toBe(0);
+    // Mouse and pen (no clamp): a forward drag still counts its distance, as before.
+    expect(pullFromVector(0, -160, 0).detents).toBe(12);
+  });
+
+  it('a touch pull back gives the same detents and aim as the mouse', () => {
+    for (const [dx, dy] of [[0, 66], [0, 110], [-50, 50], [30, 140], [0, 400]] as const) {
+      expect(pullFromVector(dx, dy, 0, true)).toEqual(pullFromVector(dx, dy, 0));
+    }
+    expect(pullFromVector(0, 110, 0, true).detents).toBe(10);
   });
 });
 

@@ -16,6 +16,7 @@ import {
 import { clank } from '../voices';
 import { keySvgPath } from './rosette';
 import { numHtml } from './num';
+import { coilProgress, stubState, stubText } from './keyStub';
 
 /** Tickets visible on the spike; the rest collapse into a count. */
 const SPIKE_VISIBLE = 6;
@@ -35,6 +36,23 @@ export interface BuildDeskOptions {
   wind: (detents: number) => void;
   /** "Let go". */
   release: () => void;
+  /**
+   * Where the key is a tile and the ticket sits below it (a media query): there the key's tag mirrors
+   * the queue as a stub, a coil along the tile shows the job's progress and an empty ticket links to
+   * the side panel (design adapt-for-phones D8). The three exist only while the query matches.
+   */
+  tileQuery?: string;
+}
+
+/** How long the key's stub shows "LV n" after a CLACK (ms). */
+const STUB_STAMP_MS = 1200;
+
+/** The phone-only pieces the build desk writes (created under `tileQuery`). */
+interface TilePieces {
+  stub: HTMLElement;
+  coil: HTMLElement;
+  coilFill: HTMLElement;
+  deckLink: HTMLAnchorElement;
 }
 
 export class BuildDesk {
@@ -53,9 +71,21 @@ export class BuildDesk {
   private readonly spike: Job[] = [];
   private last = '';
   private lastKeyAngle = -1;
+  private tile: TilePieces | null = null;
+  private stampUntil = 0;
+  private stampTimer = 0;
 
   constructor(private readonly o: BuildDeskOptions) {
     this.economy = o.economy;
+    if (o.tileQuery) {
+      const gate = window.matchMedia(o.tileQuery);
+      const sync = () => {
+        if (gate.matches && !this.tile) this.createTile();
+        else if (!gate.matches && this.tile) this.removeTile();
+      };
+      gate.addEventListener('change', sync);
+      sync();
+    }
     for (const svg of this.flatKeys) svg.querySelector('.key-flat-path')!.setAttribute('d', KEY_PATH);
     document.querySelector('[data-wind-turn]')!.addEventListener('click', () => {
       o.wind(DETENTS_PER_TURN);
@@ -65,6 +95,56 @@ export class BuildDesk {
       o.release();
       this.render();
     });
+  }
+
+  /** The stub (in the key's tag), the coil (along the key's tile) and the deck link (in the ticket). */
+  private createTile(): void {
+    const tag = document.querySelector<HTMLElement>('.key-tag');
+    const wrap = document.querySelector<HTMLElement>('.key-wrap');
+    if (!tag || !wrap) return;
+    const stub = document.createElement('span');
+    stub.className = 'key-stub';
+    tag.prepend(stub);
+    const coil = document.createElement('span');
+    coil.className = 'key-coil';
+    coil.setAttribute('aria-hidden', 'true');
+    const coilFill = document.createElement('span');
+    coilFill.className = 'key-coil-fill';
+    coil.append(coilFill);
+    wrap.append(coil);
+    const deckLink = document.createElement('a');
+    deckLink.className = 'ticket-deck-link';
+    deckLink.href = '#deck';
+    deckLink.innerHTML = 'Queue a build <svg class="icon" aria-hidden="true"><use href="#i-arrow-down" /></svg>';
+    this.job.after(deckLink);
+    this.tile = { stub, coil, coilFill, deckLink };
+    this.last = '';
+    this.render();
+  }
+
+  private removeTile(): void {
+    if (!this.tile) return;
+    this.tile.stub.remove();
+    this.tile.coil.remove();
+    this.tile.deckLink.remove();
+    this.tile = null;
+    delete this.ticket.dataset.empty;
+    window.clearTimeout(this.stampTimer);
+    this.stampUntil = 0;
+  }
+
+  /** Writes the stub and the coil from the economy; the stub keeps its "LV n" stamp while it lasts. */
+  private renderTile(): void {
+    const tile = this.tile;
+    if (!tile) return;
+    const e = this.economy;
+    tile.coilFill.style.width = `${(coilProgress(e) * 100).toFixed(1)}%`;
+    const empty = e.state.queue.length === 0;
+    if (empty) this.ticket.dataset.empty = '';
+    else delete this.ticket.dataset.empty;
+    if (performance.now() < this.stampUntil) return;
+    tile.stub.classList.remove('is-stamped');
+    tile.stub.innerHTML = numHtml(stubText(stubState(e)));
   }
 
   /** Empties the spike (Reset universe). */
@@ -98,6 +178,20 @@ export class BuildDesk {
     stamp.textContent = `LV ${job.level}`;
     this.ticket.append(stamp);
     window.setTimeout(() => stamp.remove(), 1400);
+    // The same stamp on the key's stub, in place, for 1.2 s (a cut under reduced motion).
+    if (this.tile) {
+      const stub = this.tile.stub;
+      stub.innerHTML = numHtml(`LV ${job.level}`);
+      stub.classList.remove('is-stamped');
+      void stub.offsetWidth;
+      stub.classList.add('is-stamped');
+      this.stampUntil = performance.now() + STUB_STAMP_MS;
+      window.clearTimeout(this.stampTimer);
+      this.stampTimer = window.setTimeout(() => {
+        this.stampUntil = 0;
+        this.renderTile();
+      }, STUB_STAMP_MS);
+    }
     if (!this.o.reduced()) {
       this.ticket.animate(
         [
@@ -123,6 +217,7 @@ export class BuildDesk {
     const key = JSON.stringify([s.queue, Math.round(s.spring * 10), s.mode, Math.floor(s.tin), s.levels]);
     if (key === this.last) return;
     this.last = key;
+    this.renderTile();
 
     // Ticket
     if (active) {

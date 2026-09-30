@@ -109,6 +109,10 @@ export function bindKey(element: HTMLElement, winder: Winder): { sync: () => voi
 
   element.addEventListener('pointerdown', (event) => {
     if (event.button !== 0 || pointerId !== null) return;
+    // On a phone the key's tile scrolls (`touch-action: pan-y`) and only its round face, the grip,
+    // winds: a touch outside a visible grip is left to the page. Without a grip, as today.
+    const grip = element.querySelector<HTMLElement>('.key-grip');
+    if (event.pointerType === 'touch' && grip && grip.offsetParent !== null && !grip.contains(event.target as Node)) return;
     event.preventDefault();
     element.focus({ preventScroll: true });
     pointerId = event.pointerId;
@@ -197,4 +201,27 @@ export function bindKey(element: HTMLElement, winder: Winder): { sync: () => voi
   });
 
   return { sync };
+}
+
+/**
+ * The lid key's grip on a phone (design adapt-for-phones D8): while `query` matches, a round
+ * `.key-grip` sits on the drawn key's face and is the only part of the tile that winds; the rest of
+ * the tile scrolls the page (the CSS sets both `touch-action`s). Removed when the query stops matching.
+ */
+export function bindKeyGrip(element: HTMLElement, query: string): void {
+  const gate = window.matchMedia(query);
+  let grip: HTMLElement | null = null;
+  const sync = () => {
+    if (gate.matches && !grip) {
+      grip = document.createElement('span');
+      grip.className = 'key-grip';
+      grip.setAttribute('aria-hidden', 'true');
+      element.append(grip);
+    } else if (!gate.matches && grip) {
+      grip.remove();
+      grip = null;
+    }
+  };
+  gate.addEventListener('change', sync);
+  sync();
 }

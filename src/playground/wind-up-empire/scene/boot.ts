@@ -74,7 +74,8 @@ export function bootScene(ctx: SharedContext): void {
 
   // --- The 3D winding key, in the BUILD instrument ---
   const keyElement = document.querySelector<HTMLElement>('#key')!;
-  const narrow = window.matchMedia('(max-width: 900px)');
+  // Where the key is a tile (≤ 900 px, and phones in landscape): a rounded rectangle, not a disc.
+  const narrow = window.matchMedia('(max-width: 900px), (orientation: landscape) and (max-height: 500px)');
   keyView = new KeyView({
     element: keyElement,
     display,

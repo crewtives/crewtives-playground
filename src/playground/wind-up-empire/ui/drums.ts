@@ -5,7 +5,8 @@ import { formatRate, type Economy } from '../economy';
 import { carryClick } from '../voices';
 import { numHtml } from './num';
 
-const DIGITS = 6;
+/** Reels per drum. On a phone the Spring drum, which never passes 12, shows only its last two (wind-up-empire.css). */
+export const DIGITS = 6;
 
 class Drum {
   private readonly reels: HTMLElement[] = [];

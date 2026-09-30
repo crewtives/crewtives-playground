@@ -3214,3 +3214,710 @@ svg[hidden] {
     font-size: 1rem;
   }
 }
+
+/* =====================================================================================
+   Phones (adapt-for-phones D8). Every rule below sits inside a phone gate: a width of
+   900 px or less, a landscape phone (at most 500 px tall), or a coarse pointer. None of
+   them can match a desktop window with a mouse, so the desktop box paints what it did.
+   The phone-only pieces (the key's stub, coil and grip, the ticket's deck link and the
+   press's proof bed) are created by the page's script under the same gates.
+   ===================================================================================== */
+
+/* ---------- the drums never clip a digit ---------- */
+
+@media (max-width: 400px) {
+  /* The reels keep their width; the Spring drum, whose value never passes 12 (turns),
+     shows its last two reels (ui/drums.ts builds six). */
+  .reel-window {
+    flex: none;
+  }
+  .drum-digits.is-reels {
+    gap: 0;
+  }
+  .drum[data-resource='spring'] .reel-window:nth-child(-n + 4) {
+    display: none;
+  }
+  .drum {
+    column-gap: 3px;
+  }
+  .drum-label {
+    letter-spacing: 0;
+  }
+  .strip-drums {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 359px) {
+  /* Launch drops under the two sliders, which keep a finger's width. */
+  .rail-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+  .rail-launch {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Narrow and landscape phones: the wordmark keeps its space ("WIND-UP EMPIRE"). */
+@media (min-width: 561px) and (max-width: 900px) {
+  .wordmark {
+    gap: 0.3em;
+  }
+}
+
+@media (max-width: 560px) {
+  /* The decal is an honesty tag: 11 px, set tighter to keep its place. */
+  .sticker {
+    font-size: 0.6875rem;
+    letter-spacing: 0.02em;
+    padding: 2px 4px;
+  }
+  /* The tray's die-cut covers reach past the column; the grid clips them, so the page's width stays the viewport's. */
+  .tray-grid {
+    overflow-x: clip;
+  }
+}
+
+/* ---------- touch: grips, not strips ---------- */
+
+/* The spark wheel's touch zone (a 52 × 30 wheel in a 33 px row under the menu) stops at the menu's
+   row and reaches below the strip instead: 52 × 46, none of it under another control. */
+@media (max-width: 900px) and (orientation: portrait) {
+  .spark-wheel::before {
+    inset: -3px -2px -17px;
+  }
+}
+
+@media (pointer: coarse) {
+  /* A vertical swipe that starts on the rocket is the browser's; the rocket keeps it only when its
+     first move pulls away from the Whirl (ui/rocketInput.ts, touchPull). */
+  .rocket-grab {
+    touch-action: pan-y;
+  }
+  /* Credit and footer links: a 44 px touch around the text, with no line moved. The footer's
+     links paint above the next line, which would otherwise take the lower half of the touch. */
+  a.credit,
+  .colophon a {
+    padding-block: 14px;
+    margin-block: -14px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .colophon a {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* Where the key is a tile, only its round face winds; the rest of the tile scrolls. */
+@media (pointer: coarse) and (max-width: 900px), (pointer: coarse) and (orientation: landscape) and (max-height: 500px) {
+  .key-socket {
+    touch-action: pan-y;
+  }
+  .key-grip {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    /* The drawn key's face: 86 % of the tile's height (scene/keyView.ts frames the key on the height),
+       never less than a finger's 44 px. */
+    height: max(44px, 86%);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    touch-action: none;
+    cursor: grab;
+  }
+}
+
+/* ---------- the key's tag as the queue's stub, the coil and the deck link ---------- */
+
+@media (max-width: 900px), (orientation: landscape) and (max-height: 500px) {
+  .key-stub {
+    font-family: var(--font-plate);
+    font-size: 1rem;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .key-stub .num {
+    font-family: var(--font-num);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .key-stub + .key-tag-title {
+    display: none;
+  }
+  /* CLACK: the level seal stamps in place on the tag. */
+  .key-stub.is-stamped {
+    margin: -2px -4px;
+    padding: 0 2px;
+    border: 2px solid var(--vermilion);
+    border-radius: 4px;
+    animation: stamp-drop 160ms var(--ease-stamp);
+  }
+  /* The job's progress: a 4 px spring along the tile's bottom edge. */
+  .key-coil {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 7px;
+    height: 8px;
+    padding: 1px;
+    border: 1px solid var(--ink);
+    border-radius: 4px;
+    background: repeating-linear-gradient(100deg, var(--tin-hi) 0 3px, var(--tin-shade) 3px 5px, var(--tin) 5px 8px);
+    pointer-events: none;
+  }
+  .key-coil-fill {
+    display: block;
+    height: 100%;
+    width: 0%;
+    border-radius: 2px;
+    background: repeating-linear-gradient(100deg, var(--turquoise) 0 2px, var(--teal-deep) 2px 3px);
+  }
+  /* Nothing queued: the ticket offers the way to the side panel. */
+  .ticket-deck-link {
+    display: none;
+  }
+  #ticket[data-empty] .ticket-deck-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    margin-top: 8px;
+    padding: 0 14px;
+    border-radius: 8px;
+    background: var(--ink);
+    color: var(--chrome);
+    font-weight: 700;
+    font-size: 0.9375rem;
+    text-decoration: underline dashed 2px;
+    text-decoration-color: color-mix(in srgb, var(--chrome) 55%, transparent);
+    text-underline-offset: 5px;
+  }
+  #ticket[data-empty] .ticket-deck-link:focus-visible {
+    outline-color: var(--ink);
+    box-shadow: 0 0 0 5px var(--pink);
+  }
+
+  /* The press's proof bed: a small pinned stage under the strip while its rows scroll beneath. */
+  .press {
+    --bed-h: 174px;
+  }
+  /* Pinned, its tin field starts at the strip's edge, so no row shows between the two. */
+  .press-bed {
+    position: sticky;
+    top: var(--strip-h);
+    z-index: 1;
+    display: grid;
+    gap: 6px;
+    margin: -14px -10px 0;
+    padding: 16px 10px 6px;
+    border-radius: 8px;
+    background: var(--tin);
+    box-shadow: 0 3px 0 var(--tin-shade);
+  }
+  .press-bed-print {
+    display: block;
+    width: 100%;
+    height: 128px;
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    background: var(--space);
+    image-rendering: pixelated;
+  }
+  .press-bed-caption {
+    font-weight: 700;
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--tin-text);
+  }
+  /* The switch's transparent radio covers its whole label in every engine (WebKit keeps a radio at
+     its intrinsic 12 px unless it is given a size), so a finger anywhere on a position picks it. */
+  .slide-switch input {
+    width: 100%;
+    height: 100%;
+  }
+  /* A focused switch never lands under the bed. */
+  .press-row,
+  .press-row input,
+  .press-research,
+  .press-skip .chrome-button {
+    scroll-margin-top: calc(var(--bed-h) + 16px);
+  }
+}
+
+/* ---------- portrait: the route band docks while its place is below the fold ---------- */
+
+/* From 640 px of height the rail's controls end above the docked band (the compact lid below); on a
+   shorter screen the band would cover them, so it stays in its place there. */
+@media (max-width: 900px) and (orientation: portrait) and (min-height: 640px) {
+  /* The docked band is 85 to 105 px tall (its line wraps below 390 px): focus stops above it. */
+  html {
+    scroll-padding-bottom: 120px;
+  }
+  /* The desktop box's insets would become sticky offsets: only the bottom one counts here. */
+  .lip {
+    position: sticky;
+    inset: auto 0 0;
+    z-index: 1;
+  }
+}
+
+/* Short portrait phones (390×664 with the browser's bars): a tighter lid, so the rail stays clear of the band. */
+@media (max-width: 560px) and (max-height: 760px) {
+  .lid-title h1 {
+    font-size: 2.5rem;
+  }
+  .orrery-anchor {
+    height: clamp(180px, calc(100svh - 464px), 244px);
+  }
+  .key-wrap,
+  .gauge {
+    height: 104px;
+  }
+  .gauge-face {
+    width: 72px;
+  }
+}
+
+/* ---------- landscape phones: a one-row strip, the orrery beside its controls ---------- */
+
+/* A landscape phone can be wider than 900 px (932×430), where the desktop box would otherwise
+   apply: this block repeats what the narrow layout sets and places the lid in two columns. */
+@media (orientation: landscape) and (max-height: 500px) {
+  :root {
+    --strip-h: 52px;
+  }
+
+  .strip {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: 49px;
+    gap: 0 10px;
+    padding: 0 12px 3px;
+  }
+  .strip-brand {
+    gap: 8px;
+  }
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    min-height: 44px;
+    font-size: 1rem;
+  }
+  .sticker {
+    font-size: 0.6875rem;
+    line-height: 1.15;
+    padding: 3px 6px;
+    text-align: center;
+  }
+  .sticker-line {
+    display: block;
+  }
+  .strip-drums {
+    grid-column: auto;
+    grid-row: auto;
+    justify-content: center;
+    gap: 8px;
+  }
+  .drum {
+    grid-template-columns: auto auto;
+    column-gap: 4px;
+  }
+  .drum-label {
+    writing-mode: horizontal-tb;
+    rotate: 0deg;
+    grid-row: 1;
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+  }
+  .drum-rate {
+    display: none;
+  }
+  .drum-well {
+    grid-row: 1;
+    height: 26px;
+    padding: 0 2px;
+  }
+  .drum-digits {
+    font-size: 0.875rem;
+    line-height: 26px;
+  }
+  .drum-digits.is-reels {
+    gap: 1px;
+  }
+  .reel-window {
+    flex: none;
+    height: 26px;
+  }
+  .reel {
+    line-height: 26px;
+    translate: 0 calc(var(--d, 0) * -26px);
+  }
+  .drum[data-resource='spring'] .reel-window:nth-child(-n + 4) {
+    display: none;
+  }
+  .spark-wheel {
+    flex: none;
+    width: 52px;
+    height: 30px;
+  }
+  .spark-wheel::before {
+    content: '';
+    position: absolute;
+    inset: -9px -2px;
+  }
+  /* The links go into the menu's plate, as on a narrow phone. */
+  .strip-nav {
+    position: relative;
+    gap: 6px;
+  }
+  .bell {
+    justify-content: center;
+    gap: 4px;
+    min-height: 44px;
+    padding: 0 10px 0 6px;
+    font-size: 11px;
+  }
+  .menu-button {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    background: var(--tin);
+    color: var(--ink);
+    box-shadow: inset 0 2px 0 var(--tin-hi), inset 0 -3px 0 var(--tin-shade);
+    cursor: pointer;
+  }
+  .menu-button[aria-expanded='true'] {
+    background: var(--ink);
+    color: var(--tin-hi);
+    box-shadow: none;
+  }
+  .strip-links {
+    position: absolute;
+    top: calc(var(--strip-h) - 4px);
+    right: 0;
+    display: none;
+    min-width: 176px;
+    padding: 6px;
+    border: 2px solid var(--ink);
+    border-radius: 4px 4px 10px 10px;
+    background: var(--tin);
+    box-shadow: inset 0 2px 0 var(--tin-hi), 0 8px 16px rgba(10, 15, 74, 0.4);
+  }
+  .strip-links.is-open {
+    display: grid;
+  }
+  .strip-links .tin-tab {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 12px;
+    font-size: 1rem;
+  }
+
+  /* The lid: the orrery fitted to the height on the left; the title, the rail and the two tiles
+     on the right; the band along the bottom edge, whole, as on the desktop box. */
+  .lid {
+    --frame-in: 8px;
+    height: auto;
+    min-height: calc(100svh - var(--strip-h));
+    container-type: normal;
+    padding: 16px 18px 12px;
+  }
+  .lid-comp {
+    --u: 1px;
+    --orrery-h: calc(100svh - var(--strip-h) - 104px);
+    /* The tiles take what the title and the rail leave; 52 px keeps the key's face a 44 px grip. */
+    --tile-h: clamp(52px, calc(var(--orrery-h) - 152px), 96px);
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    translate: none;
+    display: grid;
+    grid-template-columns: min(46%, calc(var(--orrery-h) * 760 / 532)) minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      'orrery title title'
+      'orrery rail rail'
+      'orrery controls controls'
+      'orrery key gauge'
+      'lip lip lip'
+      'ticket ticket ticket'
+      'log log log';
+    grid-template-rows: auto auto auto 1fr;
+    gap: 6px 16px;
+    padding: 0 4px 12px;
+  }
+  .lid-title {
+    grid-area: title;
+    position: static;
+    width: auto;
+    rotate: none;
+    padding-top: 2px;
+  }
+  .lid-title h1 {
+    font-size: clamp(1.75rem, 8svh, 2rem);
+    line-height: 1;
+    white-space: nowrap;
+    -webkit-text-stroke-width: 4px;
+    text-shadow: 0 4px 10px rgba(10, 15, 74, 0.55);
+  }
+  .h1-line {
+    display: inline;
+  }
+  .subline {
+    margin: 4px 0 0;
+    max-width: none;
+    min-width: 0;
+    font-size: clamp(0.75rem, 3.4svh, 0.8125rem);
+    line-height: 1.3;
+  }
+  .orrery-anchor {
+    grid-area: orrery;
+    position: relative;
+    left: auto;
+    top: auto;
+    align-self: start;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 760 / 532;
+    /* The rocket's grab reaches about 20 px below the orrery's box: the band keeps clear of it. */
+    margin-bottom: 24px;
+  }
+  .rocket-grab {
+    left: 50%;
+    top: 0;
+    width: 120px;
+    height: 120px;
+  }
+  .rail {
+    display: contents;
+  }
+  .rail-plate {
+    grid-area: rail;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    column-gap: 8px;
+    padding: 6px 12px 2px;
+    border: 2px solid var(--ink);
+    border-bottom: 0;
+    border-radius: 10px 10px 0 0;
+    color: var(--ink);
+    background: var(--tin);
+    box-shadow: inset 0 2px 0 var(--tin-hi);
+    text-align: center;
+  }
+  .rail.is-out .rail-plate,
+  .rail.is-out .rail-controls {
+    border-style: dashed;
+  }
+  .rail-controls {
+    grid-area: controls;
+    margin-top: -8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    align-items: end;
+    gap: 2px 14px;
+    padding: 0 12px 8px;
+    border: 2px solid var(--ink);
+    border-top: 0;
+    border-radius: 0 0 10px 10px;
+    color: var(--ink);
+    background: var(--tin);
+    box-shadow: inset 0 -3px 0 var(--tin-shade), 0 6px 14px rgba(10, 15, 74, 0.5);
+  }
+  .rail-controls input[type='range'] {
+    width: 100%;
+    height: 44px;
+  }
+  /* The plate keeps its hint, which the intermediate desktop widths drop: keys, or a finger's drag. */
+  .rail-hint-keys {
+    display: inline;
+  }
+  @media (pointer: coarse) {
+    .rail-hint-keys {
+      display: none;
+    }
+    .rail-hint-touch {
+      display: inline;
+    }
+  }
+  .instrument {
+    display: contents;
+  }
+  .key-wrap {
+    grid-area: key;
+    align-self: start;
+    width: auto;
+    min-width: 0;
+    height: var(--tile-h);
+    aspect-ratio: auto;
+  }
+  .key-socket {
+    border-radius: 14px;
+    border-width: 2px;
+    box-shadow: none;
+  }
+  .key-tag {
+    right: auto;
+    left: 8px;
+    top: 8px;
+    max-width: none;
+    padding: 3px 7px 4px;
+    rotate: -3deg;
+  }
+  .key-tag::before {
+    display: none;
+  }
+  .key-tag-title {
+    font-size: 1rem;
+  }
+  .key-tag-hint {
+    display: none;
+  }
+  .gauge {
+    grid-area: gauge;
+    align-self: start;
+    width: auto;
+    min-width: 0;
+    height: var(--tile-h);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border-radius: 14px;
+    background: var(--space-deep);
+  }
+  .gauge-face {
+    width: auto;
+    height: calc(var(--tile-h) - 10px);
+    flex: none;
+  }
+  .gauge-readout {
+    margin: 0;
+    font-size: 0.6875rem;
+    white-space: normal;
+    max-width: 88px;
+    line-height: 1.3;
+    text-align: left;
+  }
+  .ticket {
+    grid-area: ticket;
+  }
+  .log {
+    grid-area: log;
+  }
+  .log-lines li {
+    font-size: 0.78125rem;
+  }
+  .lip {
+    grid-area: lip;
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 6px 4px 18px;
+    text-align: left;
+  }
+  .lip-text {
+    font-size: 0.75rem;
+  }
+  .lip-button {
+    justify-content: center;
+    min-height: 46px;
+  }
+  /* A finger's targets everywhere on the page, as on a narrow phone. */
+  .tin-button,
+  .chrome-button,
+  .lever,
+  .ticket-buttons .tin-button,
+  .press-research,
+  .press-skip .chrome-button,
+  .slide-switch span {
+    min-height: 44px;
+  }
+  .lid .tin-button {
+    min-height: 46px;
+  }
+  /* The orrery's nameplates in their compact phone cut. */
+  .plate {
+    gap: 4px;
+    padding: 2px 5px 1px 4px;
+  }
+  .plate-name {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.6875rem;
+  }
+  .plate-coord {
+    font-size: 0.625rem;
+  }
+  .planet-tag {
+    width: 190px;
+  }
+}
+
+/* A smaller landscape phone (780×360, 667×375): the wordmark in two lines and closer figures, so the
+   strip keeps one row; where the rail's plate takes two lines, the tiles give up the height. */
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 800px) {
+  .lid-comp {
+    --tile-h: clamp(52px, calc(var(--orrery-h) - 168px), 96px);
+  }
+  .wordmark {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    font-size: 0.8125rem;
+    line-height: 1.05;
+  }
+  .drum-digits.is-reels {
+    gap: 0;
+  }
+  .drum-label {
+    letter-spacing: 0;
+  }
+  .strip-drums {
+    gap: 6px;
+  }
+}
+
+/* A 320 px phone, or a 667 px landscape one: the same strip with smaller figures and a two-line bell
+   (after the landscape blocks, which it tightens). */
+@media (max-width: 359px), (orientation: landscape) and (max-height: 500px) and (max-width: 700px) {
+  .strip {
+    padding-inline: 8px;
+  }
+  .drum-digits {
+    font-size: 0.8125rem;
+  }
+  .strip-drums {
+    gap: 4px;
+  }
+  .strip-brand {
+    gap: 4px;
+  }
+  .strip-nav {
+    gap: 4px;
+  }
+  .bell {
+    gap: 3px;
+    padding: 0 6px;
+    white-space: normal;
+    line-height: 1.05;
+    text-align: left;
+  }
+  .bell-text {
+    max-width: 4.2em;
+  }
+}

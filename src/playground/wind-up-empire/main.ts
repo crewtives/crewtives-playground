@@ -18,15 +18,22 @@ import { Drums } from './ui/drums';
 import { BuildDesk } from './ui/buildDesk';
 import { aimText } from './ui/rocketInput';
 import { Rosette } from './ui/rosette';
-import { Winder, bindKey } from './ui/keyControl';
+import { Winder, bindKey, bindKeyGrip } from './ui/keyControl';
 import { SparkWheel } from './ui/sparkWheel';
 import { Press } from './ui/press';
+import { bindPressBed } from './ui/pressBed';
 import { cutTray } from './ui/tray';
 import { detentTick, unwindWhirr } from './voices';
 
 const $ = <T extends Element = HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
 const root = document.documentElement;
-const phone = window.matchMedia('(pointer: coarse) and (max-width: 800px)').matches;
+// A phone in either orientation: a coarse pointer at most 800 px wide or at most 500 px tall. Read once,
+// on purpose: the renderer's pixel density and the scene's detail are fixed when they are built.
+const phone = window.matchMedia('(pointer: coarse) and (max-width: 800px), (pointer: coarse) and (max-height: 500px)').matches;
+/** Where the key is a tile under the orrery and the press sits screens away from the lid: the phone layouts. */
+const TILE = '(max-width: 900px), (orientation: landscape) and (max-height: 500px)';
+/** Where the key's tile scrolls and only its round face winds. */
+const GRIP = '(pointer: coarse) and (max-width: 900px), (pointer: coarse) and (orientation: landscape) and (max-height: 500px)';
 
 setupSmoothScroll({ resetToTop: false });
 
@@ -91,6 +98,7 @@ let fold = 5;
 const rosette = new Rosette();
 const winder = new Winder({ economy, rosette, reduced: () => motion.reduced, onChange: () => renderEconomy() });
 const keys = Array.from(document.querySelectorAll<HTMLElement>('[data-key]'), (element) => bindKey(element, winder));
+bindKeyGrip($('#key'), GRIP);
 
 const drums = new Drums($('.strip-drums'));
 const desk = new BuildDesk({
@@ -98,6 +106,7 @@ const desk = new BuildDesk({
   reduced: () => motion.reduced,
   wind: (n) => winder.wind(n),
   release: () => winder.release(),
+  tileQuery: TILE,
 });
 const hangar = new Hangar($('#hangar-slots'), $<HTMLUListElement>('#hangar-flights'), $<HTMLUListElement>('#hangar-charted'));
 
@@ -120,6 +129,7 @@ economy.on((event) => {
   }
   log.add(event.line);
   if (event.type === 'built') desk.clack(event.job);
+  if (event.type === 'research-done') bed.print();
   syncCapacity();
   renderEconomy();
 });
@@ -194,12 +204,16 @@ const press = new Press({
       fold = Number(value);
       for (const fn of hooks.symmetry) fn(fold);
     }
+    bed.print();
   },
 });
 displayRegistry.onChange((mode) => {
   const radio = document.querySelector<HTMLInputElement>(`.press input[name="inks"][value="${mode}"]`);
   if (radio) radio.checked = true;
 });
+
+// The press's own flat proof, beside its switches, where the lid is screens away.
+const bed = bindPressBed({ press: $('.press'), fleet, fold: () => fold, mode: () => displayRegistry.mode, query: TILE });
 
 // The economy's own clock: 10 Hz, independent of the views and of the engine. Coming back from a
 // hidden tab, it catches up with the elapsed time (the economy clamps it to 5 minutes).
@@ -253,6 +267,7 @@ for (const button of document.querySelectorAll<HTMLButtonElement>('[data-reset]'
     renderCharted();
     renderEconomy();
     hangar.update(fleet);
+    bed.print();
   });
 }
 for (const button of document.querySelectorAll<HTMLButtonElement>('[data-skip-grind]')) {
@@ -260,6 +275,7 @@ for (const button of document.querySelectorAll<HTMLButtonElement>('[data-skip-gr
     economy.skipGrind();
     syncCapacity();
     renderEconomy();
+    bed.print();
   });
 }
 
