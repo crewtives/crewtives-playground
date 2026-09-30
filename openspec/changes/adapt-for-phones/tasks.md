@@ -185,11 +185,16 @@ Rules for every group:
 
 ## 9. Loops (integration)
 
-- [ ] 9.1 Build and serve the committed tree. Run `$PW tools/capture-loops.ts all --base <url> --dry-run --json <scratch>/loops-after.json`. Verify with the script of 8.1 that every pass's frame hashes and every poster hash equal `git show <base>:sites/playground/public/loops/<loop>/provenance.json` for all six loops. If one differs, a phone rule reaches the desktop: fix it (by the file's owner), commit, and run this task again.
-- [ ] 9.2 Record for real: `$PW tools/capture-loops.ts all --base <url>`. Verify that `git status --porcelain -- sites/playground/public/loops` lists only `provenance.json` and `poster.webp.json` files, and that their diff changes only the commit, the sources hash and, if the day changed, the date.
-- [ ] 9.3 Rewrite the six loop rows of `LICENSES.md`: recorded again on the recording date at the implementation commit, with frames identical to the first recording. Verify that each row's date and wording match its `provenance.json`.
-- [ ] 9.4 Check freshness: `rm -rf dist && npm run build` prints no `[museum]` line; `npm test` passes with `dist/` moved away (including `published.test.ts`, `manifest.test.ts`, `trails.test.ts` and `worlds.test.ts`); `npm run typecheck` passes.
-- [ ] 9.5 Commit as `chore(loops): record museum loops at <sha>`, with `<sha>` the abbreviated implementation commit. Verify that each `provenance.json` names a commit reachable from `HEAD` (`git merge-base --is-ancestor <commit> HEAD`).
+- [x] 9.1 Build and serve the committed tree. Run `$PW tools/capture-loops.ts all --base <url> --dry-run --json <scratch>/loops-after.json`. Verify with the script of 8.1 that every pass's frame hashes and every poster hash equal `git show <base>:sites/playground/public/loops/<loop>/provenance.json` for all six loops. If one differs, a phone rule reaches the desktop: fix it (by the file's owner), commit, and run this task again.
+  - Done: the dry run at the implementation commit 3ffbead matches the previous recording for all six loops: every FORWARD and REWIND frame hash (45 per pass, 11 passes), every poster hash, rectangle, native size, palette and pass size.
+- [x] 9.2 Record for real: `$PW tools/capture-loops.ts all --base <url>`. Verify that `git status --porcelain -- sites/playground/public/loops` lists only `provenance.json` and `poster.webp.json` files, and that their diff changes only the commit, the sources hash and, if the day changed, the date.
+  - Done: `git status --porcelain -- sites/playground/public/loops` lists only the six `provenance.json` and six `poster.webp.json` files; their diff changes only the commit (to 3ffbead), the sources hash, the date (2026-09-30) and the sidecar's `createdAt`. The passes and posters are byte-identical.
+- [x] 9.3 Rewrite the six loop rows of `LICENSES.md`: recorded again on the recording date at the implementation commit, with frames identical to the first recording. Verify that each row's date and wording match its `provenance.json`.
+  - Done: the six rows read "on 2026-09-30, after the phone adaptation, with frames identical to the first recording of 2026-09-25", matching each `provenance.json`.
+- [x] 9.4 Check freshness: `rm -rf dist && npm run build` prints no `[museum]` line; `npm test` passes with `dist/` moved away (including `published.test.ts`, `manifest.test.ts`, `trails.test.ts` and `worlds.test.ts`); `npm run typecheck` passes.
+  - Done: the build prints no `[museum]` line and every loop reads fresh; `npm test` passes with `dist/` moved away; `npm run typecheck` passes.
+- [x] 9.5 Commit as `chore(loops): record museum loops at <sha>`, with `<sha>` the abbreviated implementation commit. Verify that each `provenance.json` names a commit reachable from `HEAD` (`git merge-base --is-ancestor <commit> HEAD`).
+  - Done: every `provenance.json` names 3ffbead, the parent of the loops commit (`git merge-base --is-ancestor` exits 0).
 
 ## 10. Closing (integration)
 
