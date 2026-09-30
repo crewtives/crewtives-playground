@@ -7,7 +7,7 @@ Date: 2026-09-30. Branch `feat/seo-and-mobile`, on top of `835fd7d` (`<base>`, t
 ## Status
 
 - **Tasks:** groups 1 to 10 done (10.4 with a note about a second worktree, see "10. Closing").
-- **Reviews:** three final reviews ran on the build after group 9: a phone QA pass (verdict pass, four minor findings), a finish review against each work's visual rules (verdict fix, one minor finding in the museum, fixed in `f8bb6cf`) and a compliance review (verdict pass, two minor findings: the unticked closing tasks, done here, and the ungated index-row press, listed under "Intended desktop differences"). One phone QA finding was fixed (`9779549`); the other three are under "Pending", each with the reason it was left.
+- **Reviews:** three final reviews ran on the build after group 9: a phone QA pass (verdict pass, four minor findings), a finish review against each work's visual rules (verdict fix, one minor finding in the museum, fixed in `f8bb6cf`) and a compliance review (verdict pass, two minor findings: the unticked closing tasks, done here, and the ungated index-row press, listed under "Intended desktop differences"). One phone QA finding was fixed (`9779549`); the other three, and the spelling in the loop records, were left open at the archive and fixed after it (see "Resolved after archive").
 - **Nothing was deployed or pushed.** Every HTTP check ran against the built output served locally by `wrangler dev` with the production configuration.
 
 ## Environment
@@ -238,7 +238,7 @@ How to read the "How" column:
 | Focus under a pinned stage | cp bloomscope "focus never stays under the stage" | Pass |
 | Escape closes a window | cp a/b/c "dock: keyboard order, Enter and Escape"; unit `dock.test.ts` | Pass |
 | Focus above a bottom bar | cp museum "generic: focus" at 390×844 (no focused element under the clock bar or the sticky row) | Pass |
-| Measuring text | cp every page "generic: text sizes" (Chromium) | Pass; D's formula scripts pending (see "Pending") |
+| Measuring text | cp every page "generic: text sizes" (Chromium) | Pass; D's formula scripts at 11 px after the archive (see "Resolved after archive") |
 | Measuring the phone elements | cp every page "generic: contrast" (figures in "Phone evidence per work") | Pass |
 | A docked window's legends | cp b "generic: contrast": docked legends and aside 4.7:1 | Pass |
 
@@ -495,11 +495,13 @@ Every deviation from the plan is recorded in design D21 with its rejected altern
 
 **Checks that need the preview host:** the phone checks and the throttled E boot against the real Workers host (real compression, caching and HTTP/2), after deploy, which is outside this change.
 
-**Minor findings left open**, each with its reason:
-- World C's docked Layers window: at 390×844 and 360×780, tabbing to the first radio leaves its 44 px label, and its focus ring, 12 to 16 px below the viewport (the browser scrolls only the small native input into view; fine at 390×664). The fix (the radio filling its label under C's narrow gate, as E's dock cells do, or a `scroll-margin-bottom` on the docked labels) edits `src/4d-os/worlds/c/`, a source of sheet 001, so it needs loops a, b and c recorded again: left for a follow-up change.
-- World D's formula sub- and superscripts (`r0 · φ^(−2θ/π)`, the readout's `-6.328` superscript, `span.gun__num`) render at 9.7 to 10.3 px at 390 px, under the 11 px floor, and are not clearly covered by the screen-typeface exemption. It predates this change. The fix (an exemption for scripts inside formulas, or `sub, sup` at 11 px under D's phone query) edits `src/4d-os/worlds/d/` or the spec; the first needs loop `d` recorded again.
-- Game Center's 2F cabinet credit links (the cat's credit line, 116×19 px) sit flush under the cabinet's own link, so a tap slightly above one lands on the cabinet. A negative-margin hit area would overlap the cabinet link, which `phone-ergonomics` forbids; growing the credit's own cell changes the cabinets' phone layout and needs its own Game Center phone run. Credit lines are arguably sentence text (exempt). Left for a follow-up.
-- `tools/capture-loops.ts` writes "16-colour" (British spelling) into each `poster.webp.json` prompt, against the repository's US English rule. The fix belongs in the tool, followed by a recording of every loop.
+**Resolved after archive.** The four minor findings left open at the archive were fixed on the same branch, with no new change and no spec edit; the first three sit behind the phone gates their works already use:
+- World C's docked Layers window (`94f1352`): the docked inputs carry `scroll-margin-block: 20px` under C's narrow gate, so a focused option's whole 44 px cell and its focus ring land on the screen (at 390×844 the first radio's cell ends at 840, at 360×780 at 776; the same in WebKit).
+- World D's formula scripts (`48c0d2f`): under D's narrow query the equations' sub- and superscripts use `max(11px, 0.64em)` or `max(11px, 0.66em)` and the gun numerals 11 px; `tools/check-phone/worlds-de.ts` no longer exempts them.
+- Game Center's 2F credit links (`3321d00`): on a coarse pointer the credit row is 44 px and each credit link fills it (116×44 and 65×44 at 390×844), 10 px under the cabinet, with no overlapping touch areas.
+- The loop records' spelling (`1eb9f62`): the poster sidecar prompt and the tool's Bloomscope prep note say "color"; the six `poster.webp.json` files changed only in that word, and Bloomscope's `provenance.json` takes the new note when the loops are recorded again.
+
+On development servers of the fixed tree, the phone modules pass in every viewport (C 65/65, D 90/90, Game Center 105/105), and `desk` of C, D and Game Center compared with `desk-before-dev` (`desk-compare`) gives 114 shots: 106 byte-identical, 8 different only inside the D15 copy lines, 0 noise-only, 0 differing, 0 layout differences and equal element dumps. The fixes to C and D change sources of sheets 001 and 002, so loops `a` to `d` are recorded again after them; a recording must keep every frame and poster hash.
 
 **Out of scope, as the design says (D20):** serving the `.bin` packs compressed (a hosting change; the pack files must not change).
 
