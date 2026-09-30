@@ -9,10 +9,11 @@ The behavior is specified in the
 [`site-metadata`](../openspec/specs/site-metadata/spec.md) capability, and the reasons behind it are in
 the design of the change `add-seo-and-sharing` (decisions D1 to D10), which comments in `src/site/`
 cite; the change `adapt-for-phones` (D12 to D14) set the tab titles, tightened the descriptions and
-removed the icon placeholders from the sources. None of it changes what a page shows or does: the
-metadata is added to the built HTML, and a page's source carries only what belongs to the page itself,
-its tab title and its description. [`architecture.md`](architecture.md) places this layer among the
-others.
+removed the icon placeholders from the sources, and the change `move-cat-credit-out-of-share-images`
+(D1 and D2) took the cat's credit out of the share images' band and set where it travels instead.
+None of it changes what a page shows or does: the metadata is added to the built HTML, and a page's
+source carries only what belongs to the page itself, its tab title and its description.
+[`architecture.md`](architecture.md) places this layer among the others.
 
 ## The page registry
 
@@ -36,7 +37,7 @@ Each entry of `PAGES` holds:
 | `route`, `canonical` | The public route with its trailing slash, and `SITE_ORIGIN` + route |
 | `title` | The share title (`og:title`, `twitter:title`), 10 to 70 characters. It begins with the page's name as its tab title gives it (the part before the first " · "), and it may say more than the tab title |
 | `description` | A copy of the page's own `<meta name="description">`, 50 to 160 characters, so that search results show it whole |
-| `image` | Path, 1200 × 630, and the alt text (40 to 420 characters), which describes the frame and the band and names the cat's credit when the image carries it |
+| `image` | Path, 1200 × 630, and the alt text (40 to 420 characters), which describes the frame and the band and names the cat's credit when the frame shows the cat |
 | `jsonLd` | `WebSite` on `/`, `CreativeWork` elsewhere |
 | `frameShows` | The 4D.OS worlds the share image's frame shows |
 | `syntheticFrame` | Optional: the frame shows a synthetic scene of the page's own, not a world, which the page itself labels "Synthetic scene" (only Game Center's Rain Run) |
@@ -52,7 +53,8 @@ leaves the works as they are").
 **"Synthetic" and the cat's credit are never decided by hand.** `isSynthetic(page)` and
 `creditFor(page)` read them from `WORLDS` in `src/playground/shared/worlds.ts`, through the worlds in
 `frameShows`. A frame that shows world A, B or C in any form (a live view, a still, a poster) shows
-the cat, so its image, its alt text and its structured data carry the credit. The one synthetic frame
+the cat, so the credit travels with its share image: in the alt text, the structured data, the
+image's sidecar and `provenance.json`, never in the band. The one synthetic frame
 that is not a world, Rain Run on Game Center's cabinet, is declared with `syntheticFrame`, and a test
 requires the page's own HTML to label it "Synthetic scene", so the mark still follows the page.
 
@@ -177,9 +179,13 @@ at most 300 KB. Its two regions sit side by side:
 - **The band**, 360 × 630 at the right, beside the frame and never over it. It is set in the page's
   own self-hosted typefaces and colored from the page's own tokens, with a contrast of at least
   4.5:1. It carries the site line ("crewtives playground", with "4D.OS" on the 4D.OS pages), the
-  page's short name, the "synthetic" mark when the frame shows a synthetic scene and, when the frame
-  shows the cat, the credit *"Cat" by J-Toastie, CC-BY 3.0*, because the image is seen on other
-  sites, away from the page.
+  page's short name and the "synthetic" mark when the frame shows a synthetic scene. It does not
+  carry the cat's credit, even when the frame shows the cat: the band is a title block, and a credit
+  line under the mark weighed it down (`move-cat-credit-out-of-share-images` D1). The credit, *"Cat"
+  by J-Toastie, CC-BY 3.0*, travels with each image instead, as CC-BY 3.0 allows it to be given "in
+  any reasonable manner": in its page's `og:image:alt`, `twitter:image:alt` and JSON-LD `isBasedOn`,
+  in its sidecar and `provenance.json`, in its row in `LICENSES.md`, and on the pages that show the
+  cat (D2). The frame keeps whatever the page itself shows, such as the launcher's own credit line.
 
 The composition data (source, region, the worlds the region shows, faces, token references and band
 strings) is in `src/site/og/cards.ts`, where the tests can read it:
@@ -192,10 +198,14 @@ strings) is in `src/site/og/cards.ts`, where the tests can read it:
 
 **Provenance.** Next to each image, `<slug>.png.json` states that the image was not generated and
 names its source, its region, its band text and its SHA-256, in the `{ prompt, createdAt }` shape of
-the repository's other image sidecars. `sites/playground/public/og/provenance.json` records the
-source and its SHA-256, how the capture was made, the region, the band's text, faces and colors, the
-tool and its pinned versions, and the image's SHA-256 and weight. Each image has a row in
-`LICENSES.md`; the images that show the cat are marked as derivatives of a CC-BY 3.0 model.
+the repository's other image sidecars; when the frame shows the cat, it also states the cat's credit,
+apart from the band text, and where the credit travels. `sites/playground/public/og/provenance.json`
+records the source and its SHA-256, how the capture was made, the region, the band's text, faces and
+colors, the credit the frame requires (or none), the tool and its pinned versions, and the image's
+SHA-256 and weight. Each image has a row in `LICENSES.md`; the images that show the cat are marked as
+derivatives of a CC-BY 3.0 model, and their row says where the credit travels. An image whose bytes
+do not change when it is composed again keeps its sidecar's date, and its sidecar and record are
+written again from the current inputs.
 
 **The `?v=` version.** The pages name each image as `/og/<slug>.png?v=<version>`, where the version
 is the first 8 hex digits of the image's SHA-256, read by the build. Link previews cache images by

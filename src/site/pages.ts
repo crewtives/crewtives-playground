@@ -139,7 +139,7 @@ export const PAGES: readonly PageMeta[] = [
     title: '4D.OS: one engine, five worlds, every moment of a scene at once',
     description:
       '4D.OS: live 4D scenes with every moment drawn at once, in five worlds: a synthetic cat on a stairway in three, and two subjects built from equations.',
-    alt: `The 4D.OS launcher, captured from its live render: the windows of worlds A, Vitrine, B, Plate and C, Leader, each drawing the same synthetic black cat climbing a stairway, every moment at once, and below them the heading “Two more plates.” of worlds D and E. Beside it, a band reads “4D.OS”, “crewtives playground” and “One engine, five worlds”, with the mark “synthetic” and the credit ${CREDIT}.`,
+    alt: `The 4D.OS launcher, captured from its live render: the windows of worlds A, Vitrine, B, Plate and C, Leader, each drawing the same synthetic black cat climbing a stairway, every moment at once, and below them the heading “Two more plates.” of worlds D and E. Beside it, a band reads “4D.OS”, “crewtives playground” and “One engine, five worlds”, with the mark “synthetic”. Cat model: ${CREDIT}.`,
     jsonLd: 'CreativeWork',
     frameShows: ['a', 'b', 'c'],
   }),
@@ -150,7 +150,7 @@ export const PAGES: readonly PageMeta[] = [
     title: 'Vitrine · 4D.OS: a synthetic cat climbing stairs in a red gallery',
     description:
       'A live 4D reconstruction hung like a museum piece: every moment of a synthetic black cat climbing a flight of stairs in an alley at night, on display at once.',
-    alt: `World A, Vitrine, captured from its live render: inside the red gallery wall, the vitrine of points where the synthetic black cat, in cyan, climbs the stairway, its earlier steps left behind as grey ghost cats, and the source camera drawn as a white frustum. Beside it, a band reads “4D.OS”, “crewtives playground” and “Vitrine”, with the mark “synthetic” and the credit ${CREDIT}.`,
+    alt: `World A, Vitrine, captured from its live render: inside the red gallery wall, the vitrine of points where the synthetic black cat, in cyan, climbs the stairway, its earlier steps left behind as grey ghost cats, and the source camera drawn as a white frustum. Beside it, a band reads “4D.OS”, “crewtives playground” and “Vitrine”, with the mark “synthetic”. Cat model: ${CREDIT}.`,
     jsonLd: 'CreativeWork',
     frameShows: ['a'],
   }),
@@ -161,7 +161,7 @@ export const PAGES: readonly PageMeta[] = [
     title: "Plate · 4D.OS: a cat's whole climb exposed on one plate",
     description:
       'Every moment of a moving subject exposed onto one plate: a live 4D reconstruction on a chronophotographic desktop.',
-    alt: `World B, Plate, captured from its live render: the heading PLATE 4D-002, CAT, ASCENDING STAIRS. over a dark plate under a green and magenta aurora, where the cat’s whole climb is exposed as a staircase of white cats, the present one in cyan. Beside it, a band reads “4D.OS”, “crewtives playground” and “PLATE”, with the mark “synthetic” and the credit ${CREDIT}.`,
+    alt: `World B, Plate, captured from its live render: the heading PLATE 4D-002, CAT, ASCENDING STAIRS. over a dark plate under a green and magenta aurora, where the cat’s whole climb is exposed as a staircase of white cats, the present one in cyan. Beside it, a band reads “4D.OS”, “crewtives playground” and “PLATE”, with the mark “synthetic”. Cat model: ${CREDIT}.`,
     jsonLd: 'CreativeWork',
     frameShows: ['b'],
   }),
@@ -172,7 +172,7 @@ export const PAGES: readonly PageMeta[] = [
     title: "Leader · 4D.OS: a cat's climb threaded through a film gate",
     description:
       'A 4D reconstruction threaded like a strip of 16mm film: grab the strip, pull time through the gate.',
-    alt: `World C, Leader, captured from its live render: the projector gate, where the cat’s night climb runs over-exposed in orange with the present cat in cyan and the source camera drawn as a white frustum, and below it the 16 mm strip, whose frames show the black cat on the stairs. Beside it, a band reads “4D.OS”, “crewtives playground” and “LEADER”, with the mark “synthetic” and the credit ${CREDIT}.`,
+    alt: `World C, Leader, captured from its live render: the projector gate, where the cat’s night climb runs over-exposed in orange with the present cat in cyan and the source camera drawn as a white frustum, and below it the 16 mm strip, whose frames show the black cat on the stairs. Beside it, a band reads “4D.OS”, “crewtives playground” and “LEADER”, with the mark “synthetic”. Cat model: ${CREDIT}.`,
     jsonLd: 'CreativeWork',
     frameShows: ['c'],
   }),
@@ -213,7 +213,10 @@ export function isSynthetic(page: PageMeta): boolean {
   return page.syntheticFrame === true || shown(page).some((w) => w.synthetic);
 }
 
-/** The credit the share image must carry: the cat's when its frame shows world A, B or C. */
+/**
+ * The credit that travels with the share image, in its alt text, structured data and records (never in
+ * its band): the cat's when its frame shows world A, B or C.
+ */
 export function creditFor(page: PageMeta): Credit | null {
   return shown(page).find((w) => w.credit)?.credit ?? null;
 }

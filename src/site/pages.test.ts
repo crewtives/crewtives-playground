@@ -108,10 +108,12 @@ describe('page registry (site-metadata, "One registry for every public page")', 
     }
   });
 
-  test("the cat's credit is built from CAT_MODEL, and each alt names it exactly when the image carries it", () => {
+  test("the cat's credit is built from CAT_MODEL, and each alt names it exactly when the frame shows the cat", () => {
     expect(CAT_CREDIT.text).toBe(`"${CAT_MODEL.name}" by ${CAT_MODEL.creator}, CC-BY 3.0`);
     for (const page of PAGES) {
       expect(page.image.alt.includes(CAT_CREDIT.text), page.slug).toBe(creditFor(page) !== null);
+      // The band does not carry the credit, so no alt text describes it as band text.
+      expect(page.image.alt, page.slug).not.toContain('and the credit');
     }
   });
 

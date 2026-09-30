@@ -38,7 +38,7 @@ import { createRequire } from 'node:module';
 import { dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { woff2Codepoints } from '../src/playground/museum/build/woff2.ts';
-import { SITE_ORIGIN, type Slug } from '../src/site/pages.ts';
+import { creditFor, SITE_ORIGIN, type Slug } from '../src/site/pages.ts';
 import {
   BAND,
   BAND_MARGIN,
@@ -49,8 +49,6 @@ import {
   type Card,
   cardFor,
   CARDS,
-  CREDIT_LINES,
-  CREDIT_SIZE,
   type Face,
   FRAME,
   IMAGE,
@@ -292,9 +290,6 @@ function bandHtml(card: Card): string {
   const text = bandText(card);
   const colors = bandColors(card, REPO);
   const line = (cls: string, value: string | null) => (value ? `<p class="${cls}">${escapeHtml(value)}</p>` : '');
-  const credit = text.credit
-    ? `<p class="credit">${text.credit.split(/(?<=,) /).map((part) => `<span class="keep">${escapeHtml(part)}</span>`).join(' ')}</p>`
-    : '';
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><style>
 @font-face { font-family: og-display; src: url(${fontUrl(card.display)}) format('woff2'); font-weight: 1 1000; }
@@ -316,14 +311,11 @@ html, body { background: ${colors.background}; }
 .title { font-family: og-display; ${faceCss(card.display)} margin-top: 28px; line-height: 0.96; text-wrap: balance; }
 .foot { margin-top: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
 .mark { font-size: 18px; line-height: 22px; padding: 3px 9px 4px; background: ${colors.tagBackground}; color: ${colors.tagInk}; box-shadow: inset 0 0 0 1.5px ${colors.tagInk}; }
-.credit { font-size: ${CREDIT_SIZE}px; line-height: 26px; }
-/* The credit breaks only between its parts, never inside "J-Toastie" or "CC-BY 3.0". */
-.keep { white-space: nowrap; }
 </style></head><body>
 <div class="band">
   <div class="head">${line('series', text.series)}${line('site', text.site)}</div>
   <h1 class="title">${escapeHtml(text.title)}</h1>
-  <div class="foot">${line('mark', text.synthetic)}${credit}</div>
+  <div class="foot">${line('mark', text.synthetic)}</div>
 </div>
 <script>
 document.fonts.ready.then(async () => {
@@ -331,7 +323,6 @@ document.fonts.ready.then(async () => {
   const band = document.querySelector('.band');
   const title = document.querySelector('.title');
   const foot = document.querySelector('.foot');
-  const credit = document.querySelector('.credit');
   const problems = [];
   const lines = (el) => Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight));
   let size = ${TITLE_SIZE.max};
@@ -340,18 +331,17 @@ document.fonts.ready.then(async () => {
     if (title.scrollWidth <= title.clientWidth && lines(title) <= ${TITLE_LINES}) break;
   }
   if (size < ${TITLE_SIZE.min}) problems.push('the title does not fit in ${TITLE_LINES} lines at ${TITLE_SIZE.min} px');
-  if (credit && lines(credit) > ${CREDIT_LINES}) problems.push('the credit takes more than ${CREDIT_LINES} lines');
   const box = band.getBoundingClientRect();
   for (const el of band.querySelectorAll('p, h1')) {
     const r = el.getBoundingClientRect();
-    if (el.scrollWidth > el.clientWidth + 0.5 || [...el.querySelectorAll('.keep')].some((k) => k.getBoundingClientRect().right > r.right + 0.5)) {
+    if (el.scrollWidth > el.clientWidth + 0.5) {
       problems.push(el.className + ' overflows its line');
     }
     if (r.left < box.left + ${BAND_MARGIN} - 0.5 || r.right > box.right - ${BAND_MARGIN} + 0.5 || r.top < box.top + ${BAND_MARGIN} - 0.5 || r.bottom > box.bottom - ${BAND_MARGIN} + 0.5) {
       problems.push(el.className + ' comes closer than ${BAND_MARGIN} px to an edge');
     }
   }
-  if (title.getBoundingClientRect().bottom + 24 > foot.getBoundingClientRect().top) problems.push('the title runs into the mark or the credit');
+  if (title.getBoundingClientRect().bottom + 24 > foot.getBoundingClientRect().top) problems.push('the title runs into the mark');
   for (const family of ['og-display', 'og-text']) {
     if (![...document.fonts].some((f) => f.family === family && f.status === 'loaded')) problems.push(family + ' did not load');
   }
@@ -441,14 +431,22 @@ function captureRecordOf(card: Card): unknown {
   return { record: card.record, entry: name, ...entry };
 }
 
+/**
+ * The sidecar states the credit the frame needs apart from the band text, which never carries it
+ * (move-cat-credit-out-of-share-images D4).
+ */
 function sidecar(card: Card, record: ImageRecord, createdAt: string): { prompt: string; createdAt: string } {
   const text = record.band.text;
-  const band = [text.series, text.site, text.title, text.synthetic, text.credit].filter(Boolean).join(' / ');
+  const band = [text.series, text.site, text.title, text.synthetic].filter(Boolean).join(' / ');
+  const credit = creditFor(pageFor(card.slug));
+  const creditLine = credit
+    ? ` Credit: the frame shows the cat of ${credit.text} (${credit.source}); the band does not carry it: it travels with the image in its page's og:image:alt, twitter:image:alt and JSON-LD isBasedOn, in provenance.json and in LICENSES.md.`
+    : '';
   return {
     prompt:
       `Origin: not generated. Share image of ${record.route} (${IMAGE.width}×${IMAGE.height}). Frame: the ${FRAME.width}×${FRAME.height} region at x ${card.region.x}, y ${card.region.y} of ${card.source}, ` +
       `a real capture of the live render (record: ${card.record}), copied pixel for pixel with no scaling, re-dithering, filter or retouching. ` +
-      `Band, beside the frame: ${band}, set in the page's own typefaces. Image SHA-256 ${record.image.sha256}. Full record: provenance.json in this folder.`,
+      `Band, beside the frame: ${band}, set in the page's own typefaces.${creditLine} Image SHA-256 ${record.image.sha256}. Full record: provenance.json in this folder.`,
     createdAt,
   };
 }
@@ -473,10 +471,10 @@ async function compose(browser: any, slugs: Slug[], out: string): Promise<void> 
     const hash = sha256(bytes);
     const file = join(out, name);
     const sidecarFile = join(out, `${name}.json`);
-    if (existsSync(file) && sha256(readFileSync(file)) === hash && existsSync(sidecarFile) && provenance.images[name]) {
-      console.log(`= ${slug}: identical bytes (${hash.slice(0, 12)}…), sidecar and record kept`);
-      continue;
-    }
+    // Bytes that did not change keep their date, but their record and sidecar are written again from
+    // the current inputs, so that no record keeps a field the inputs no longer have (D5).
+    const unchanged = existsSync(file) && sha256(readFileSync(file)) === hash && existsSync(sidecarFile) && name in provenance.images;
+    const createdAt = unchanged ? (JSON.parse(readFileSync(sidecarFile, 'utf8')) as { createdAt: string }).createdAt : new Date().toISOString();
     const text = bandText(card);
     const record: ImageRecord = {
       route: page.route,
@@ -497,17 +495,21 @@ async function compose(browser: any, slugs: Slug[], out: string): Promise<void> 
         },
       },
       synthetic: text.synthetic !== null,
-      credit: text.credit,
+      credit: creditFor(page)?.text ?? null,
       tool: TOOL,
       browser: 'chromium',
       browserVersion: browser.version(),
       platform: `${process.platform}-${process.arch}`,
       image: { width: IMAGE.width, height: IMAGE.height, bytes: bytes.length, sha256: hash },
     };
-    writeFileSync(file, bytes);
-    writeJson(sidecarFile, sidecar(card, record, new Date().toISOString()));
+    if (!unchanged) writeFileSync(file, bytes);
+    writeJson(sidecarFile, sidecar(card, record, createdAt));
     provenance.images[name] = record;
-    console.log(`✓ ${slug}: ${bytes.length} B, title at ${band.titleSize} px, ${hash.slice(0, 12)}…`);
+    console.log(
+      unchanged
+        ? `= ${slug}: identical bytes (${hash.slice(0, 12)}…), date kept, sidecar and record written from the current inputs`
+        : `✓ ${slug}: ${bytes.length} B, title at ${band.titleSize} px, ${hash.slice(0, 12)}…`,
+    );
   }
   provenance.images = Object.fromEntries(CARDS.map((c) => `${c.slug}.png`).filter((n) => provenance.images[n]).map((n) => [n, provenance.images[n]]));
   writeJson(provenancePath, provenance);

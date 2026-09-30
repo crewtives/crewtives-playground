@@ -169,18 +169,36 @@ describe('share images (spec site-metadata, "Share images are real frames")', ()
     }
   });
 
-  test('the credit and "synthetic" are in the band exactly when the registry says so, and each image was composed with the current band', () => {
+  test('"synthetic" is in the band exactly when the registry says so, and each image was composed with the current band', () => {
     const record = provenance();
     for (const card of CARDS) {
       const page = pageFor(card.slug);
       const text = bandText(card);
       expect(text.synthetic !== null, card.slug).toBe(isSynthetic(page));
-      expect(text.credit, card.slug).toBe(creditFor(page)?.text ?? null);
       expect(text.series !== null, card.slug).toBe(page.site === '4d-os');
-      if (card.shows.some((w) => w === 'a' || w === 'b' || w === 'c')) expect(text.credit, card.slug).toBe(CAT_CREDIT.text);
-      expect(record.images[`${card.slug}.png`].band.text, `${card.slug}: recompose after a band change`).toEqual(text);
-      expect(record.images[`${card.slug}.png`].credit, card.slug).toBe(text.credit);
-      expect(record.images[`${card.slug}.png`].synthetic, card.slug).toBe(text.synthetic !== null);
+      const entry = record.images[`${card.slug}.png`];
+      expect(entry.band.text, `${card.slug}: recompose after a band change`).toEqual(text);
+      expect(entry.band.text, card.slug).not.toHaveProperty('credit');
+      expect(entry.synthetic, card.slug).toBe(text.synthetic !== null);
+    }
+  });
+
+  test('no band carries the cat\'s credit; the records state it apart from the band text exactly when the frame shows the cat', () => {
+    const record = provenance();
+    for (const card of CARDS) {
+      const page = pageFor(card.slug);
+      const credit = creditFor(page);
+      for (const run of bandRuns(card)) {
+        expect(run.text, `${card.slug}: band string`).not.toContain('J-Toastie');
+        expect(run.text, `${card.slug}: band string`).not.toContain('CC-BY');
+      }
+      if (card.shows.some((w) => w === 'a' || w === 'b' || w === 'c')) expect(credit?.text, card.slug).toBe(CAT_CREDIT.text);
+      expect(record.images[`${card.slug}.png`].credit, card.slug).toBe(credit?.text ?? null);
+      const { prompt } = JSON.parse(read(`${OG}/${card.slug}.png.json`).toString('utf8'));
+      const band = /Band, beside the frame: (.*?), set in the page's own typefaces\./.exec(prompt);
+      expect(band, `${card.slug}: the sidecar names the band text`).not.toBeNull();
+      expect(band![1], `${card.slug}: sidecar band clause`).not.toContain('J-Toastie');
+      expect(prompt.includes(CAT_CREDIT.text), `${card.slug}: sidecar credit`).toBe(credit !== null);
     }
   });
 });

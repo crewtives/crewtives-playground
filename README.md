@@ -388,9 +388,10 @@ license and the location of its license text.
 [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/). Its animation is procedural and its fur is
 darkened. The credit also covers everything derived from it: the `cat-stairs` pack, the museum's loops
 of worlds A, B and C, the stills, the images in `docs/images/` and the share images in
-`sites/playground/public/og/` that show the cat. Every page that shows the cat carries the credit, and
-so does every share image that shows it, inside the image, because those images are seen away from
-the site.
+`sites/playground/public/og/` that show the cat. Every page that shows the cat carries the credit. The
+share images that show it do not draw it in the image: the credit travels with each of them in its
+page's alt text and structured data, in its sidecar and `provenance.json`, and in its row in
+`LICENSES.md`.
 
 **Other assets.** The "Deer" model by Quaternius (CC0 1.0) is the input of the `deer-meadow` recipe,
 whose pack is not published. The typefaces are self-hosted, each under the SIL Open Font License 1.1 or the

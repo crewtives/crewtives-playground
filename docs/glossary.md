@@ -187,7 +187,7 @@ Sections: [Scenes and the 4D pack](#scenes-and-the-4d-pack) · [Time](#time) ·
 | **Playground** | The site at `/` that holds the museum, Bloomscope and the two other landings. | `sites/playground/`, `src/playground/` |
 | **Visitor** | The person using a page. Specs say "the visitor", never "the user". | `openspec/specs/` |
 | **Demo index** | The list of the five worlds and the launcher that every landing shows in its own style, from one registry, so routes, stills, lines and credits are never written twice. | `WORLDS`, `LAUNCHER` in `src/playground/shared/worlds.ts` |
-| **Cat credit** | The required CC-BY attribution of the cat model, shown next to every image or loop of the cat. | `CAT_CREDIT` in `src/playground/shared/worlds.ts`; `LICENSES.md` |
+| **Cat credit** | The required CC-BY attribution of the cat model, shown next to every image or loop of the cat on the site. The share images that show the cat carry it in their metadata (alt text, structured data, sidecar and `provenance.json`), not in the image. | `CAT_CREDIT` in `src/playground/shared/worlds.ts`; `LICENSES.md` |
 | **Build stamp** | The version label the playground pages show ("demo build 0.1"). | `BUILD_STAMP` in `src/playground/shared/worlds.ts` |
 | **Reduced motion** | The visitor's `prefers-reduced-motion` setting, followed live without a reload. Nothing moves on its own: the page clock starts in HOLD, the wash stays fixed, and a toy jumps to its result instead of animating the path. | `src/playground/shared/motion.ts` |
 | **Design brief** | The written direction for one page's design, kept for the design tooling. The design system they build on is `docs/design/DESIGN.md`. | `.impeccable/surfaces/` |

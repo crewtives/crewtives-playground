@@ -63,8 +63,7 @@
           "series": null,
           "site": "crewtives playground",
           "title": "A museum of live graphics experiments",
-          "synthetic": null,
-          "credit": null
+          "synthetic": null
         },
         "titleSize": 46,
         "display": {
@@ -164,8 +163,7 @@
           "series": null,
           "site": "crewtives playground",
           "title": "Bloomscope",
-          "synthetic": null,
-          "credit": null
+          "synthetic": null
         },
         "titleSize": 39,
         "display": {
@@ -266,8 +264,7 @@
           "series": null,
           "site": "crewtives playground",
           "title": "GAME CENTER YONJIGEN",
-          "synthetic": "synthetic",
-          "credit": null
+          "synthetic": "synthetic"
         },
         "titleSize": 52,
         "display": {
@@ -366,8 +363,7 @@
           "series": null,
           "site": "crewtives playground",
           "title": "WIND-UP EMPIRE",
-          "synthetic": null,
-          "credit": null
+          "synthetic": null
         },
         "titleSize": 56,
         "display": {
@@ -470,8 +466,7 @@
           "series": "4D.OS",
           "site": "crewtives playground",
           "title": "One engine, five worlds",
-          "synthetic": "synthetic",
-          "credit": "\"Cat\" by J-Toastie, CC-BY 3.0"
+          "synthetic": "synthetic"
         },
         "titleSize": 56,
         "display": {
@@ -505,8 +500,8 @@
       "image": {
         "width": 1200,
         "height": 630,
-        "bytes": 69944,
-        "sha256": "6ddde6117fba5e203cf20ac9a09a5dd9ddb532c9a387ef13dd2450d6f1bf9309"
+        "bytes": 67172,
+        "sha256": "6194ab7730bc5bbbcd60025091b113b159103c5050bbd3d276be207f82461f22"
       }
     },
     "4d-os-a.png": {
@@ -541,8 +536,7 @@
           "series": "4D.OS",
           "site": "crewtives playground",
           "title": "Vitrine",
-          "synthetic": "synthetic",
-          "credit": "\"Cat\" by J-Toastie, CC-BY 3.0"
+          "synthetic": "synthetic"
         },
         "titleSize": 56,
         "display": {
@@ -576,8 +570,8 @@
       "image": {
         "width": 1200,
         "height": 630,
-        "bytes": 37961,
-        "sha256": "1440341a20580bbb49e4e68dd3b08f57c5f2f87fd2b34b4705908e77dcaf3093"
+        "bytes": 34215,
+        "sha256": "5454ca039cfd96d5364071168d6d3d7d41161937e3a39db200ed016b4705fae9"
       }
     },
     "4d-os-b.png": {
@@ -612,8 +606,7 @@
           "series": "4D.OS",
           "site": "crewtives playground",
           "title": "PLATE",
-          "synthetic": "synthetic",
-          "credit": "\"Cat\" by J-Toastie, CC-BY 3.0"
+          "synthetic": "synthetic"
         },
         "titleSize": 56,
         "display": {
@@ -648,8 +641,8 @@
       "image": {
         "width": 1200,
         "height": 630,
-        "bytes": 173794,
-        "sha256": "d01a168045a7a774d817a8056db1469a94e93e0ae4c975ba075d83b2c31d4a8f"
+        "bytes": 168926,
+        "sha256": "8c9091fb50aea05d2e0fbe5568104404e04609352fa8302ae4ce868bff583f00"
       }
     },
     "4d-os-c.png": {
@@ -684,8 +677,7 @@
           "series": "4D.OS",
           "site": "crewtives playground",
           "title": "LEADER",
-          "synthetic": "synthetic",
-          "credit": "\"Cat\" by J-Toastie, CC-BY 3.0"
+          "synthetic": "synthetic"
         },
         "titleSize": 56,
         "display": {
@@ -720,8 +712,8 @@
       "image": {
         "width": 1200,
         "height": 630,
-        "bytes": 126249,
-        "sha256": "0ebe40d78ddfa789ca1db9f7e94aa1b73635b121a2f0a576de339a26857bc1e3"
+        "bytes": 119691,
+        "sha256": "6a95cd846da22d24f434fa280d2b75de2daded8c465216a0471ea1ee9dad4b26"
       }
     },
     "4d-os-d.png": {
@@ -756,8 +748,7 @@
           "series": "4D.OS",
           "site": "crewtives playground",
           "title": "The golden stoop",
-          "synthetic": "synthetic",
-          "credit": null
+          "synthetic": "synthetic"
         },
         "titleSize": 56,
         "display": {
@@ -828,8 +819,7 @@
           "series": "4D.OS",
           "site": "crewtives playground",
           "title": "Whale fall",
-          "synthetic": "synthetic",
-          "credit": null
+          "synthetic": "synthetic"
         },
         "titleSize": 56,
         "display": {

@@ -2,14 +2,16 @@
 // 10 pages, the real capture its frame comes from, the 840×630 region of it that is copied one for
 // one, the 4D.OS worlds that region shows, and the band beside it: the page's own typefaces, colors
 // read from its own tokens, and the strings it carries. `tools/capture-og.ts` composes the images
-// from this; `cards.test.ts` checks it without a browser. Whether a band says "synthetic" and whose
-// credit it carries is never written here: it comes from the registry (`isSynthetic`, `creditFor`),
-// which reads the worlds a card `shows` and, for a scene of a page's own, its `syntheticFrame`.
+// from this; `cards.test.ts` checks it without a browser. Whether a band says "synthetic" is never
+// written here: it comes from the registry (`isSynthetic`), which reads the worlds a card `shows` and,
+// for a scene of a page's own, its `syntheticFrame`. The band never carries the cat's credit
+// (move-cat-credit-out-of-share-images D1): the credit the frame needs (`creditFor`) travels in the
+// page's alt text and structured data and in the image's sidecar and `provenance.json` instead.
 
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { WorldId } from '../../playground/shared/worlds';
-import { creditFor, isSynthetic, PAGES, type PageMeta, SITE_NAME, type Slug } from '../pages';
+import { isSynthetic, PAGES, type PageMeta, SITE_NAME, type Slug } from '../pages';
 
 /** Size of a share image, of its frame (at the left) and of its band (at the right). */
 export const IMAGE = { width: 1200, height: 630 } as const;
@@ -20,9 +22,6 @@ export const BAND_MARGIN = 32;
 /** The title is fitted from the first size down to the second, over at most TITLE_LINES lines. */
 export const TITLE_SIZE = { max: 56, min: 32 } as const;
 export const TITLE_LINES = 3;
-/** The credit: at least this size, over at most CREDIT_LINES lines. */
-export const CREDIT_SIZE = 20;
-export const CREDIT_LINES = 2;
 /** Weight budget of one share image. */
 export const IMAGE_BYTES_MAX = 300 * 1024;
 /** Least contrast between any band text and what it sits on. */
@@ -232,14 +231,13 @@ export function pageFor(slug: Slug): PageMeta {
   return page;
 }
 
-/** The band's strings, top to bottom. The mark and the credit come from the registry, never from the card. */
+/** The band's strings, top to bottom. The mark comes from the registry, never from the card; the band has no credit. */
 export interface BandText {
   /** "4D.OS" on the 4D.OS pages. */
   series: string | null;
   site: string;
   title: string;
   synthetic: string | null;
-  credit: string | null;
 }
 
 export function bandText(card: Card): BandText {
@@ -249,7 +247,6 @@ export function bandText(card: Card): BandText {
     site: SITE_NAME,
     title: card.title,
     synthetic: isSynthetic(page) ? 'synthetic' : null,
-    credit: creditFor(page)?.text ?? null,
   };
 }
 
@@ -261,7 +258,6 @@ export function bandRuns(card: Card): { face: Face; text: string }[] {
     { face: card.text, text: text.site },
     { face: card.display, text: text.title },
     { face: card.text, text: text.synthetic ?? '' },
-    { face: card.text, text: text.credit ?? '' },
   ].filter((run) => run.text !== '');
 }
 
