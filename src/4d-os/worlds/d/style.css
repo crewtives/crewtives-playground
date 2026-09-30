@@ -1500,6 +1500,22 @@ strong {
     width: 110px;
     height: 110px;
   }
+
+  /* The formulas' scripts and the gun's frame numbers keep the 11 px floor of a label; a script that
+     is already larger (the monumental law) keeps its proportion. */
+  .eq sup,
+  .eq sub {
+    font-size: max(11px, 0.64em);
+  }
+  .law sup,
+  .law sub,
+  .station__figure--eq sup,
+  .station__figure--eq sub {
+    font-size: max(11px, 0.66em);
+  }
+  .gun__num {
+    font-size: 11px;
+  }
 }
 
 @media (orientation: landscape) and (max-height: 500px) {

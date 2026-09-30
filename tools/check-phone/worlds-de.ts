@@ -672,8 +672,8 @@ const worldsDe: PageCheck = {
         { selector: '.glance__read dt', kind: 'text' },
         { selector: '.deck .key', kind: 'glyph' },
       ],
-      // Scale annotations and the exponents of the equations (design D1, "Text").
-      smallText: ['.timeline__ruler', '.eq sub', '.eq sup', '.law sub', '.law sup', '.station__figure--eq sub', '.station__figure--eq sup', '.gun'],
+      // Scale annotations (design D1, "Text"). The equations' scripts and the gun's numerals keep the 11 px floor.
+      smallText: ['.timeline__ruler'],
     },
     e: {
       panels: ['.stage-dock'],
