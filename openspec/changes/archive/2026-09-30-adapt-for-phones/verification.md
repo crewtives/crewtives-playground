@@ -503,6 +503,10 @@ Every deviation from the plan is recorded in design D21 with its rejected altern
 
 On development servers of the fixed tree, the phone modules pass in every viewport (C 65/65, D 90/90, Game Center 105/105), and `desk` of C, D and Game Center compared with `desk-before-dev` (`desk-compare`) gives 114 shots: 106 byte-identical, 8 different only inside the D15 copy lines, 0 noise-only, 0 differing, 0 layout differences and equal element dumps. The fixes to C and D change sources of sheets 001 and 002, so loops `a` to `d` are recorded again after them; a recording must keep every frame and poster hash.
 
+`5ae76a3` recorded all six loops at `b74cee3`: every pass's frame hashes and each poster hash equal those at `13e3b07`, and the `.4dlp.gz` passes and `poster.webp` files are byte-identical. On the built site after that recording, `desk` of all ten routes compared with the accepted baseline gives 316 shots: 272 byte-identical, 39 different only inside the D15 copy lines, 5 on the noise list, 0 differing, 0 layout differences and equal element dumps.
+
 **Out of scope, as the design says (D20):** serving the `.bin` packs compressed (a hosting change; the pack files must not change).
 
-**Merge:** the branch is merged **without squashing**. Each loop's `provenance.json` names `3ffbead`, which must stay reachable from `main` (`public-repository` "Clean public history").
+**Out of scope, tablets:** on a touch tablet in Game Center's 768–1279 px aisle grid, the second row of cabinets (D, E) comes out about 22 px shorter than the first (at 932×430 with touch); every phone viewport and every desktop size shows five equal cabinets.
+
+**Merge:** the branch is merged **without squashing**. Each loop's `provenance.json` names `b74cee3` (earlier recordings named `3ffbead`), which must stay reachable from `main` (`public-repository` "Clean public history").
