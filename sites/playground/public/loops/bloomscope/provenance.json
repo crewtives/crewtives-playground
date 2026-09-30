@@ -50,7 +50,7 @@
     "kind": "background",
     "selector": "html, body",
     "color": "#fdfdf6",
-    "note": "page background behind the canvas set to the palette colour the Sow view paints its background with (--pal-16-14)"
+    "note": "page background behind the canvas set to the palette color the Sow view paints its background with (--pal-16-14)"
    }
   ],
   "sow": {
@@ -97,7 +97,7 @@
   "algorithm": "sha256",
   "hash": "e203df0b9c001361a4fcd566e450e3a973f2d2eeabb742caf11d7cc317f47cd4"
  },
- "commit": "3ffbead37c31503748c0f88c09e9b07b4713e33d",
+ "commit": "b74cee3fd5a540405af641a7c4b7fa14557a39c0",
  "method": {
   "liveRender": true,
   "controlledClock": true,

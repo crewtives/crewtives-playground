@@ -92,9 +92,9 @@
  "recorded": "2026-09-30",
  "sources": {
   "algorithm": "sha256",
-  "hash": "08b293e94c6a3f6c3b9038981dec6d2fc9fd65688ca25e1fd4eb096690881113"
+  "hash": "cef1f7c44b93f4080aa656f365b56748033458df5ae55a9d087709bfe50f295c"
  },
- "commit": "3ffbead37c31503748c0f88c09e9b07b4713e33d",
+ "commit": "b74cee3fd5a540405af641a7c4b7fa14557a39c0",
  "method": {
   "liveRender": true,
   "controlledClock": true,
