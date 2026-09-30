@@ -57,7 +57,7 @@ The target probe was also re-run for every page after its second pass was added 
 
 ## 8.6 The desktop did not change
 
-- `tools/check-phone.ts desk` on the build (the museum on a scratch copy of the same tree whose loop provenance carries the current sources hash, so that it renders no staleness notice; see below), compared with the build of `<base>` (`desk-compare`): **316 shots: 272 byte-identical, 39 different only inside the D15 copy lines, 5 noise-only (on the accepted list), 0 differing, 0 missing, 0 layout differences.** One element dump differed once (Bloomscope 1680×1050, `DIV.column`'s style hash, same box); two recaptures gave the base value once and the other value once, so it is not deterministic on either side.
+- `tools/check-phone.ts desk` on the build (the museum on a scratch copy of the same tree whose loop provenance carries the current sources hash, so that it renders no staleness notice; see below), compared with the build of `<base>` (`desk-compare`): **316 shots: 272 byte-identical, 39 different only inside the D15 copy lines, 5 noise-only (on the accepted list), 0 differing, 0 missing, 0 layout differences.** One element dump differed once (Bloomscope 1680×1050, `DIV.column`'s style hash, same box); two recaptures of the result build gave the base value once and the other value once, so it flips between captures of the same build.
 - The accepted desktop identity capture (`desk-identity compare desk-before <after>`): 275 byte-identical, 2 noise-only on the accepted list, 39 differing, every one of them the copy lines of D15 (A–E footers and the launcher's bar note), 0 layout differences. The museum's 48 shots at 1440×900, 1680×1050, 1100×800 and 760×1000 are byte-identical.
 - `queries --base <url>`: 68 lines (34 queries at 1440×900 and 1680×1050), all `false`, exit 0.
 - The museum on the real build shows the six notices "the work has changed since", which move its layout; group 9 records the loops again and removes them. The scratch copy with refreshed hashes proves that nothing else differs.
@@ -77,7 +77,7 @@ Compared with the fingerprint of `<base>`; every desktop and no-JavaScript diffe
 | `/bloomscope/` (desktop) | `LINK` 21 → 22 | Timing: the second `gl` chunk's `modulepreload` lands before or after the snapshot; three loads of `<base>` gave 21, 22, 22 |
 | `/` (desktop, no JS) | Staleness notices | Group 9; the fingerprint of the refreshed scratch copy shows no difference for `/` desktop or no JS |
 
-No desktop screenshot differs. The phone entries differ as intended (docks, decks, stills, call buttons, the proof bed, peephole counts, the museum grips) and were reviewed against 8.4.
+Among the desktop screenshots only the launcher's differs, inside its bar note (bounding box x 87–357, y 9–19, checked with a direct pixel difference); the comparison script did not list it because it reports a screenshot only above 2,000 differing pixels. Every other desktop screenshot is identical. The phone entries differ as intended (docks, decks, stills, call buttons, the proof bed, peephole counts, the museum grips) and were reviewed against 8.4.
 
 ## 8.8 Budgets
 
@@ -99,7 +99,7 @@ Screenshots of every page at 390×844 and 390×664 (top, and the stages, docks a
 | Museum | The bar sheds its title row; ruled 44 px rows; the grips are square ink marks at the ground line's right end, never round; the clock bar keeps its ruled states. | No change |
 | Bloomscope | The stage is a hard 2 px ink edge on the section's own glass field, no fade; the peephole count is a readout pill in the gem's type. | No change |
 | Game Center | 4F glass pinned with its mint apron; the call buttons are round ink plates like the directory; the deck keeps the cobalt plastic. | No change |
-| Wind-Up Empire | The docked band is the chrome band itself; the stub is the key's chrome tag; the bed is a tin proof with its caption. | No change |
+| Wind-Up Empire | The docked band is the chrome band itself; the stub is the key's chrome tag; the proof bed, shot pinned under the strip with the press rows scrolling under it, is a tin plate with the flat print and its "Proof · printed flat" caption, hard-edged. | No change |
 | A | Ink bars on the 3 px grid; the open window a paper tab joined to its bar. | No change |
 | B | Sage letterpress strip at the foot of the pinned plate. | No change |
 | C | Black leader bands; the open band's leak-orange edge. | No change |
