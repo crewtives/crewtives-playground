@@ -1,11 +1,39 @@
 // The elevator: floor directory, current floor (the one crossing the middle of the viewport), addresses
-// #1f…#rf with a history entry (Back goes down one floor), elevator panel on phones, and ding.
+// #1f…#rf with a history entry (Back goes down one floor), elevator panel on phones (opened from 1F's
+// deck and from a call button in every other floor's header), and ding.
 import { motion } from '../shared/motion';
 import { sound } from '../shared/sound';
 import { sfx } from './sfx';
 
 export const FLOORS = ['1f', '2f', '3f', '4f', '5f', 'rf'] as const;
 export type Floor = (typeof FLOORS)[number];
+
+/** The phone layout: no directory, an elevator panel instead (style.css, tokens.css). */
+export const PHONE_QUERY = '(max-width: 767px)';
+
+/** Who opened the elevator panel. Only that button reads as expanded, and focus returns to it. */
+export interface LiftState<T> {
+  open: boolean;
+  invoker: T | null;
+}
+
+export const LIFT_CLOSED: LiftState<never> = { open: false, invoker: null };
+
+/** A press on an elevator button: it opens the panel, closes it when it is the one that opened it, and takes it over otherwise. */
+export function pressLift<T>(state: LiftState<T>, pressed: T): LiftState<T> {
+  if (state.open && state.invoker === pressed) return { open: false, invoker: null };
+  return { open: true, invoker: pressed };
+}
+
+/** Closing the panel (Escape, a floor chosen, a tap outside): the button to give focus back to, when asked. */
+export function closeLift<T>(state: LiftState<T>, restoreFocus: boolean): { state: LiftState<T>; focus: T | null } {
+  return { state: { open: false, invoker: null }, focus: restoreFocus && state.open ? state.invoker : null };
+}
+
+/** `aria-expanded` of one elevator button. */
+export function liftExpanded<T>(state: LiftState<T>, button: T): boolean {
+  return state.open && state.invoker === button;
+}
 
 /** Color of each floor: the scrollbar thumb takes the current floor's color. */
 const FLOOR_COLOR: Record<Floor, string> = {
@@ -37,7 +65,6 @@ export function setupFloors(): FloorsApi {
   }
   const cells = [...document.querySelectorAll<HTMLAnchorElement>('.cell[data-floor]')];
   const nowLabel = document.querySelector<HTMLElement>('[data-now]');
-  const liftNow = document.querySelector<HTMLElement>('[data-lift-now]');
   let current: Floor = parseFloorHash(location.hash) ?? '1f';
   let settled = false;
 
@@ -56,7 +83,8 @@ export function setupFloors(): FloorsApi {
         nowLabel.animate([{ transform: 'translateY(70%)' }, { transform: 'translateY(0)' }], { duration: 240, easing: 'steps(6)' });
       }
     }
-    if (liftNow) liftNow.textContent = label;
+    // Every elevator display, looked up each time: the phone's call buttons come and go (setupCallButtons).
+    for (const liftNow of document.querySelectorAll<HTMLElement>('[data-lift-now]')) liftNow.textContent = label;
     document.documentElement.style.setProperty('--thumb', FLOOR_COLOR[floor]);
     if (changed && ding && sound.enabled) sfx.ding();
   };
@@ -104,7 +132,8 @@ export function setupFloors(): FloorsApi {
     scrollToFloor(parseFloorHash(location.hash) ?? '1f');
   });
 
-  setupLiftPanel(goTo);
+  const closePanel = setupLiftPanel(goTo, () => current);
+  setupCallButtons(() => current, closePanel);
 
   // A machine's address (`#4f?…`) is not an id on the page: the browser does not scroll down by itself.
   if (current !== '1f' && location.hash.includes('?')) {
@@ -120,25 +149,34 @@ export function setupFloors(): FloorsApi {
   };
 }
 
-/** Elevator panel (phone): six floor buttons; Escape closes it and returns focus. */
-function setupLiftPanel(goTo: FloorsApi['goTo']): void {
-  const button = document.querySelector<HTMLButtonElement>('[data-lift]');
+/**
+ * Elevator panel (phone): six floor buttons, opened by any elevator button (`[data-lift]`: 1F's deck and
+ * the call buttons). The buttons come and go with the phone layout, so clicks are handled by delegation
+ * on the document; the button that opened the panel is the only one expanded, and Escape returns focus
+ * to it. Returns a function that closes the panel.
+ */
+function setupLiftPanel(goTo: FloorsApi['goTo'], current: () => Floor): (restoreFocus: boolean) => void {
   const panel = document.querySelector<HTMLElement>('[data-lift-panel]');
-  if (!button || !panel) return;
+  if (!panel) return () => {};
+  let state: LiftState<HTMLElement> = LIFT_CLOSED;
+  const paint = () => {
+    panel.hidden = !state.open;
+    for (const button of document.querySelectorAll<HTMLElement>('[data-lift]')) button.setAttribute('aria-expanded', String(liftExpanded(state, button)));
+  };
   const close = (restoreFocus: boolean) => {
-    panel.hidden = true;
-    button.setAttribute('aria-expanded', 'false');
-    if (restoreFocus) button.focus();
+    if (!state.open) return;
+    const next = closeLift(state, restoreFocus);
+    state = next.state;
+    paint();
+    if (next.focus?.isConnected) next.focus.focus();
   };
-  const open = () => {
-    panel.hidden = false;
-    button.setAttribute('aria-expanded', 'true');
-    panel.querySelector<HTMLButtonElement>('button')?.focus();
-  };
-  button.addEventListener('click', () => {
+  document.addEventListener('click', (event) => {
+    const button = (event.target as Element | null)?.closest<HTMLElement>('[data-lift]');
+    if (!button) return;
     sfx.click();
-    if (panel.hidden) open();
-    else close(false);
+    state = pressLift(state, button);
+    paint();
+    if (state.open) panel.querySelector<HTMLButtonElement>('button')?.focus();
   });
   panel.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
@@ -152,11 +190,69 @@ function setupLiftPanel(goTo: FloorsApi['goTo']): void {
     if (!floor) return;
     sfx.click();
     close(false);
+    // The floor the visitor rode to by scrolling gets its address first, so Back returns to it.
+    const here = current();
+    if (location.hash !== `#${here}`) history.replaceState({ floor: here }, '', `#${here}`);
     goTo(floor);
   });
   document.addEventListener('pointerdown', (event) => {
-    if (panel.hidden) return;
-    const t = event.target as Node;
-    if (!panel.contains(t) && !button.contains(t)) close(false);
+    if (!state.open) return;
+    const t = event.target as Element;
+    if (!panel.contains(t) && !t.closest?.('[data-lift]')) close(false);
   });
+  return close;
+}
+
+/**
+ * Elevator call buttons (phone): a round lift button in the header of 2F, 3F, 4F, 5F and RF, created
+ * while the phone layout matches and removed when it stops matching, so the desktop document keeps its
+ * elements. Each shows the current floor, written when it is made (setFloor keeps it up to date).
+ */
+function setupCallButtons(current: () => Floor, closePanel: (restoreFocus: boolean) => void): void {
+  const query = window.matchMedia(PHONE_QUERY);
+  let made: HTMLButtonElement[] = [];
+  const make = (): HTMLButtonElement => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'lift-call';
+    button.dataset.lift = '';
+    button.setAttribute('aria-expanded', 'false');
+    button.setAttribute('aria-controls', 'lift-panel');
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    use.setAttribute('href', '#i-lift');
+    svg.append(use);
+    const num = document.createElement('span');
+    num.className = 'lift-call__num';
+    num.dataset.liftNow = '';
+    num.textContent = current().toUpperCase();
+    const name = document.createElement('span');
+    name.className = 'visually-hidden';
+    name.textContent = 'Elevator: choose a floor';
+    button.append(svg, num, name);
+    return button;
+  };
+  const apply = () => {
+    if (query.matches && made.length === 0) {
+      for (const floor of FLOORS.slice(1)) {
+        const section = document.getElementById(floor);
+        const host = section?.querySelector<HTMLElement>(floor === 'rf' ? '.roof__deck' : '.floor__inner');
+        if (!host) continue;
+        const button = make();
+        const plate = host.querySelector(':scope > .floor__plate');
+        if (plate) plate.after(button);
+        else host.prepend(button);
+        made.push(button);
+      }
+    } else if (!query.matches && made.length > 0) {
+      // The panel belongs to the phone layout: it closes with it.
+      closePanel(false);
+      for (const button of made) button.remove();
+      made = [];
+    }
+  };
+  apply();
+  query.addEventListener('change', apply);
 }

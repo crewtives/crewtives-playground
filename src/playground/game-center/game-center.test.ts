@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { BUILD_STAMP, CAT_CREDIT, LAB_SLOTS, LAUNCHER, NOT_IN_COLLECTION_LINE, WORLDS, checkBackLink, checkIndexHtml } from '../shared/worlds';
 import { SIGN_GLOSS } from './rainrun/canyon';
-import { FLOORS, parseFloorHash } from './floors';
+import { closeLift, FLOORS, LIFT_CLOSED, liftExpanded, parseFloorHash, pressLift, type LiftState } from './floors';
 
 const repo = resolve(import.meta.dirname, '../../..');
 const html = readFileSync(resolve(repo, 'sites/playground/landings/game-center/index.html'), 'utf8');
@@ -237,5 +237,34 @@ describe('Game Center Yonjigen: floor addresses', () => {
     expect(parseFloorHash('')).toBeNull();
     expect(parseFloorHash('#worlds')).toBeNull();
     expect(parseFloorHash('#4f?sym=8&rails=twin&seed=12&shutter=all')).toBe('4f');
+  });
+});
+
+describe('Game Center Yonjigen: elevator panel with several buttons', () => {
+  const deck = 'deck lift';
+  const call4f = '4F call';
+  const call2f = '2F call';
+
+  it('the button that opens the panel is the only one expanded', () => {
+    const open = pressLift<string>(LIFT_CLOSED, call4f);
+    expect(open).toEqual({ open: true, invoker: call4f });
+    expect([deck, call4f, call2f].map((b) => liftExpanded(open, b))).toEqual([false, true, false]);
+    expect([deck, call4f, call2f].map((b) => liftExpanded(LIFT_CLOSED, b))).toEqual([false, false, false]);
+  });
+
+  it('pressing the invoker again closes the panel; another button takes it over', () => {
+    const open = pressLift<string>(LIFT_CLOSED, call4f);
+    expect(pressLift(open, call4f)).toEqual({ open: false, invoker: null });
+    const moved = pressLift(open, deck);
+    expect(moved).toEqual({ open: true, invoker: deck });
+    expect(liftExpanded(moved, call4f)).toBe(false);
+    expect(liftExpanded(moved, deck)).toBe(true);
+  });
+
+  it('Escape gives focus back to the invoker; choosing a floor or tapping outside does not', () => {
+    const open: LiftState<string> = pressLift<string>(LIFT_CLOSED, call2f);
+    expect(closeLift(open, true)).toEqual({ state: { open: false, invoker: null }, focus: call2f });
+    expect(closeLift(open, false)).toEqual({ state: { open: false, invoker: null }, focus: null });
+    expect(closeLift<string>(LIFT_CLOSED, true).focus).toBeNull();
   });
 });

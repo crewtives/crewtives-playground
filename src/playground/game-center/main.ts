@@ -60,6 +60,9 @@ setupClose(floors);
 // The elevator: each painted numeral rises from 12vh into place as its floor arrives (no fade).
 setupPlates();
 
+// 2F on phones: the aisle of cabinets scrolls sideways.
+setupAisleFocus();
+
 // Power-on sequence: the marquee tubes strike twice and the CRT turns on.
 if (!motion.reduced) {
   body.classList.add('is-striking');
@@ -114,6 +117,25 @@ function setupPlates(): void {
     window.clearTimeout(timer);
     timer = window.setTimeout(() => ScrollTrigger.refresh(), 200);
   }).observe(document.querySelector('.building') ?? document.body);
+}
+
+/**
+ * On phones the 2F aisle scrolls sideways, and the browser leaves a partly visible cabinet where it is
+ * when it takes keyboard focus: the aisle brings the focused slot to its center. Where the aisle does
+ * not scroll (tablet and desktop) nothing moves.
+ */
+function setupAisleFocus(): void {
+  const aisle = document.querySelector<HTMLElement>('.aisle');
+  if (!aisle) return;
+  aisle.addEventListener('focusin', (event) => {
+    if (aisle.scrollWidth <= aisle.clientWidth + 1) return;
+    const slot = (event.target as Element).closest<HTMLElement>('.aisle__slot');
+    if (!slot) return;
+    const box = aisle.getBoundingClientRect();
+    const r = slot.getBoundingClientRect();
+    if (r.left >= box.left - 0.5 && r.right <= box.right + 0.5) return;
+    aisle.scrollTo({ left: aisle.scrollLeft + r.left - box.left - (box.width - r.width) / 2, behavior: 'instant' });
+  });
 }
 
 function whenNear(id: string, load: () => void): void {

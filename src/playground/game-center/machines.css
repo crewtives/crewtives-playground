@@ -424,6 +424,11 @@
     width: 68px;
     height: 68px;
   }
+  /* The ticket prints where it is seen: the rack comes right under the machine, before HOW TO PLAY.
+     (Wider, the row has two or three columns and the rack keeps its own cell.) */
+  .machine-row--crane .rack {
+    order: -1;
+  }
 }
 
 /* Cards in narrow columns: the key in a short column. */
@@ -883,15 +888,45 @@
   .parlour__counter {
     font-size: 13px;
   }
-  /* The control bars go at the foot of the machine: first play, then time, then the card. */
-  .parlour-side--right {
-    order: 2;
+  /* The glass is a pinned stage: the chrome cabinet sticks with its candy marquee above the top edge,
+     so the glass, its lamp ring and the counter stay in view while the play panel and then the time
+     panel scroll beneath it; HOW TO PLAY comes last and slides over the stage as the floor ends. The
+     sides' boxes dissolve so the two panels and the card become items of the floor's one column
+     (their document order, and so the tab order, stays as it is). */
+  .floor--4f .machine-row--parlour {
+    row-gap: 40px;
   }
-  .parlour-side--left {
-    order: 3;
+  .floor--4f .parlour-side {
+    display: contents;
   }
   .machine-row--parlour .parlour {
     order: 1;
+    position: sticky;
+    top: calc(var(--safe-t) - var(--parlour-pin));
+    /* Under the page's canvas, which paints the glass; over the panels passing beneath. The mint
+       apron hides them under the cabinet's rounded lower corners. */
+    z-index: calc(var(--engine-z) - 1);
+    box-shadow:
+      0 24px 40px rgba(8, 61, 38, 0.45),
+      0 0 0 28px var(--mint);
+  }
+  .floor--4f .panel--play {
+    order: 2;
+  }
+  .floor--4f .panel--time {
+    order: 3;
+  }
+  .floor--4f #parlour-howto {
+    order: 4;
+    position: relative;
+    z-index: var(--over-engine);
+  }
+  .floor--4f .parlour__glass {
+    width: min(100%, var(--parlour-stage-h));
+  }
+  /* A control that takes focus lands below the pinned glass. */
+  .machine-row--parlour :is(button, [role='slider'], [role='radio']) {
+    scroll-margin-top: calc(var(--parlour-stage-h) + 118px);
   }
   .jog {
     width: 148px;
@@ -1388,6 +1423,15 @@
   .roof__screen {
     height: min(118vw, 72vh);
   }
+  /* The sign's flex row must not hold its column open: the eight tubes shrink to fit 360 px. */
+  .roof__deck {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .gas,
+  .gas__parapet,
+  .gas__sign {
+    min-width: 0;
+  }
   .gas__tate {
     display: none;
   }
@@ -1408,5 +1452,145 @@
   .dip {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     row-gap: 16px;
+  }
+}
+
+/* Labels on the machines' controls, raised for phones (see style.css): push-button text at 12 px,
+   the DIP switch names at 11 px. */
+@media (max-width: 767px), (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+  .rocker__track button,
+  .key--small,
+  .gas__stops button,
+  .jog__hub {
+    font-size: 12px;
+  }
+  .dip__name {
+    font-size: 11px;
+  }
+}
+
+/* Under 390 px the tubes are narrower than 44 px (edge to edge, one word): each cell grows to 52 px
+   tall instead, and the sign's frame thins so each keeps at least 40 px. */
+@media (max-width: 389px) {
+  .gas__sign {
+    border-width: 2px;
+  }
+  .tube {
+    height: 52px;
+  }
+}
+
+/* ───────────────────────── Phone in landscape ───────────────────────── */
+
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+  /* 3F: the crane turns sideways, [glass | buttons], fitted to the height, and the ticket rack
+     prints beside it. */
+  .machine-row--crane {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+  }
+  .machine-row--crane .crane {
+    grid-row: 1;
+    grid-column: 1;
+    grid-template-columns: auto auto;
+    column-gap: 12px;
+    width: auto;
+    max-width: none;
+    justify-self: start;
+    padding: 10px;
+    border-radius: 22px;
+  }
+  .machine-row--crane .rack {
+    grid-row: 1;
+    grid-column: 2;
+    order: 0;
+  }
+  .machine-row--crane .card {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+  .crane__marquee,
+  .crane__chute {
+    display: none;
+  }
+  .crane__glass {
+    width: auto;
+    height: calc(100svh - 48px);
+  }
+  .crane__deck {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    align-content: center;
+    align-self: stretch;
+    gap: 14px;
+    margin: 0;
+    padding: 14px 12px;
+  }
+  .crane__buttons {
+    flex-direction: column;
+    gap: 14px;
+  }
+  .crane-btn {
+    width: 68px;
+    height: 68px;
+  }
+  .crane__readout {
+    justify-self: center;
+    min-width: 0;
+    font-size: 12px;
+  }
+
+  /* 4F: the same pinned glass, turned sideways: a sticky left column beside the two panels. */
+  .floor--4f .machine-row--parlour {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: 24px;
+  }
+  .floor--4f .parlour-side {
+    display: contents;
+  }
+  .machine-row--parlour .parlour {
+    --parlour-glass: calc(100svh - 104px);
+    grid-row: 1 / span 2;
+    grid-column: 1;
+    width: calc(var(--parlour-glass) + 36px);
+    max-width: none;
+    justify-self: start;
+    padding: 0 14px 16px;
+    position: sticky;
+    top: calc(8px + var(--safe-t));
+    z-index: calc(var(--engine-z) - 1);
+    /* Beside the panels, not over them: no mint apron here. */
+    box-shadow: 0 24px 40px rgba(8, 61, 38, 0.45);
+  }
+  .machine-row--parlour .parlour__marquee {
+    display: none;
+  }
+  .floor--4f .parlour__counter {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .floor--4f .parlour__glass {
+    width: 100%;
+    box-shadow:
+      0 0 0 10px var(--ink),
+      0 0 0 13px var(--chrome-lo);
+  }
+  .floor--4f .panel--play {
+    grid-row: 1;
+    grid-column: 2;
+  }
+  .floor--4f .panel--time {
+    grid-row: 2;
+    grid-column: 2;
+  }
+  .floor--4f #parlour-howto {
+    grid-row: 3;
+    grid-column: 1 / -1;
+    position: relative;
+    z-index: var(--over-engine);
+  }
+  .machine-row--parlour :is(button, [role='slider'], [role='radio']) {
+    scroll-margin-top: 16px;
   }
 }

@@ -162,5 +162,35 @@
   :root {
     --dir-w: 0px;
     --gutter: 16px;
+    /* The page runs with viewport-fit=cover: the phone blocks pad for the display's safe areas, read
+       through these properties so that a test can inject fake insets. */
+    --safe-t: env(safe-area-inset-top, 0px);
+    --safe-r: env(safe-area-inset-right, 0px);
+    --safe-b: env(safe-area-inset-bottom, 0px);
+    --safe-l: env(safe-area-inset-left, 0px);
+    /* 4F pinned glass: the stuck cabinet hides its marquee above the top edge (--parlour-pin) and
+       keeps the glass, its lamp ring and the counter: at most 56% of the small viewport height. The
+       stuck cabinet's fixed part (measured: 106 px below the glass's top edge besides the glass) plus
+       2 px of margin is the constant after 56svh; machines.css adds the same 106 px (plus 12) to the
+       controls' scroll-margin-top, so focus lands below the stage. */
+    --parlour-pin: 80px;
+    --parlour-stage-h: min(calc(100vw - 68px), calc(56svh - 108px));
+  }
+}
+
+/* Phone in landscape (touch only: short desktop windows keep the tablet layout) */
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+  :root {
+    --safe-t: env(safe-area-inset-top, 0px);
+    --safe-r: env(safe-area-inset-right, 0px);
+    --safe-b: env(safe-area-inset-bottom, 0px);
+    --safe-l: env(safe-area-inset-left, 0px);
+  }
+}
+
+/* With the directory (768 px and wider), its column also covers the right safe area. */
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) and (min-width: 768px) {
+  :root {
+    --dir-w: calc(56px + var(--safe-r));
   }
 }

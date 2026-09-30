@@ -2490,9 +2490,17 @@ a {
 /* ───────────────────────── Phone (< 768): TATE 縦 ───────────────────────── */
 
 @media (max-width: 767px) {
+  /* The cabinet scales with the screen (--u), but its control deck stops shrinking at the size of
+     a 390 × 844 phone (--du): a thumb target cannot shrink, the screen can. The deck stands on the
+     cabinet's bottom edge, over the home indicator's safe area, and the bezel takes what is left. */
   .cabinet {
     --u: min(100vw / 390, 100svh / 844);
-    height: calc(844 * var(--u));
+    --du: max(var(--u), 1px);
+    --deck-h: calc(254 * var(--du) + var(--safe-b));
+    --bh: calc(747 * var(--u) - 254 * var(--du) - var(--safe-b));
+    /* Below the first screen the cabinet keeps a row for SCREEN and its tag (.wing--r). */
+    --screen-row: 112px;
+    height: calc(844 * var(--u) + var(--screen-row));
     min-height: 0;
   }
 
@@ -2521,10 +2529,10 @@ a {
   }
 
   .bezel {
-    left: calc(50% - 187 * var(--u));
+    left: calc(50% - var(--bh) * 187 / 493);
     top: calc(88 * var(--u));
-    width: calc(374 * var(--u));
-    height: calc(493 * var(--u));
+    width: calc(var(--bh) * 374 / 493);
+    height: var(--bh);
     border-radius: calc(16 * var(--u));
   }
 
@@ -2535,33 +2543,35 @@ a {
   .crt {
     left: calc(8 * var(--u));
     top: calc(8 * var(--u));
-    width: calc(358 * var(--u));
-    height: calc(477 * var(--u));
+    width: calc(var(--bh) * 374 / 493 - 16 * var(--u));
+    height: calc(var(--bh) - 16 * var(--u));
     border-radius: calc(16 * var(--u)) / calc(14 * var(--u));
     --strip: 0.15;
   }
 
+  /* The HUD follows the bezel on short screens, so 1UP and HI never meet; it never grows. */
   .hud {
-    font-size: 16px;
+    font-size: min(16px, calc(var(--bh) * 16 / 493));
   }
   .hud__press {
-    font-size: 22px;
+    font-size: min(22px, calc(var(--bh) * 22 / 493));
   }
   .hud__free {
-    font-size: 14px;
+    font-size: min(14px, calc(var(--bh) * 14 / 493));
   }
 
-  /* SCREEN and the label move below the cabinet, in a row */
+  /* SCREEN and its tag move below the first screen, into the cabinet's last row, centered on the
+     page's width (the wing lives in the bezel, which is narrower). */
   .wing--r {
-    top: calc(100% + 290 * var(--u) + 24px);
-    left: 0;
-    right: 0;
-    width: auto;
+    top: calc(756 * var(--u) + 16px);
+    left: calc(var(--bh) * 187 / 493 - 50cqw);
+    right: auto;
+    width: 100cqw;
     height: auto;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 16px;
+    gap: 8px;
     padding: 0 16px;
     font-size: 11px;
   }
@@ -2598,10 +2608,12 @@ a {
   }
 
   /* On phones the time strip goes inside the CRT, at the bottom, and the TIME VIEW HUD moves up. */
+  /* Its center stays at least 24 px above the CRT's bottom edge, so a 44 px touch box fits inside. */
   .timestrip {
     left: calc(20 * var(--u));
-    width: calc(334 * var(--u));
-    top: calc(446 * var(--u));
+    width: calc(var(--bh) * 374 / 493 - 40 * var(--u));
+    top: auto;
+    bottom: calc(max(27 * var(--u), 24px) - 4 * var(--u));
     gap: 8px;
   }
 
@@ -2623,11 +2635,12 @@ a {
     right: 6%;
   }
 
+  /* Anchored to the cabinet's bottom edge; written from the top so that at du = u the box is today's. */
   .deck {
     left: 0;
     width: 100%;
-    top: calc(590 * var(--u));
-    height: calc(254 * var(--u));
+    top: calc(590 * var(--u) + 254 * (var(--u) - var(--du)) - var(--safe-b));
+    height: var(--deck-h);
     perspective: none;
   }
 
@@ -2641,13 +2654,13 @@ a {
     left: 0;
     right: 0;
     top: 0;
-    height: calc(64 * var(--u));
+    height: calc(64 * var(--du));
   }
 
   .lift {
     position: absolute;
     left: calc(50% - 24px);
-    top: calc(22 * var(--u) - 24px + 12px);
+    top: calc(22 * var(--du) - 24px + 12px);
     width: 48px;
     height: 48px;
     padding: 0;
@@ -2658,6 +2671,47 @@ a {
     font-family: var(--f-screen);
     font-size: 17px;
     box-shadow: 0 4px 0 #07040f;
+  }
+
+  /* Elevator call button (created by floors.ts on phones): the 1F lift, in each upper floor's header,
+     on the plate's row. */
+  .lift-call {
+    position: absolute;
+    right: var(--gutter);
+    top: calc(80px + (var(--t-numeral) * 1.06 - 48px) / 2);
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 1px;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 3px solid var(--acrylic);
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--sodium);
+    box-shadow: 0 4px 0 #07040f;
+    --focus: var(--on);
+  }
+
+  .lift-call svg {
+    width: 9px;
+    height: 11px;
+    color: var(--acrylic);
+  }
+
+  .lift-call__num {
+    font-family: var(--f-screen);
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  .floor--4f .lift-call {
+    top: calc(96px + (var(--t-numeral) * 1.06 - 48px) / 2);
+  }
+
+  .roof__deck > .lift-call {
+    top: 72px;
   }
 
   .deck__worlds {
@@ -2715,10 +2769,10 @@ a {
 
 
   .stick {
-    left: calc(14 * var(--u));
-    width: calc(148 * var(--u));
-    height: calc(140 * var(--u));
-    top: calc(96 * var(--u));
+    left: calc(14 * var(--du));
+    width: calc(148 * var(--du));
+    height: calc(140 * var(--du));
+    top: calc(96 * var(--du));
   }
 
   .stick__dir {
@@ -2742,18 +2796,18 @@ a {
   }
 
   .start {
-    left: calc(195 * var(--u) - 44px);
-    top: calc(96 * var(--u));
+    left: calc(50% - 44px);
+    top: calc(96 * var(--du));
     width: 88px;
     height: 44px;
   }
 
   .abc {
     left: auto;
-    right: calc(10 * var(--u));
-    top: calc(150 * var(--u));
-    width: calc(176 * var(--u));
-    height: calc(90 * var(--u));
+    right: calc(10 * var(--du));
+    top: calc(150 * var(--du));
+    width: calc(176 * var(--du));
+    height: calc(90 * var(--du));
   }
 
   .arcade {
@@ -2784,7 +2838,7 @@ a {
     position: fixed;
     left: 50%;
     top: auto;
-    bottom: calc(260 * var(--u));
+    bottom: calc(var(--deck-h) + 6 * var(--u));
     width: 250px;
     margin-left: -125px;
     padding: 16px 16px 18px;
@@ -2832,7 +2886,7 @@ a {
   .coindoor {
     grid-template-columns: 1fr;
     gap: 32px;
-    padding-top: 64px;
+    padding-top: 48px;
     padding-bottom: 64px;
   }
 
@@ -2924,7 +2978,8 @@ a {
 
   /* 44 px touch targets without moving the text: the board's route grows into its cell's padding */
   .skip,
-  .credits__links a {
+  .credits__links a,
+  .credits__outside a {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
@@ -2946,6 +3001,479 @@ a {
   .credits__list div {
     grid-template-columns: 1fr;
     gap: 4px;
+  }
+}
+
+/* Below 360 px the deck's floor drops to 0.889 and START rises 6 px, so the cabinet still fits 320 px. */
+@media (max-width: 359px) {
+  .cabinet {
+    --du: max(var(--u), 0.889px);
+  }
+
+  .start {
+    top: calc(96 * var(--du) - 6px);
+  }
+
+  /* The utility row keeps its gaps around the lift at 320 px. */
+  .sound--deck {
+    gap: 6px;
+    padding-inline: 8px;
+  }
+}
+
+/* Labels on the controls, raised for phones: push-button text at 12 px, the other labels and the
+   SYNTHETIC SCENE tags at 11 px (the machines' own labels are in machines.css). Screen readouts in
+   DotGothic16 keep their sizes. */
+@media (max-width: 767px), (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+  .screen-switch button,
+  .sound__text,
+  .sound--deck .sound__text,
+  .arcade__silk,
+  .lift-panel__grid button {
+    font-size: 12px;
+  }
+
+  .tag {
+    font-size: 11px;
+  }
+
+  .marquee__sub {
+    font-size: max(11px, min(12px, 3.1vw));
+  }
+}
+
+/* ───────────────────────── Touch (coarse pointer) ───────────────────────── */
+
+@media (pointer: coarse) {
+  /* The hold trio, as on the crane buttons and LAUNCH: a held control keeps its hold through a
+     drifting finger and never starts a scroll, a text selection or the system callout. */
+  .stick__dir,
+  .arcade,
+  .start {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    /* The press is the cap sinking 4 px, not the browser's tap rectangle. */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* TIME VIEW: a 44 px touch box around the drawn 18 px strip (the drawing moves to the track). */
+  .timestrip__range {
+    height: 44px;
+    margin-block: -13px;
+    background: none;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .timestrip__range::-webkit-slider-runnable-track {
+    box-sizing: border-box;
+    height: 18px;
+    background: repeating-linear-gradient(90deg, #2a1c55 0 6px, #140a24 6px 8px);
+    border: 2px solid var(--sodium);
+    border-radius: 3px;
+  }
+
+  .timestrip__range::-moz-range-track {
+    box-sizing: border-box;
+    height: 18px;
+    background: repeating-linear-gradient(90deg, #2a1c55 0 6px, #140a24 6px 8px);
+    border: 2px solid var(--sodium);
+    border-radius: 3px;
+  }
+
+  .timestrip__range::-webkit-slider-thumb {
+    width: 12px;
+    height: 28px;
+    margin-top: -7px;
+  }
+
+  .timestrip__range::-moz-range-thumb {
+    width: 12px;
+    height: 28px;
+  }
+
+  .cell {
+    min-height: 44px;
+  }
+
+  /* Links outside sentences grow to 44 px rows without moving their text. */
+  .board__table td a {
+    display: inline-block;
+    padding-block: 13px;
+    margin-block: -13px;
+  }
+
+  /* The caption under the roof screen is one link: its row grows (the deck below would cover a
+     touch area borrowed from the margins). */
+  .roof__moon a {
+    display: inline-block;
+    padding-block: 9px;
+  }
+
+  .credits__links a,
+  .credits__outside a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+/* ───────────────────────── Phone in landscape: the handheld (横) ───────────────────────── */
+
+/* A touch phone on its side holds the cabinet like a handheld: a slim marquee, the 4:3 CRT centered
+   at full height, the stick in a cobalt left wing and A, B, C and START in a cobalt right wing, all in
+   the first screen. The page runs with viewport-fit=cover, so the sides and the bottom keep at least
+   the display's safe-area insets. Short desktop windows (a fine pointer) keep the tablet layout. */
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+  .cabinet {
+    --u: 1px;
+    --du: 1px;
+    --mq: 40px;
+    --pad-l: max(12px, var(--safe-l));
+    --pad-r: max(12px, calc(var(--safe-r) - var(--dir-w)));
+    --pad-b: max(8px, var(--safe-b));
+    --wing-min: 150px;
+    --crt-h: min(
+      calc(100svh - var(--mq) - var(--pad-b) - 24px),
+      calc((100cqw - var(--pad-l) - var(--pad-r) - 2 * var(--wing-min) - 32px) * 3 / 4)
+    );
+    --crt-w: calc(var(--crt-h) * 4 / 3);
+    --bz-w: calc(var(--crt-w) + 16px);
+    --bz-top: calc(var(--mq) + (100svh - var(--mq) - var(--pad-b) - var(--crt-h) - 16px) / 2);
+    --wing-w: calc((100cqw - var(--pad-l) - var(--pad-r) - var(--bz-w) - 16px) / 2);
+    --screen-row: 112px;
+    height: calc(100svh + var(--screen-row));
+    min-height: 0;
+  }
+
+  .tmold,
+  .cabinet::before,
+  .cabinet::after,
+  .marquee__side,
+  .wing--l,
+  .bezel__strip {
+    display: none;
+  }
+
+  .marquee {
+    left: 0;
+    width: 100%;
+    height: var(--mq);
+    border-bottom-width: 3px;
+  }
+
+  .marquee__title {
+    grid-auto-flow: column;
+    align-items: baseline;
+    column-gap: 14px;
+  }
+
+  .marquee__word {
+    font-size: 26px;
+  }
+
+  .marquee__sub {
+    margin-top: 0;
+    font-size: 12px;
+  }
+
+  .bezel {
+    left: calc(var(--pad-l) + var(--wing-w) + 8px);
+    top: var(--bz-top);
+    width: var(--bz-w);
+    height: calc(var(--crt-h) + 16px);
+    border-radius: 16px;
+  }
+
+  .crt {
+    left: 8px;
+    top: 8px;
+    width: var(--crt-w);
+    height: var(--crt-h);
+    border-radius: 14px / 12px;
+    --strip: 0.15;
+  }
+
+  .hud {
+    font-size: clamp(10px, calc(var(--crt-h) * 0.04), 16px);
+  }
+
+  .hud__press {
+    font-size: clamp(12px, calc(var(--crt-h) * 0.058), 22px);
+  }
+
+  .hud__free {
+    font-size: clamp(10px, calc(var(--crt-h) * 0.034), 14px);
+  }
+
+  .timestrip {
+    left: 20px;
+    width: calc(var(--crt-w) - 24px);
+    top: auto;
+    bottom: 32px;
+    height: 24px;
+    gap: 8px;
+  }
+
+  .timestrip__read {
+    min-width: 0;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  /* TIME VIEW's count sits above the strip (its top is 48 px above the CRT's bottom edge). */
+  .crt.is-timeview .hud__center {
+    bottom: 56px;
+  }
+
+  /* SCREEN and its tag: below the first screen, centered on the page's width. */
+  .wing--r {
+    top: calc(100svh - var(--bz-top) + 16px);
+    left: calc(-1 * (var(--pad-l) + var(--wing-w) + 8px));
+    right: auto;
+    width: 100cqw;
+    height: auto;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    font-size: 11px;
+  }
+
+  .wing--r .wing__list {
+    display: none;
+  }
+
+  .screen-switch {
+    grid-auto-flow: column;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .screen-switch__label {
+    color: var(--ink);
+  }
+
+  .screen-switch__track {
+    grid-auto-flow: column;
+  }
+
+  .screen-switch button {
+    width: auto;
+    min-width: 64px;
+    min-height: 44px;
+    padding: 4px 10px;
+    letter-spacing: 0.04em;
+  }
+
+  .tag--screen {
+    margin: 0;
+    color: var(--ink);
+  }
+
+  /* The two wings: cobalt only under the controls, never behind the CRT. */
+  .deck {
+    left: var(--pad-l);
+    right: var(--pad-r);
+    width: auto;
+    top: calc(var(--mq) + 8px);
+    height: calc(100svh - var(--mq) - 8px - var(--pad-b));
+    perspective: none;
+    pointer-events: none;
+  }
+
+  .deck::before,
+  .deck::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: var(--wing-w);
+    background: linear-gradient(180deg, #2f47f0 0%, var(--cobalt) 30%, var(--cobalt-deep) 100%);
+    border-top: 4px solid #6b7cff;
+    border-radius: 18px;
+    box-shadow: 0 10px 18px rgba(46, 8, 3, 0.35);
+  }
+
+  .deck::before {
+    left: 0;
+  }
+
+  .deck::after {
+    right: 0;
+  }
+
+  .deck__plate {
+    z-index: 1;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .deck :is(button, a, [data-stick-gate]) {
+    pointer-events: auto;
+  }
+
+  .stick {
+    left: calc((var(--wing-w) - 132px) / 2);
+    top: auto;
+    bottom: 22px;
+    width: 132px;
+    height: 132px;
+  }
+
+  .stick__dir {
+    width: 44px;
+    height: 44px;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .stick__dir--up {
+    top: -6px;
+  }
+
+  .stick__dir--down {
+    bottom: -6px;
+  }
+
+  .stick__dir--left {
+    left: -6px;
+    top: calc(50% - 22px);
+  }
+
+  .stick__dir--right {
+    right: -6px;
+    top: calc(50% - 22px);
+  }
+
+  .abc {
+    left: auto;
+    right: calc((var(--wing-w) - 144px) / 2);
+    top: auto;
+    bottom: 30px;
+    width: 144px;
+    height: 102px;
+  }
+
+  .arcade {
+    width: 48px;
+    height: 48px;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .arcade--a {
+    left: 0;
+    top: 54px;
+  }
+
+  .arcade--b {
+    left: 48px;
+    top: 0;
+  }
+
+  .arcade--c {
+    left: auto;
+    right: 0;
+    top: 54px;
+  }
+
+  .arcade__silk {
+    bottom: -18px;
+  }
+
+  .start {
+    left: auto;
+    right: calc((var(--wing-w) - 144px) / 2 + 28px);
+    top: auto;
+    bottom: 160px;
+    width: 88px;
+    height: 44px;
+  }
+
+  /* The utility row sits at the top of the wings: sound on the left. */
+  .deck__phone {
+    display: block;
+    inset: 0;
+    height: auto;
+  }
+
+  .sound--deck {
+    position: absolute;
+    left: calc((var(--wing-w) - 132px) / 2);
+    top: 12px;
+    flex-direction: row;
+    gap: 8px;
+    min-height: 44px;
+    padding: 6px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--ink);
+    color: var(--night-2);
+  }
+
+  .sound--deck svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .sound--deck[aria-pressed='true'] {
+    color: var(--sodium);
+  }
+
+  .lift-panel {
+    position: fixed;
+    left: 50%;
+    top: max(8px, calc(50% - 142px));
+    bottom: auto;
+    width: 250px;
+    margin-left: -125px;
+  }
+
+  .coindoor {
+    padding-top: 48px;
+  }
+}
+
+/* Without the directory (under 768 px) the wings also carry the elevator and the 2F link, on the right. */
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) and (max-width: 767px) {
+  .deck__worlds {
+    right: calc((var(--wing-w) - 144px) / 2);
+    top: 12px;
+  }
+
+  .lift {
+    left: auto;
+    right: calc((var(--wing-w) - 144px) / 2);
+    top: auto;
+    bottom: 158px;
+  }
+
+  .start {
+    right: calc((var(--wing-w) - 144px) / 2 + 56px);
+  }
+}
+
+/* With the directory (768 px and wider) the elevator lives there; its column compacts so each floor
+   keeps a 44 px cell above the bottom safe area, and the sound moves to the left wing. */
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) and (min-width: 768px) {
+  .directory {
+    grid-template-rows: 40px minmax(0, 1fr);
+    padding-right: var(--safe-r);
+    padding-bottom: var(--safe-b);
+  }
+
+  .directory .sound--grille,
+  .deck__phone .lift,
+  .deck__worlds {
+    display: none;
   }
 }
 
