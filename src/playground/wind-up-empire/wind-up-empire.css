@@ -3461,6 +3461,8 @@ svg[hidden] {
     position: sticky;
     inset: auto 0 0;
     z-index: 1;
+    /* Clear of the home indicator if the page ever declares viewport-fit=cover (0 today). */
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
   }
 }
 
