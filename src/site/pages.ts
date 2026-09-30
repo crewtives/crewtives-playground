@@ -41,9 +41,12 @@ export interface PageMeta {
   route: string;
   /** `SITE_ORIGIN + route`. */
   canonical: string;
-  /** `og:title` and `twitter:title`: 10 to 70 characters. It may say more than the tab title. */
+  /**
+   * `og:title` and `twitter:title`: 10 to 70 characters. It begins with the page's name as its tab
+   * title gives it (the part before the first " · "), and it may say more than the tab title.
+   */
   title: string;
-  /** Equal to the page's own `<meta name="description">` after whitespace is collapsed: 50 to 200 characters. */
+  /** Equal to the page's own `<meta name="description">` after whitespace is collapsed: 50 to 160 characters. */
   description: string;
   /** Share image, served from `sites/playground/public/og/`. The build appends `?v=<version>` (D2). */
   image: { path: `/og/${Slug}.png`; width: 1200; height: 630; alt: string };
@@ -63,7 +66,7 @@ export interface NotFoundMeta {
   title: string;
 }
 
-/** Icons of each site (D4): the SVG that replaces the `data:,` placeholders, and the apple-touch-icon. */
+/** Icons of each site (D4): the SVG the build declares on a page with no icon of its own, and the apple-touch-icon. */
 export const ICONS: Record<Site, { svg: string; appleTouch: string }> = {
   playground: { svg: '/icon.svg', appleTouch: '/apple-touch-icon.png' },
   '4d-os': { svg: '/4d-os/icon.svg', appleTouch: '/4d-os/apple-touch-icon.png' },
@@ -90,7 +93,7 @@ export const PAGES: readonly PageMeta[] = [
     route: '/',
     title: 'crewtives playground: a museum of live graphics experiments',
     description:
-      'A museum of live graphics experiments by crewtives: each work on its own sheet, moving in a loop recorded from its live render, with all of its moments drawn at once in plan and elevation.',
+      'A museum of live graphics experiments by crewtives: each work on its own sheet, looping from its live render, with every moment drawn at once.',
     alt: 'The museum’s first screen, captured from the live page: the bar with the page clock (REWIND, HOLD, FORWARD) above sheet 004, whose passe-partout holds the recorded loop of Bloomscope, a flower head of seeds at frame 0. Beside it, a band reads “crewtives playground” and “A museum of live graphics experiments”.',
     jsonLd: 'WebSite',
     frameShows: [],
@@ -112,7 +115,7 @@ export const PAGES: readonly PageMeta[] = [
     route: '/landings/game-center/',
     title: 'Game Center Yonjigen: the playground as a Tokyo arcade building',
     description:
-      'Game Center Yonjigen: the crewtives playground as a Tokyo arcade building. Fly Rain Run in a live dithered cabinet, then ride up to five 4D.OS worlds. A free demo that runs in your browser.',
+      'The crewtives playground as a Tokyo arcade building: fly Rain Run in a live dithered cabinet, then ride up to five 4D.OS worlds. Free, in your browser.',
     alt: 'Game Center Yonjigen’s first screen, captured from its live render: the arcade cabinet under its PLAYGROUND marquee, its dithered screen showing Rain Run’s demo, a synthetic scene the page labels as such, the controls, and the floor directory at the side. Beside it, a band reads “crewtives playground” and “GAME CENTER YONJIGEN”, with the mark “synthetic”.',
     jsonLd: 'CreativeWork',
     frameShows: [],
@@ -124,7 +127,7 @@ export const PAGES: readonly PageMeta[] = [
     route: '/landings/wind-up-empire/',
     title: 'Wind-Up Empire: a demo space empire printed on tin',
     description:
-      'A demo space empire printed on tin. Pull back a friction rocket, wind the key, flick the planets, then open the five real 4D.OS worlds in the tray. The economy is fake and resets on reload.',
+      'A demo space empire printed on tin: pull back a friction rocket, wind the key, then open five real 4D.OS worlds. The economy is fake and resets on reload.',
     alt: 'Wind-Up Empire’s first screen, captured from its live page: the WIND-UP EMPIRE title over an orrery of tin tops printed in each 4D.OS world’s inks and labeled with the worlds’ names, around the black-hole Whirl; the tops are toys of the page, not views of the worlds. Beside it, a band reads “crewtives playground” and “WIND-UP EMPIRE”.',
     jsonLd: 'CreativeWork',
     frameShows: [],
@@ -179,7 +182,7 @@ export const PAGES: readonly PageMeta[] = [
     route: '/4d-os/d/',
     title: 'The golden stoop · 4D.OS: a falcon diving on a golden spiral',
     description:
-      'A peregrine falcon computed from equations dives along a golden spiral through a city of points: every moment of the flight at once, live, with the mathematics read from the same code that made it.',
+      'A peregrine falcon computed from equations dives along a golden spiral through a city of points, every moment of the flight at once, live in your browser.',
     alt: 'World D, The golden stoop, captured from its live render: its heading The golden stoop. and the page’s own SYNTHETIC tag above the falcon computed from equations, in cyan, flying among its earlier moments in green along a dotted golden path through a city of points. Beside it, a band reads “4D.OS”, “crewtives playground” and “The golden stoop”, with the mark “synthetic”.',
     jsonLd: 'CreativeWork',
     frameShows: ['d'],
@@ -190,7 +193,7 @@ export const PAGES: readonly PageMeta[] = [
     route: '/4d-os/e/',
     title: 'Whale fall · 4D.OS: a whale spiraling into a black hole',
     description:
-      'A humpback whale spirals into a black hole, every moment of the fall kept at once, while two clocks drift apart: a live 4D scene with the gravitational lens traced in your browser.',
+      'A humpback whale spirals into a black hole, every moment of its fall kept at once, while two clocks drift apart: a live 4D scene traced in your browser.',
     alt: 'World E, Whale fall, captured from its live render: the heading Whale fall. above the black hole, whose lensed disk burns orange and gold around the photon ring while the humpback computed from equations circles inside it, every moment of its fall at once. Beside it, a band reads “4D.OS”, “crewtives playground” and “Whale fall”, with the mark “synthetic”.',
     jsonLd: 'CreativeWork',
     frameShows: ['e'],

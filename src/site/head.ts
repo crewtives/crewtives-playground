@@ -2,7 +2,8 @@
 // function of the built HTML and the page's registry entry: the build plugin calls it on every page,
 // and the tests call it on fixtures. It writes one block right after the page's viewport meta, so that
 // link previews that read only the first 32 KiB of a page still find it (the built museum's head is
-// over 65 KB), and it replaces the empty `data:,` icon placeholders with the site's icon.
+// over 65 KB). A page with no icon of its own gets the site's icon in that block; a source that
+// declares the empty `data:,` icon placeholder is rejected (adapt-for-phones D14).
 
 import { CAT_MODEL, CREATOR, creditFor, FAVICON, ICONS, type NotFoundMeta, type PageMeta, SITE_NAME, SITE_ORIGIN } from './pages.ts';
 
@@ -62,9 +63,8 @@ export function metaDescription(html: string): string | null {
 
 const relOf = (tag: HeadTag) => (tag.attrs.rel ?? '').toLowerCase().split(/\s+/);
 const isIcon = (tag: HeadTag) => tag.name === 'link' && relOf(tag).includes('icon');
-/** `<link rel="icon" href="data:,">` in any spelling: the empty icon some sources declare (D2). */
-const isPlaceholder = (tag: HeadTag) =>
-  tag.name === 'link' && tag.attrs.rel === 'icon' && tag.attrs.href === 'data:,' && Object.keys(tag.attrs).length === 2;
+/** `<link rel="icon" href="data:,">` in any spelling: the empty icon the sources used to declare (D14). */
+const isPlaceholder = (tag: HeadTag) => isIcon(tag) && (tag.attrs.href ?? '').trim() === 'data:,';
 
 /** The tags this module adds, which a source must not declare itself. */
 function addedByBuild(tag: HeadTag): string | null {
@@ -134,8 +134,9 @@ const link = (attrs: Record<string, string>) => `<link ${Object.entries(attrs).m
 
 /**
  * Adds the page's metadata to its built HTML. It throws when the source already declares a tag the
- * build adds, when its description differs from the registry's, or when its head has no single
- * viewport meta. The 404 page gets only `noindex` and the icons.
+ * build adds, when it declares the empty `data:,` icon placeholder, when its description differs from
+ * the registry's, or when its head has no single viewport meta. The 404 page gets only `noindex` and
+ * the icons.
  */
 export function injectHead(html: string, page: PageMeta | NotFoundMeta, options: { imageVersion?: string } = {}): string {
   const label = 'slug' in page ? page.route : page.file;
@@ -146,6 +147,7 @@ export function injectHead(html: string, page: PageMeta | NotFoundMeta, options:
   if (viewports.length !== 1) throw fail(`expected exactly one <meta name="viewport">, found ${viewports.length}`);
   const viewport = viewports[0];
   for (const tag of tags) {
+    if (isPlaceholder(tag)) throw fail(`the source declares the empty data:, icon placeholder; remove it: the build adds the site's icon`);
     const what = addedByBuild(tag);
     if (what) throw fail(`the source already declares ${what}; the build adds it (src/site/pages.ts)`);
   }
@@ -159,7 +161,7 @@ export function injectHead(html: string, page: PageMeta | NotFoundMeta, options:
       throw fail(`its <meta name="description"> differs from the registry's description in src/site/pages.ts`);
     }
     if (page.route === '/') {
-      const ownIcon = tags.find((t) => isIcon(t) && !isPlaceholder(t));
+      const ownIcon = tags.find(isIcon);
       if (ownIcon && ownIcon.start < viewport.start) throw fail('its own icon comes before the viewport meta, so it would precede /favicon.ico');
       block.push(link({ rel: 'icon', href: FAVICON.href, sizes: FAVICON.sizes }));
     }
@@ -186,18 +188,12 @@ export function injectHead(html: string, page: PageMeta | NotFoundMeta, options:
   } else {
     block.push(meta('name', 'robots', 'noindex'));
   }
-  // A page with no icon at all (the 404 page) gets the site's; a placeholder is replaced where it sits.
+  // A page with no icon of its own (the 4D.OS pages, Wind-Up Empire and the 404 page) gets the site's.
   if (!tags.some(isIcon)) block.push(link({ rel: 'icon', href: icons.svg, type: 'image/svg+xml' }));
   block.push(link({ rel: 'apple-touch-icon', href: icons.appleTouch }));
   if ('slug' in page) block.push(`<script type="application/ld+json">${jsonLdText(jsonLd(page, options.imageVersion))}</script>`);
 
   const lineStart = html.lastIndexOf('\n', viewport.start) + 1;
   const indent = /^[ \t]*$/.test(html.slice(lineStart, viewport.start)) ? html.slice(lineStart, viewport.start) : '';
-  const edits: { start: number; end: number; text: string }[] = [
-    { start: viewport.end, end: viewport.end, text: block.map((tag) => `\n${indent}${tag}`).join('') },
-    ...tags.filter(isPlaceholder).map((t) => ({ start: t.start, end: t.end, text: link({ rel: 'icon', href: icons.svg, type: 'image/svg+xml' }) })),
-  ];
-  let out = html;
-  for (const edit of edits.sort((a, b) => b.start - a.start)) out = out.slice(0, edit.start) + edit.text + out.slice(edit.end);
-  return out;
+  return html.slice(0, viewport.end) + block.map((tag) => `\n${indent}${tag}`).join('') + html.slice(viewport.end);
 }

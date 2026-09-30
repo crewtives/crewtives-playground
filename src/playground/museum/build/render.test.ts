@@ -57,9 +57,9 @@ describe('museum page (6.1)', () => {
     expect([...order].sort((a, b) => a - b)).toEqual(order);
   });
 
-  test('Tab and heading: title "crewtives playground" and a single h1', () => {
+  test('Tab and heading: tab titled "crewtives playground · a museum of live graphics experiments" and a single h1', () => {
     const template = readFileSync(join(repo, 'sites/playground/index.html'), 'utf8');
-    expect(template).toContain('<title>crewtives playground</title>');
+    expect(template).toContain('<title>crewtives playground · a museum of live graphics experiments</title>');
     expect((body().match(/<h1\b/g) ?? []).length).toBe(1);
     expect(template.match(/<h1\b/g)).toBeNull();
     expect(body()).toMatch(/<h1 class="bar__title">crewtives playground<\/h1>/);

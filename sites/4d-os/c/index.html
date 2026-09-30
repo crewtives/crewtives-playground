@@ -3,8 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="data:," />
-    <title>Leader — 4D.OS</title>
+    <title>Leader · 4D.OS · crewtives playground</title>
     <meta name="description" content="A 4D reconstruction threaded like a strip of 16mm film: grab the strip, pull time through the gate." />
   </head>
   <body>
@@ -37,6 +36,25 @@
             points, with the present frame highlighted. The scene is synthetic.
           </p>
         </div>
+
+        <!-- The strip: a physical timeline -->
+        <section class="strip" aria-label="Film strip">
+          <div class="strip__head">
+            <button class="strip__play" type="button" data-play aria-label="Play">
+              <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 2 L10 6 L3 10 Z" /></svg>
+            </button>
+            <output class="strip__tc" data-now="timecode">00:00:00</output>
+            <output class="strip__state" data-now="state">HOLD 0.00×</output>
+          </div>
+          <div class="strip__window" data-strip>
+            <div class="strip__film" data-strip-film></div>
+            <div class="strip__gate" aria-hidden="true"></div>
+          </div>
+          <div class="timeline__track" data-track role="slider" tabindex="0" aria-label="Time" aria-valuemin="0" aria-valuenow="0">
+            <div class="timeline__ruler" data-ruler aria-hidden="true"></div>
+            <div class="timeline__playhead" aria-hidden="true"></div>
+          </div>
+        </section>
 
         <div class="desk__cards">
           <section class="win" data-window="clock" aria-labelledby="w-clock">
@@ -85,25 +103,6 @@
             </div>
           </section>
         </div>
-
-        <!-- The strip: a physical timeline -->
-        <section class="strip" aria-label="Film strip">
-          <div class="strip__head">
-            <button class="strip__play" type="button" data-play aria-label="Play">
-              <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 2 L10 6 L3 10 Z" /></svg>
-            </button>
-            <output class="strip__tc" data-now="timecode">00:00:00</output>
-            <output class="strip__state" data-now="state">HOLD 0.00×</output>
-          </div>
-          <div class="strip__window" data-strip>
-            <div class="strip__film" data-strip-film></div>
-            <div class="strip__gate" aria-hidden="true"></div>
-          </div>
-          <div class="timeline__track" data-track role="slider" tabindex="0" aria-label="Time" aria-valuemin="0" aria-valuenow="0">
-            <div class="timeline__ruler" data-ruler aria-hidden="true"></div>
-            <div class="timeline__playhead" aria-hidden="true"></div>
-          </div>
-        </section>
 
         <section class="dialog win" data-window="splice" data-trail aria-labelledby="w-splice">
           <h2 class="win__title" id="w-splice"><span>Splice</span><span class="win__code">0923 SP</span></h2>
@@ -238,7 +237,7 @@
     <footer class="tail">
       <div class="tail__mark" data-view="tesseract" role="img" aria-label="The 4D.OS mark: a tesseract drawn in dashed lines, turning toward the pointer."></div>
       <p class="tail__end">End</p>
-      <p class="tail__edge">4DOS 0923 E7 · Leader edition · A local experiment, 2026 · Cat model by J-Toastie, CC-BY 3.0</p>
+      <p class="tail__edge">4DOS 0923 E7 · Leader edition · A playground experiment, 2026 · Cat model by J-Toastie, CC-BY 3.0</p>
     </footer>
 
     <script type="module" src="../../../src/4d-os/worlds/c/main.ts"></script>

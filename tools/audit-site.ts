@@ -4,6 +4,10 @@
  * checks what can be read from the files:
  * - on each of the 10 public pages, every tag the build adds, exactly once, in its attribute form
  *   (`og:*` with `property=`, `twitter:*` with `name=`), with the registry's values;
+ * - the description's length (50 to 160 characters), and the tab title's rule: "<World> · 4D.OS ·
+ *   crewtives playground" on the worlds, "4D.OS · crewtives playground" on the launcher, "crewtives
+ *   playground · a museum of live graphics experiments" on `/` and "<Name> · crewtives playground" on
+ *   the landings, with the share title beginning with that name;
  * - that those tags come before the first `<style>` and end within the first 32 KiB;
  * - the share image each page names: `?v=` equal to the start of the file's SHA-256, a 1200×630 PNG
  *   of at most 300 KB;
@@ -12,7 +16,8 @@
  * - the 404 page, robots.txt, sitemap.xml, _headers and the icon files, and that no built page is
  *   missing from the registry.
  * It parses the HTML and reads the PNG and ICO headers itself, so that it does not share code with
- * what it audits; it takes only the registry from src/site/pages.ts.
+ * what it audits; it takes only the registry from src/site/pages.ts and the world names from
+ * src/playground/shared/worlds.ts.
  *
  * Usage, from the repo root, after `npm run build`:
  *
@@ -25,6 +30,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
+import { LAUNCHER, WORLDS } from '../src/playground/shared/worlds.ts';
 import { CAT_MODEL, creditFor, FAVICON, ICONS, NOT_FOUND, PAGES, type PageMeta, SITE_NAME, SITE_ORIGIN } from '../src/site/pages.ts';
 
 const dist = resolve(process.argv[2] ?? 'dist');
@@ -33,6 +39,8 @@ const HEAD_BYTES = 32 * 1024;
 /** Weight budget of one share image (the same figure as the share-image tool's). */
 const IMAGE_BYTES_MAX = 300 * 1024;
 const HEADERS_RULE = ['https://:version.:subdomain.workers.dev/*', '  X-Robots-Tag: noindex'];
+/** Length bounds of a description, so that search results show it whole. */
+const DESCRIPTION_CHARS = [50, 160] as const;
 
 // ── Reading the files ──────────────────────────────────────────────────────────────────────────
 
@@ -171,9 +179,30 @@ function checkPage(page: PageMeta, problems: string[]): void {
   const keys = tags.filter((t) => t.name === 'meta').map((t) => t.attrs.property ?? t.attrs.name ?? '');
   for (const key of new Set(keys.filter((k) => /^(og|twitter):/.test(k) && !expected.some(([e]) => e === k)))) problems.push(`unexpected ${key} tag`);
 
-  // The page's own description equals the registry's.
+  // The page's own description equals the registry's, within the length search results show whole.
   const description = tags.find((t) => t.name === 'meta' && t.attrs.name === 'description')?.attrs.content;
   if (description === undefined || collapse(description) !== collapse(page.description)) problems.push('its meta description differs from the registry');
+  const [least, most] = DESCRIPTION_CHARS;
+  if (page.description.length < least || page.description.length > most) problems.push(`its description has ${page.description.length} characters, outside ${least} to ${most}`);
+
+  // The tab title follows its rule, and the share title begins with the page's name.
+  const titleTag = tags.find((t) => t.name === 'title');
+  const title = titleTag ? collapse(decode(html.slice(titleTag.end, html.indexOf('</title>', titleTag.end)))) : null;
+  const world = WORLDS.find((w) => w.route === page.route);
+  const rule =
+    page.route === '/'
+      ? `${SITE_NAME} · a museum of live graphics experiments`
+      : page.route === LAUNCHER.route
+        ? `${LAUNCHER.name} · ${SITE_NAME}`
+        : world
+          ? `${world.name} · ${LAUNCHER.name} · ${SITE_NAME}`
+          : null;
+  if (title === null) problems.push('it has no <title>');
+  else if (rule ? title !== rule : !new RegExp(`^[^·]+ · ${SITE_NAME}$`).test(title)) {
+    problems.push(`its tab title is "${title}", expected "${rule ?? `<Name> · ${SITE_NAME}`}"`);
+  } else if (!page.title.startsWith(title.split(' · ')[0])) {
+    problems.push(`its share title "${page.title}" does not begin with "${title.split(' · ')[0]}", the name its tab title leads with`);
+  }
 
   // The share image: ?v= from the file's SHA-256, a 1200×630 PNG within the weight budget.
   const url = new RegExp(`^${SITE_ORIGIN.replace(/\./g, '\\.')}(/og/[a-z0-9-]+\\.png)(?:\\?v=([0-9a-f]+))?$`).exec(image);

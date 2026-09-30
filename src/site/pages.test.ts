@@ -3,9 +3,9 @@ import { relative, resolve } from 'node:path';
 import type { UserConfig, UserConfigFnObject } from 'vite';
 import { describe, expect, test, vi } from 'vitest';
 import { routeOf } from './build/plugin.ts';
-import { CAT_CREDIT } from '../playground/shared/worlds.ts';
-import { collapse, metaDescription } from './head.ts';
-import { CAT_MODEL, creditFor, isSynthetic, NOT_FOUND, PAGES, type PageMeta, pageForRoute, SITE_ORIGIN } from './pages.ts';
+import { CAT_CREDIT, LAUNCHER, WORLDS } from '../playground/shared/worlds.ts';
+import { collapse, headTags, injectHead, metaDescription } from './head.ts';
+import { CAT_MODEL, creditFor, isSynthetic, NOT_FOUND, PAGES, type PageMeta, pageForRoute, SITE_NAME, SITE_ORIGIN } from './pages.ts';
 
 const repo = resolve(import.meta.dirname, '../..');
 
@@ -14,6 +14,29 @@ function sourceHtml(page: PageMeta): string {
   const path = page.site === '4d-os' ? `sites/4d-os/${page.route.slice('/4d-os/'.length)}` : `sites/playground/${page.route.slice(1)}`;
   return resolve(repo, path, 'index.html');
 }
+
+/** The text of the source's `<title>`, whitespace collapsed. */
+function sourceTitle(page: PageMeta): string {
+  const html = readFileSync(sourceHtml(page), 'utf8');
+  const tag = headTags(html).find((t) => t.name === 'title');
+  expect(tag, `${page.slug} <title>`).toBeDefined();
+  return collapse(html.slice(tag!.end, html.indexOf('</title>', tag!.end)));
+}
+
+/**
+ * The tab title a page must carry (site-metadata "Tab titles and self-description" for the 4D.OS
+ * pages, playground-hub "Demo honesty" for the museum and the landings), or null for a landing,
+ * whose title is "<Name> · crewtives playground".
+ */
+function tabTitle(page: PageMeta): string | null {
+  if (page.route === '/') return `${SITE_NAME} · a museum of live graphics experiments`;
+  if (page.route === LAUNCHER.route) return `${LAUNCHER.name} · ${SITE_NAME}`;
+  const world = WORLDS.find((w) => w.route === page.route);
+  return world ? `${world.name} · ${LAUNCHER.name} · ${SITE_NAME}` : null;
+}
+
+/** Descriptions tightened to fit search results (adapt-for-phones D13): each keeps at least 110 characters. */
+const TIGHTENED = ['/', '/landings/game-center/', '/landings/wind-up-empire/', '/4d-os/d/', '/4d-os/e/'];
 
 describe('page registry (site-metadata, "One registry for every public page")', () => {
   test('exactly the 10 slugs, with their routes, in order', () => {
@@ -47,15 +70,34 @@ describe('page registry (site-metadata, "One registry for every public page")', 
     for (const page of PAGES) {
       expect(page.title.length, `${page.slug} title`).toBeGreaterThanOrEqual(10);
       expect(page.title.length, `${page.slug} title`).toBeLessThanOrEqual(70);
-      expect(page.description.length, `${page.slug} description`).toBeGreaterThanOrEqual(50);
-      expect(page.description.length, `${page.slug} description`).toBeLessThanOrEqual(200);
+      expect(page.description.length, `${page.slug} description`).toBeGreaterThanOrEqual(TIGHTENED.includes(page.route) ? 110 : 50);
+      expect(page.description.length, `${page.slug} description`).toBeLessThanOrEqual(160);
+      expect(page.description, `${page.slug} description`).not.toMatch(/local experiment/i);
       expect(page.image.alt.length, `${page.slug} alt`).toBeGreaterThanOrEqual(40);
       expect(page.image.alt.length, `${page.slug} alt`).toBeLessThanOrEqual(420);
       expect(page.image).toMatchObject({ path: `/og/${page.slug}.png`, width: 1200, height: 630 });
     }
-    // The one description this change writes stays within what search results usually show.
-    expect(pageForRoute('/4d-os/')!.description.length).toBeLessThanOrEqual(160);
-    expect(pageForRoute('/4d-os/')!.description).not.toMatch(/local experiment/i);
+  });
+
+  test('each tab title follows the rule, and each share title begins with its name', () => {
+    for (const page of PAGES) {
+      const title = sourceTitle(page);
+      const expected = tabTitle(page);
+      if (expected) expect(title, page.slug).toBe(expected);
+      else expect(title, page.slug).toMatch(new RegExp(`^[^·]+ · ${SITE_NAME}$`));
+      const name = title.split(' · ')[0];
+      expect(page.title.startsWith(name), `${page.slug}: "${page.title}" begins with "${name}"`).toBe(true);
+    }
+  });
+
+  test("no source calls the site a local experiment, and each passes the build's head checks", () => {
+    for (const page of PAGES) {
+      const html = readFileSync(sourceHtml(page), 'utf8');
+      expect(html, page.slug).not.toMatch(/local experiment/i);
+      // The build plugin runs exactly this: it throws on the data:, placeholder, on a tag the build
+      // adds, on a description that differs from the registry's and on a head without one viewport meta.
+      expect(() => injectHead(html, page), page.slug).not.toThrow();
+    }
   });
 
   test("each description equals the page's own meta description", () => {

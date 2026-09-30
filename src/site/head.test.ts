@@ -9,14 +9,13 @@ const BLOOMSCOPE = byRoute('/bloomscope/');
 const WORLD_A = byRoute('/4d-os/a/');
 const WORLD_B = byRoute('/4d-os/b/');
 
-/** The head of sites/4d-os/b/index.html, copied: the placeholder comes after <title> and self-closes. */
+/** The head of sites/4d-os/b/index.html, copied: it declares no icon of its own. */
 const WORLD_B_HTML = `<!doctype html>
 <html lang="en" data-world="b">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Plate 4D-002 — 4D.OS</title>
-    <link rel="icon" href="data:," />
+    <title>Plate · 4D.OS · crewtives playground</title>
     <meta name="description" content="Every moment of a moving subject exposed onto one plate: a live 4D reconstruction on a chronophotographic desktop." />
   </head>
   <body></body>
@@ -36,7 +35,7 @@ function museumHtml(description = MUSEUM.description): string {
       document.documentElement.classList.add('js'); // <meta property="og:title"> inside a script is not a tag
     </script>
     ${OWN_ICON}
-    <title>crewtives playground</title>
+    <title>crewtives playground · a museum of live graphics experiments</title>
     <meta
       name="description"
       content="${description}"
@@ -82,6 +81,8 @@ describe('injectHead (site-metadata; add-seo-and-sharing D2)', () => {
     }
     expect(count(out, /<link rel="canonical" href="https:\/\/playground\.crewtives\.com\/4d-os\/b\/">/)).toBe(1);
     expect(count(out, /<link rel="apple-touch-icon" href="\/4d-os\/apple-touch-icon\.png">/)).toBe(1);
+    expect(count(out, /<link rel="icon" href="\/4d-os\/icon\.svg" type="image\/svg\+xml">/)).toBe(1);
+    expect(count(out, /rel="icon"/)).toBe(1);
     expect(count(out, /application\/ld\+json/)).toBe(1);
     expect(out).toContain(`<meta property="og:url" content="${WORLD_B.canonical}">`);
     expect(out).toContain('<meta name="twitter:card" content="summary_large_image">');
@@ -93,8 +94,9 @@ describe('injectHead (site-metadata; add-seo-and-sharing D2)', () => {
     expect(after.startsWith('\n    <link rel="canonical"')).toBe(true);
     const block = after.slice(0, after.indexOf('\n    <title>'));
     expect(block.trimEnd().endsWith('</script>')).toBe(true);
-    // Only the block and the icon differ from the source.
-    expect(out.replace(block, '').replace('<link rel="icon" href="/4d-os/icon.svg" type="image/svg+xml">', '<link rel="icon" href="data:," />')).toBe(WORLD_B_HTML);
+    // The site's icon is part of the block, and only the block differs from the source.
+    expect(block).toContain('<link rel="icon" href="/4d-os/icon.svg" type="image/svg+xml">');
+    expect(out.replace(block, '')).toBe(WORLD_B_HTML);
   });
 
   test('on a head with a 60 KB <style>, every injected tag comes before it and ends within the first 32 KiB', () => {
@@ -126,7 +128,7 @@ describe('injectHead (site-metadata; add-seo-and-sharing D2)', () => {
     expect(jsonLdText({ s: '<&>' })).toBe('{"s":"\\u003c\\u0026\\u003e"}');
   });
 
-  test('the data:, placeholder is replaced in every source form', () => {
+  test('the data:, placeholder is rejected in every source form, naming the page', () => {
     const forms = [
       '<link rel="icon" href="data:," />',
       '<link rel="icon" href="data:,">',
@@ -134,17 +136,23 @@ describe('injectHead (site-metadata; add-seo-and-sharing D2)', () => {
       '<link   rel="icon"\n      href="data:,"   />',
       '<link href="data:," rel="icon">',
       "<link rel='icon' href='data:,'>",
+      '<link rel="icon" href="data:," type="image/x-icon" />',
     ];
-    for (const form of forms) {
-      const out = injectHead(pageHtml(WORLD_A, form), WORLD_A);
-      expect(out, form).not.toContain('data:,');
-      expect(count(out, /<link rel="icon" href="\/4d-os\/icon\.svg" type="image\/svg\+xml">/), form).toBe(1);
-      expect(count(out, /rel="icon"/), form).toBe(1);
-    }
+    for (const form of forms) expect(() => injectHead(pageHtml(WORLD_A, form), WORLD_A), form).toThrow(/^\/4d-os\/a\/: .*data:, icon placeholder/);
     const windUp = byRoute('/landings/wind-up-empire/');
-    const out = injectHead(pageHtml(windUp, '<link rel="icon" href="data:," />'), windUp);
-    expect(out).toContain('<link rel="icon" href="/icon.svg" type="image/svg+xml">');
+    expect(() => injectHead(pageHtml(windUp, '<link rel="icon" href="data:," />'), windUp)).toThrow(/^\/landings\/wind-up-empire\/: .*data:,/);
+  });
+
+  test("a page with no icon of its own gets its site's icons in the block", () => {
+    const windUp = byRoute('/landings/wind-up-empire/');
+    const out = injectHead(pageHtml(windUp), windUp);
+    expect(count(out, /<link rel="icon" href="\/icon\.svg" type="image\/svg\+xml">/)).toBe(1);
+    expect(count(out, /rel="icon"/)).toBe(1);
     expect(out).toContain('<link rel="apple-touch-icon" href="/apple-touch-icon.png">');
+    const worldA = injectHead(pageHtml(WORLD_A), WORLD_A);
+    expect(count(worldA, /<link rel="icon" href="\/4d-os\/icon\.svg" type="image\/svg\+xml">/)).toBe(1);
+    expect(count(worldA, /rel="icon"/)).toBe(1);
+    expect(worldA).toContain('<link rel="apple-touch-icon" href="/4d-os/apple-touch-icon.png">');
   });
 
   test("a real icon is kept, and on / the favicon link comes before it", () => {

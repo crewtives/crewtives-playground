@@ -8,8 +8,10 @@ and X card tags, the structured data, the icons, the share images, `robots.txt`,
 The behavior is specified in the
 [`site-metadata`](../openspec/specs/site-metadata/spec.md) capability, and the reasons behind it are in
 the design of the change `add-seo-and-sharing` (decisions D1 to D10), which comments in `src/site/`
-cite. None of it changes what a page shows or does: the metadata is added to the built HTML, and no
-work's source is edited to carry it. [`architecture.md`](architecture.md) places this layer among the
+cite; the change `adapt-for-phones` (D12 to D14) set the tab titles, tightened the descriptions and
+removed the icon placeholders from the sources. None of it changes what a page shows or does: the
+metadata is added to the built HTML, and a page's source carries only what belongs to the page itself,
+its tab title and its description. [`architecture.md`](architecture.md) places this layer among the
 others.
 
 ## The page registry
@@ -32,8 +34,8 @@ Each entry of `PAGES` holds:
 | `slug` | Names the share image, `/og/<slug>.png` |
 | `site` | `playground` or `4d-os`: which build makes the page, which decides its icons |
 | `route`, `canonical` | The public route with its trailing slash, and `SITE_ORIGIN` + route |
-| `title` | The share title (`og:title`, `twitter:title`), 10 to 70 characters. It may say more than the tab title, which this layer never changes |
-| `description` | A copy of the page's own `<meta name="description">`, 50 to 200 characters |
+| `title` | The share title (`og:title`, `twitter:title`), 10 to 70 characters. It begins with the page's name as its tab title gives it (the part before the first " · "), and it may say more than the tab title |
+| `description` | A copy of the page's own `<meta name="description">`, 50 to 160 characters, so that search results show it whole |
 | `image` | Path, 1200 × 630, and the alt text (40 to 420 characters), which describes the frame and the band and names the cat's credit when the image carries it |
 | `jsonLd` | `WebSite` on `/`, `CreativeWork` elsewhere |
 | `frameShows` | The 4D.OS worlds the share image's frame shows |
@@ -42,7 +44,10 @@ Each entry of `PAGES` holds:
 **The description is written twice on purpose.** Most pages are sources of a museum sheet, whose
 HTML cannot change without marking the sheet's loops stale, so the page keeps its own tag. The
 registry keeps a copy so that the tests and the audit can check it without parsing HTML. The build
-fails, naming the page, when the two differ after whitespace is collapsed.
+fails, naming the page, when the two differ after whitespace is collapsed, so a description is always
+edited in the page and in `src/site/pages.ts` in the same commit. A change that edits a world's page
+this way records that sheet's loop again, with every frame unchanged (`site-metadata`, "Metadata
+leaves the works as they are").
 
 **"Synthetic" and the cat's credit are never decided by hand.** `isSynthetic(page)` and
 `creditFor(page)` read them from `WORLDS` in `src/playground/shared/worlds.ts`, through the worlds in
@@ -53,7 +58,8 @@ requires the page's own HTML to label it "Synthetic scene", so the mark still fo
 
 ### Adding a page
 
-1. Add the page's HTML entry to its site config, with its own `<meta name="description">`.
+1. Add the page's HTML entry to its site config, with its own `<meta name="description">` and a tab
+   title that follows [the rule](#tab-titles).
 2. Add its entry to `PAGES` and its slug to the `Slug` type, with a description equal to the page's.
 3. Add its card to `src/site/og/cards.ts`, take its capture if it needs a new one, and compose its
    share image (see [Share images](#share-images)). Give the image a row in `LICENSES.md`.
@@ -61,6 +67,24 @@ requires the page's own HTML to label it "Synthetic scene", so the mark still fo
    site configs, so a page left out of either fails there. Then build and run the audit.
 
 A build that meets a page with no registry entry fails and names the file.
+
+### Tab titles
+
+A page's `<title>` is part of the page, not of this layer: the build never writes it. It names the page
+first and the site after it, so that a search result or a tab says what the page is to a visitor who
+has never heard of crewtives:
+
+| Pages | Tab title | Rule in |
+|---|---|---|
+| `/` | "crewtives playground · a museum of live graphics experiments" | `playground-hub`, "Demo honesty" |
+| The landings (Bloomscope, Game Center Yonjigen, Wind-Up Empire) | "<Name> · crewtives playground" | `playground-hub`, "Demo honesty" |
+| `/4d-os/` | "4D.OS · crewtives playground" | `site-metadata`, "Tab titles and self-description" |
+| `/4d-os/a/` to `/4d-os/e/` | "<World> · 4D.OS · crewtives playground", with the world's name from `WORLDS` in `src/playground/shared/worlds.ts` ("Vitrine", "Plate", "Leader", "The golden stoop", "Whale fall") | `site-metadata`, "Tab titles and self-description" |
+
+The share title in the registry begins with the part of the tab title before the first " · ", for
+example "Vitrine · 4D.OS: …" for world A and "crewtives playground: …" for `/`. No code reads a
+page's `<title>`: the museum's sheets, their "Enter …" links and the share images take their names from
+`src/playground/museum/collection.ts`, `src/playground/shared/worlds.ts` and `src/site/og/cards.ts`.
 
 ## The block in each page's head
 
@@ -76,8 +100,9 @@ block right after the page's `<meta name="viewport">`. In order:
    and `image:alt`;
 4. five X tags, as `<meta name="twitter:…">`: `card` (`summary_large_image`), `title`,
    `description`, `image` and `image:alt`;
-5. the site's `apple-touch-icon`;
-6. the JSON-LD block.
+5. on a page with no icon of its own, the site's SVG icon;
+6. the site's `apple-touch-icon`;
+7. the JSON-LD block.
 
 **Why right after the viewport meta.** Some link previews read only the start of a page: Slack reads
 the first 32 KiB. The built museum carries more than 60 KB of inline styles in its head, so a block
@@ -95,11 +120,12 @@ every `<`, `>` and `&` becomes a JSON Unicode escape (`<`, `>`, `&`), so the blo
 never contain `</script>` and `JSON.parse` still gives back the original strings.
 
 **What fails the build.** A page with no registry entry, a head without exactly one viewport meta, a
-description that differs from the registry's, or a source that already declares a tag the block adds
-(a canonical link, an `og:*` or `twitter:*` tag, an apple-touch-icon, a robots meta or a JSON-LD
-block). A missing share image does not fail it: the plugin prints a line that starts with `[site]`
-and names the file, and the page is built without a `?v=` version, so that a fresh clone builds
-before the images exist. The audit does not accept that output.
+description that differs from the registry's, a source that declares the empty `data:,` icon
+placeholder, or a source that already declares a tag the block adds (a canonical link, an `og:*` or
+`twitter:*` tag, an apple-touch-icon, a robots meta or a JSON-LD block). A missing share image does
+not fail it: the plugin prints a line that starts with `[site]` and names the file, and the page is
+built without a `?v=` version, so that a fresh clone builds before the images exist. The audit does
+not accept that output.
 
 ### Structured data
 
@@ -114,7 +140,7 @@ before the images exist. The audit does not accept that output.
 There are no dates, ratings, reviews or offers, and no creator other than crewtives and the credited
 model. The 404 page has no structured data.
 
-## Icons and the `data:,` placeholders
+## Icons
 
 | File | Served at | What |
 |---|---|---|
@@ -129,13 +155,15 @@ icon (the museum, Bloomscope, Game Center Yonjigen) keep it; `/` also declares `
 it, because crawlers look for a raster icon on the home page. For Google Search, the icon meant is
 the 180 × 180 apple-touch-icon.
 
-Six 4D.OS pages and Wind-Up Empire declare `<link rel="icon" href="data:,">` in their source, an empty
-icon that only stops the browser from requesting `/favicon.ico`. The plugin replaces it, wherever it
-sits in the head and however it is spelled, with the site's SVG icon: `/4d-os/icon.svg` on the 4D.OS
-pages and `/icon.svg` on Wind-Up Empire. **The placeholder stays in the source on purpose.** Six of
-those pages are museum sheet sources, and editing them would mark their loops stale; a later change
-that edits the worlds removes the placeholders from the source. A page with no icon at all (only the
-404 page) gets the site's SVG icon in its block.
+The six 4D.OS pages, Wind-Up Empire and the 404 page declare no icon of their own, so the plugin
+writes the site's SVG icon into their block: `/4d-os/icon.svg` on the 4D.OS pages and `/icon.svg` on
+the others. A source never writes that link itself, because a page's own icon is kept next to the one
+the build adds.
+
+**No empty icon placeholder.** Those pages used to declare `<link rel="icon" href="data:,">`, an empty
+icon that only stopped the browser from requesting `/favicon.ico`, and the plugin replaced it. The
+placeholders left the sources in `adapt-for-phones` (D14), and the plugin now fails the build, naming
+the page, when a source declares one in any spelling; the audit also rejects one left in the output.
 
 ## Share images
 
@@ -251,11 +279,14 @@ of its pages gets `noindex` (the README's "Deploy your own" says so).
 
 `npm test` covers this layer without a build, reading only repository files:
 
-- `src/site/pages.test.ts`: the slugs, routes and canonicals, the length bounds, each description
-  against its page, the credit in the alt texts, the JSON-LD kinds, and that the registry equals the
-  entry pages of both site configs plus the 404 page;
+- `src/site/pages.test.ts`: the slugs, routes and canonicals, the length bounds (descriptions of 50
+  to 160 characters), each source's tab title against its rule and the share title led by its name,
+  each source passing the build's head checks (`injectHead`) and never calling the site local, each
+  description against its page, the credit in the alt texts, the JSON-LD kinds, and that the
+  registry equals the entry pages of both site configs plus the 404 page;
 - `src/site/head.test.ts`: `injectHead` on fixtures, including the real head of world B, a head with
-  60 KB of styles, a description that contains `</script>`, and every placeholder spelling;
+  60 KB of styles, a description that contains `</script>`, and the placeholder rejected in every
+  spelling;
 - `src/site/sitemap.test.ts`: the sitemap, `robots.txt`, `_headers`, the 404 page and its glyphs, and
   `not_found_handling`;
 - `src/site/og/png.test.ts` and `src/site/og/cards.test.ts`: the PNG codec, the share images (size,
@@ -268,7 +299,9 @@ After a build, the audit reads the output:
 npx -y -p tsx@4.23.15 tsx tools/audit-site.ts [dist]
 ```
 
-It checks every page's tags, their attribute forms and values against the registry; that they end
+It checks every page's tags, their attribute forms and values against the registry; the
+description's length (50 to 160 characters) and the tab title's rule, with the share title led by the
+page's name; that they end
 before the first `<style>` and within the first 32 KiB; the share image each page names (1200 × 630,
 at most 300 KB, `?v=` equal to the start of its SHA-256); the icons; the JSON-LD; the absence of
 `noindex` and of `data:,` placeholders; the 404 page, `robots.txt`, `sitemap.xml`, `_headers` and the
