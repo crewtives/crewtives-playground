@@ -29,7 +29,7 @@ src/pipeline/       scene equations (scenes/), the development-only baker (bake/
 src/4d-os/          4D.OS code: launcher/, worlds/a … e/, debug/
 src/playground/     playground code: museum/, bloomscope/, game-center/, wind-up-empire/, not-found/, shared/
 src/site/           what both sites share at build time: the page registry, the metadata plugin, og/
-tools/              development tools: capture-loops.ts, capture-og.ts, audit-site.ts, vite/ (Vite plugins)
+tools/              development tools: capture-loops.ts, capture-og.ts, audit-site.ts, check-phone.ts (+ check-phone/), vite/ (Vite plugins)
 deploy/             wrangler.jsonc, _redirects, .assetsignore
 docs/               these guides; design/ holds DESIGN.md and PRODUCT.md
 openspec/           specifications and the archived changes that built the project
@@ -267,8 +267,8 @@ museum's body. For each page it:
 - reads the page's share image, `sites/playground/public/og/<slug>.png`, and takes the first 8 hex
   digits of its SHA-256 as the image's `?v=` version;
 - calls `injectHead` (`src/site/head.ts`), which writes the canonical link, the Open Graph and X
-  tags, the icons and the JSON-LD in one block right after the viewport meta, and replaces the
-  `data:,` icon placeholders of the source HTML with the site's icon.
+  tags, the icons and the JSON-LD in one block right after the viewport meta. A page that declares
+  no icon gets the site's; a `data:,` icon placeholder in a source fails the build, naming the page.
 
 The playground build also emits `robots.txt` and `sitemap.xml` from the same registry.
 [`site-metadata.md`](site-metadata.md) explains the block, its position and every tag.
@@ -396,6 +396,12 @@ or pass the recorder `--base` with the URL that Wrangler prints (see [museum.md]
   registry, where they sit in the file, the share images and icons they point to, the JSON-LD,
   `robots.txt`, `sitemap.xml`, the 404 page and `_headers`. Run it after a build with
   `npx -y -p tsx@4.23.15 tsx tools/audit-site.ts [dist]`; it exits with 1 and lists every problem.
+- **`tools/check-phone.ts`** checks the phone rules of every page (spec `phone-ergonomics`) in
+  Chromium with touch emulation and once in WebKit, and proves that the desktop did not change: deep
+  desktop screenshots with element dumps (`desk`, `desk-compare`) and every phone media query false
+  at 1440×900 and 1680×1050 (`queries`). Each work's own checks live in `tools/check-phone/<name>.ts`.
+  It runs Playwright through `npx` like the loop recorder, against development servers or a build
+  under `wrangler dev`; the modes and flags are in its header comment.
 - **`tools/vite/pack-saver.ts`** adds a development-only endpoint, `POST /__pack/save`, that the baker
   (`/bake.html`) uses to write a pack into `sites/4d-os/public/packs/<name>/`. It accepts only simple
   pack and file names inside that folder.
@@ -421,6 +427,7 @@ change numbers its own decisions, so a "D4" means the D4 of the change that shap
 | Hero gesture, pinch, chase camera, stable points, cat motion, `src/pipeline/scenes/`, worlds D and E | [`2026-09-28-add-cosmic-landings-and-organic-motion`](../openspec/changes/archive/2026-09-28-add-cosmic-landings-and-organic-motion/design.md) |
 | The museum, its loops, `tools/capture-loops.ts` | [`2026-09-28-add-playground-museum`](../openspec/changes/archive/2026-09-28-add-playground-museum/design.md) |
 | `src/site/`, the 404 page, `tools/capture-og.ts`, `tools/audit-site.ts` | [`2026-09-29-add-seo-and-sharing`](../openspec/changes/archive/2026-09-29-add-seo-and-sharing/design.md) |
+| Phone layouts of every page, `src/engine/window/dock.ts`, the loader's `source` option, `tools/check-phone.ts` | [`adapt-for-phones`](../openspec/changes/adapt-for-phones/design.md) |
 
 A module that several changes touched can cite decisions from more than one of them; the title of the
 decision usually settles which. The paths inside archived changes describe the repository as it was

@@ -141,12 +141,14 @@ A pack may declare `"correspondence": true`. It then promises that every frame h
 
 ### Loading and validation
 
-`loadPack(baseUrl, { onProgress })`:
+`loadPack(baseUrl, { onProgress, source })`:
 
 1. fetches `scene.json` and validates it with `parseScene`;
-2. fetches `static.bin`, `dynamic.bin` and every page in parallel, streaming each body and counting bytes against the sizes declared in `files`, so progress reflects bytes actually received;
+2. fetches `static.bin`, `dynamic.bin` and every page in parallel (with `source: false`, no page: see below), streaming each body and counting bytes against the sizes declared in `files`, so progress reflects bytes actually received;
 3. copies each file into a buffer of its exact size, then validates and wraps it with `parseStatic` and `parseDynamic`;
 4. decodes the atlas pages and returns a `Pack` with `meta`, `static`, `dynamic`, `source`, `correspondence` (`{ pointsPerFrame }` or `null`) and the total `bytes`.
+
+`source` defaults to `true`. A world that never samples the source frames (E: its viewers turn the frustum off and no control turns it on) passes `source: false`: the loader then requests no `source/page-*`, gives `pack.source` a 1×1 placeholder per frame (`placeholderSource`) so the GPU texture stays valid, and counts progress over the files it requested. `meta.files` still lists every file, so "Weight on disk" keeps reading the whole pack.
 
 Validation is strict because a silently empty scene is the worst failure. Every check throws a `PackError(layer, reason)` whose message names the layer and, for count mismatches, both values: a wrong magic, an unsupported version, a camera count that differs from the frame count, an offset table that does not start at 0, end at `M` or grow monotonically, a point whose frame does not match its range, or declared correspondence with unequal frames. The boot window shows that message (section 7). The loader also refuses to run on a big-endian platform, since the typed views assume little-endian.
 
@@ -269,7 +271,7 @@ The shell has no styles of its own. Each world supplies its markup and CSS; thes
 
 ### Boot
 
-`bootPack({ url, boot, display, engine })` ([`boot.ts`](../src/engine/shell/boot.ts)) sets the display's reveal to 0, loads the pack while writing the real byte progress to `--progress` and `[data-boot-pct]`, then reveals the scene with the threshold dissolve (1.1 s in 14 steps by default; instant under reduced motion). If loading fails, the boot window stays visible with the `PackError` text, in the world's own voice through `errorText`, and the promise rejects.
+`bootPack({ url, boot, display, engine, load?, onProgress? })` ([`boot.ts`](../src/engine/shell/boot.ts)) passes `load` (the loader's options, such as `source: false`) through to `loadPack` and calls `onProgress(progress, received, total)` with the bytes as they arrive (E's phone boot shows them). It sets the display's reveal to 0, loads the pack while writing the real byte progress to `--progress` and `[data-boot-pct]`, then reveals the scene with the threshold dissolve (1.1 s in 14 steps by default; instant under reduced motion). If loading fails, the boot window stays visible with the `PackError` text, in the world's own voice through `errorText`, and the promise rejects.
 
 ### The desktop
 
@@ -293,7 +295,9 @@ It also installs the global keyboard. The pieces it uses can be bound on their o
 - **Window trail** ([`windowTrail.ts`](../src/engine/shell/windowTrail.ts)): while a `[data-trail]` dialog is dragged, it leaves inert copies at its earlier positions, cleared from oldest to newest after release. It is the 2D version of "every moment at once", and it is off under reduced motion.
 - **Figures** ([`packStats.ts`](../src/engine/shell/packStats.ts)): `fillStats` writes frames, duration, fps, point counts and total size, all read from `scene.json`, into `[data-stat]` elements. No figure on a page is typed by hand.
 
-The draggable windows are not one of those pieces: `bindDesktop` does not bind them, and worlds A, B and C call `bindWindows()` ([`windows.ts`](../src/engine/window/windows.ts)) themselves. It makes every `.win[data-window]` draggable by its `.win__title` with Pointer Events and pointer capture. The offset is applied with `translate`, so the window keeps its place in the world's layout; it stays inside the viewport, the touched or focused window comes to the front, and a world disables dragging with `--win-drag: 0` (narrow layouts stack the windows under the viewer). A `pointercancel`, which means the browser took the gesture as a scroll, puts the window back.
+The draggable windows are not one of those pieces: `bindDesktop` does not bind them, and worlds A, B and C call `bindWindows()` ([`windows.ts`](../src/engine/window/windows.ts)) themselves. It makes every `.win[data-window]` draggable by its `.win__title` with Pointer Events and pointer capture. The offset is applied with `translate`, so the window keeps its place in the world's layout; it stays inside the viewport, the touched or focused window comes to the front, and a world disables dragging with `--win-drag: 0`. A `pointercancel`, which means the browser took the gesture as a scroll, puts the window back.
+
+Narrow layouts no longer stack the windows under the viewer: they dock them. `bindDock({ query, windows, mount, initial, label?, onChange? })` ([`dock.ts`](../src/engine/window/dock.ts)), next to `bindWindows`, is headless like it. While `query` matches it creates a row of disclosure buttons (`.dock`, `role="group"`, one `button.dock__button` per window, named after the window's title, with `aria-expanded` and `aria-controls`), lets the world place it with `mount`, keeps at most one window open (the others get `hidden` and every docked window `data-docked`), closes the open one on Escape with focus returned without scrolling, and calls `onChange(open)` after each change (world B reframes its plate there). It never scrolls, never reparents a window and never touches `translate` or `z-index`, which `bindWindows` keeps owning; leaving the query restores every node and attribute. Each world skins the dock in its own language (`docs/design/DESIGN.md`, "Window dock").
 
 ### Story page and "scroll is time"
 

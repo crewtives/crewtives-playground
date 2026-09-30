@@ -106,6 +106,7 @@ other work sheets in ascending order, sheet 000 and the colophon. Each sheet is 
 | `src/playground/museum/loops/` | Pure modules shared by the recording tool, the build, the tests and the browser: the 4DLP format, frame hashes, block sampling and the provenance schema. |
 | `src/playground/museum/main.ts` | The page's JavaScript, added on top of the static HTML. |
 | `src/playground/museum/clock.ts`, `player.ts` | The page clock and scrubber; the loop player. |
+| `src/playground/museum/clockAria.ts` | When and what the scrubber exposes to assistive technology while the clock runs. |
 | `src/playground/museum/fold.ts`, `fold3d.ts` | The fold: its state and fallback, loaded on the first fold gesture; and the 3D view, loaded after it only with WebGL2. |
 | `src/playground/museum/tokens.css`, `style.css`, `fonts/` | The house tokens (colors, module, 16-color palette), the styles and the two typefaces with their licenses. |
 | `tools/capture-loops.ts` | The development-only tool that records the loops. |
@@ -272,6 +273,14 @@ clock chase the requested position by at most 2 frames per step, one step every 
 to change direction within 1/3 s. A hollow mark shows where the clock is heading. Arrow keys, Home and
 End go through the same chase.
 
+A drag on the scrubber never scrolls the page or selects text, with a mouse or a finger: its
+`pointerdown` prevents the browser's default (which would start the drag autoscroll) and focuses the
+scrubber without scrolling, so the arrows keep working after a drag. Its exposed position
+(`aria-valuenow`, and `aria-valuetext` such as "frame 40 of 45, playing forward") follows
+`clockAria.ts`: it is written at once on focus and on every state change, at most once a second while
+the clock runs and the scrubber does not have focus, and not at all while it runs with focus, so a
+screen reader is not read a new frame fifteen times a second.
+
 The animation loop runs only while it has something to do: the clock is not in HOLD, the tab is
 visible, and some following VISTA or index preview is on screen.
 
@@ -288,8 +297,9 @@ show the same source frame.
 Two `IntersectionObserver`s track each sheet. A sheet less than one viewport height from the screen
 requests its FORWARD passes; a sheet on screen is painted. The REWIND passes are requested only after
 the visitor first sets the clock to REWIND; until one arrives, the player shows the FORWARD pass in
-reverse order. An index row requests its loop only on focus, or after the pointer has rested on it for
-300 ms, so moving the pointer across the index requests nothing.
+reverse order. An index row requests its loop only on keyboard focus (`:focus-visible`), or after the pointer has
+rested on it for 300 ms, so moving the pointer across the index requests nothing, and a tap or a quick
+click on a row follows its link instead of swapping its poster for the loop mid-press.
 
 ### The loop player
 
@@ -359,6 +369,26 @@ how to read the sheet instead of decorating it.
   paint. After the fonts load, the sheet is put back in place unless the visitor has scrolled.
 - **Sound** is off by default. With it on, the museum makes only two synthesized sounds: a hinge
   "clack" when a fold settles and a tick on a jump by number.
+
+### On a phone
+
+The museum's phone rules are in `style.css` and `main.ts`, each under its gate (spec
+`phone-ergonomics`); none of them matches on a desktop with a mouse.
+
+- **Portrait, 759 px or less.** The top bar sheds its title row: it is sticky 30 px above the top, so
+  only its 45 px navigation row stays (75 px at load). The clock is a fixed bar at the bottom, 79 px
+  plus the safe area (`--clock-h`, which also sets the body's bottom padding and
+  `scroll-padding-bottom`); the scrubber takes what the states leave (151 px at 390 px). Jumps land
+  61 px from the top. The index rows re-flow with the poster under the number (954 px at 390 px).
+- **Landscape, at most 500 px tall.** The bar is static in one row, the clock is one 47 px row, each
+  VISTA is fitted to the height beside its épure, and sheet 001's three VISTAS sit side by side.
+- **Touch (coarse pointer).** Every control keeps its drawn size and gets a 44 px hit area. The ground
+  line no longer takes touches, so a swipe over an épure scrolls; the fold is dragged from a grip, a
+  14 px square mark at the ground line's right end, created by the script while the gate matches (a
+  tap on it folds, like "Fold"). After a fold on a phone the page scrolls the least distance that shows
+  the fold view whole, unless the visitor touched or scrolled since pressing Fold.
+
+`tools/check-phone.ts phone museum` checks all of it (the module is `tools/check-phone/museum.ts`).
 
 ## Loops
 
